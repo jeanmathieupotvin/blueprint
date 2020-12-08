@@ -31,3 +31,6 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+# Files in development that should not be committed for a temporary period of time
+.dev/
