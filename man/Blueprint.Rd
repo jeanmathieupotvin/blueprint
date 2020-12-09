@@ -31,11 +31,6 @@ class names collisions.
 
 You should consider it as a virtual class.
 }
-\seealso{
-Other Blueprint classes: 
-\code{\link{Fields}},
-\code{\link{Field}}
-}
 \author{
 Jean-Mathieu Potvin (\href{mailto:jean-mathieu_potvin@cooperators.ca}{jean-mathieu_potvin@cooperators.ca})
 }
