@@ -2,6 +2,10 @@
 NULL
 
 
+# All functions defined in this script are unexported. Preferably, they are
+# also tested, but not always.
+
+
 # The following function is a wrapper validator for R6 objects. It
 # first checks if underlying object inherits the R6 class, then checks
 # the existence of a $validate() method. If so, the latter is called
