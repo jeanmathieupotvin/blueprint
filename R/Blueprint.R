@@ -15,7 +15,8 @@ NULL
 #' useful to the user** and is mostly used has a safeguard against probable
 #' class names collisions.
 #'
-#' You should consider it as a virtual class.
+#' You should consider it as a virtual class. It has an API mostly for
+#' consistency with other classes of the package.
 #'
 #' @usage NULL
 #'
@@ -98,9 +99,9 @@ Blueprint <- R6::R6Class("Blueprint",
 #' ## Constructor function
 #' new_blueprint()
 #'
-#' @return Constructor function [new_blueprint()] is a wrapper to
-#' [`$new()`][Blueprint] and returns a [R6][R6::R6] object of
-#' class [Blueprint].
+#' @return
+#' * Constructor function [new_blueprint()] is a wrapper to
+#' [`$new()`][Blueprint] and returns a [R6][R6::R6] object of class [Blueprint].
 #'
 #' @export
 new_blueprint <- function()
@@ -117,7 +118,8 @@ new_blueprint <- function()
 #'
 #' @param x any \R object.
 #'
-#' @return External helper functions [is_blueprint()] returns a logical scalar.
+#' @return
+#' * External helper functions [is_blueprint()] returns a logical scalar.
 #'
 #' @export
 is_blueprint <- function(x)
