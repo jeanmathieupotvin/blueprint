@@ -34,19 +34,14 @@ Blueprint <- R6::R6Class("Blueprint",
     cloneable    = FALSE,
     inherit      = NULL,
     private      = NULL,
-    active       = list(
-
-        #' @field blueprint_version A scalar character that holds the
-        #' \pkg{blueprint} package's version when an object is created.
-        blueprint_version = function()
-        {
-            return(as.character(utils::packageVersion("Blueprint")))
-        }
-    ),
-    public = list(
+    public       = list(
 
         #' @field is_blueprint A scalar logical always equal to `TRUE`.
         is_blueprint = TRUE,
+
+        #' @field blueprint_version A scalar character that holds the
+        #' \pkg{blueprint} package's version when an object is created.
+        blueprint_version = as.character(utils::packageVersion("Blueprint")),
 
         #' @description Create a new [Blueprint] object.
         #' @return A [R6][R6::R6] object of class [Blueprint].
