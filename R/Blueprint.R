@@ -15,13 +15,14 @@ NULL
 #' useful to the user** and is mostly used has a safeguard against probable
 #' class names collisions.
 #'
-#' You should consider it as a virtual class.
+#' You should consider it as a virtual class. It has an API mostly for
+#' consistency with other classes of the package.
 #'
 #' @usage NULL
 #'
 #' @format NULL
 #'
-#' @author Jean-Mathieu Potvin (<jean-mathieu_potvin@@cooperators.ca>)
+#' @author Jean-Mathieu Potvin (<info@@jeanmathieupotvin.com>)
 #'
 #' @family Blueprint classes
 #'
@@ -41,7 +42,7 @@ Blueprint <- R6::R6Class("Blueprint",
 
         #' @field blueprint_version A scalar character that holds the
         #' \pkg{blueprint} package's version when an object is created.
-        blueprint_version = as.character(utils::packageVersion("Blueprint")),
+        blueprint_version = as.character(utils::packageVersion("blueprint")),
 
         #' @description Create a new [Blueprint] object.
         #' @return A [R6][R6::R6] object of class [Blueprint].
@@ -58,8 +59,11 @@ Blueprint <- R6::R6Class("Blueprint",
         validate = function()
         {
             is_valid_r6_instance(
-                if (!self$is_blueprint) {
-                    "$is_blueprint is FALSE. It should be TRUE. Investigate."
+                if (!is_scalar_logical(self$is_blueprint) || !self$is_blueprint) {
+                    "$is_blueprint is FALSE. It should be a scalar TRUE."
+                },
+                if (!is_scalar_character(self$blueprint_version)) {
+                    "$blueprint_version must be a character of length 1."
                 }
             )
 
@@ -79,6 +83,7 @@ Blueprint <- R6::R6Class("Blueprint",
         #' [Blueprint] object.
         format = function()
         {
+            self$validate()
             return("<Blueprint>")
         }
     )
@@ -94,9 +99,9 @@ Blueprint <- R6::R6Class("Blueprint",
 #' ## Constructor function
 #' new_blueprint()
 #'
-#' @return Constructor function [new_blueprint()] is a wrapper to
-#' [`$new()`][Blueprint] and returns a [R6][R6::R6] object of
-#' class [Blueprint].
+#' @return
+#' * Constructor function [new_blueprint()] is a wrapper to
+#' [`$new()`][Blueprint] and returns a [R6][R6::R6] object of class [Blueprint].
 #'
 #' @export
 new_blueprint <- function()
@@ -113,12 +118,13 @@ new_blueprint <- function()
 #'
 #' @param x any \R object.
 #'
-#' @return External helper functions [is_blueprint()] returns a logical scalar.
+#' @return
+#' * External helper functions [is_blueprint()] returns a logical scalar.
 #'
 #' @export
 is_blueprint <- function(x)
 {
-    return(inherits(x, "Blueprint", FALSE) && x$is_blueprint)
+    return(inherits(x, "Blueprint", FALSE) && isTRUE(x$is_blueprint))
 }
 
 

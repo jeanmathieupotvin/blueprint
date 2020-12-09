@@ -16,11 +16,14 @@ is_blueprint(x)
 \item{x}{any \R object.}
 }
 \value{
-Constructor function \code{\link[=new_blueprint]{new_blueprint()}} is a wrapper to
-\code{\link[=Blueprint]{$new()}} and returns a \link[R6:R6Class]{R6} object of
-class \link{Blueprint}.
+\itemize{
+\item Constructor function \code{\link[=new_blueprint]{new_blueprint()}} is a wrapper to
+\code{\link[=Blueprint]{$new()}} and returns a \link[R6:R6Class]{R6} object of class \link{Blueprint}.
+}
 
-External helper functions \code{\link[=is_blueprint]{is_blueprint()}} returns a logical scalar.
+\itemize{
+\item External helper functions \code{\link[=is_blueprint]{is_blueprint()}} returns a logical scalar.
+}
 }
 \description{
 \link{Blueprint} is the root super-class of all \link[R6:R6Class]{R6} classes of package
@@ -29,27 +32,18 @@ External helper functions \code{\link[=is_blueprint]{is_blueprint()}} returns a 
 useful to the user} and is mostly used has a safeguard against probable
 class names collisions.
 
-You should consider it as a virtual class.
-}
-\seealso{
-Other Blueprint classes: 
-\code{\link{Fields}},
-\code{\link{Field}}
+You should consider it as a virtual class. It has an API mostly for
+consistency with other classes of the package.
 }
 \author{
-Jean-Mathieu Potvin (\href{mailto:jean-mathieu_potvin@cooperators.ca}{jean-mathieu_potvin@cooperators.ca})
+Jean-Mathieu Potvin (\href{mailto:info@jeanmathieupotvin.com}{info@jeanmathieupotvin.com})
 }
 \concept{Blueprint classes}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{is_blueprint}}{A scalar logical always equal to \code{TRUE}.}
-}
-\if{html}{\out{</div>}}
-}
-\section{Active bindings}{
-\if{html}{\out{<div class="r6-active-bindings">}}
-\describe{
+
 \item{\code{blueprint_version}}{A scalar character that holds the
 \pkg{blueprint} package's version when an object is created.}
 }
