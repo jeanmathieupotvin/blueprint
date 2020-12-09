@@ -58,8 +58,11 @@ Blueprint <- R6::R6Class("Blueprint",
         validate = function()
         {
             is_valid_r6_instance(
-                if (!self$is_blueprint) {
-                    "$is_blueprint is FALSE. It should be TRUE. Investigate."
+                if (!is_scalar_logical(self$is_blueprint) || !self$is_blueprint) {
+                    "$is_blueprint is FALSE. It should be a scalar TRUE."
+                },
+                if (!is_scalar_character(self$blueprint_version)) {
+                    "$blueprint_version must be a character of length 1."
                 }
             )
 
@@ -79,6 +82,7 @@ Blueprint <- R6::R6Class("Blueprint",
         #' [Blueprint] object.
         format = function()
         {
+            self$validate()
             return("<Blueprint>")
         }
     )
@@ -118,7 +122,7 @@ new_blueprint <- function()
 #' @export
 is_blueprint <- function(x)
 {
-    return(inherits(x, "Blueprint", FALSE) && x$is_blueprint)
+    return(inherits(x, "Blueprint", FALSE) && isTRUE(x$is_blueprint))
 }
 
 
