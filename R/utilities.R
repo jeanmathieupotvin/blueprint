@@ -38,7 +38,7 @@ is_valid_r6_instance <- function(...)
              call. = FALSE)
     } else {
         stop(
-            "errors detected in object:\n",
+            "errors detected in object.\n",
             sprintf("  %i. %s\n", seq_along(errs), errs),
             call. = FALSE
         )
