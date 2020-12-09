@@ -25,7 +25,7 @@ testthat::test_that("method $validate() works", {
 
 
 testthat::test_that("method $print() works", {
-    testthat::expect_identical(b$print(), b)
+    testthat::expect_identical(quiet(b$print()), b)
     testthat::expect_output(b$print())
 })
 
