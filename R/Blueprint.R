@@ -41,7 +41,7 @@ Blueprint <- R6::R6Class("Blueprint",
 
         #' @field blueprint_version A scalar character that holds the
         #' \pkg{blueprint} package's version when an object is created.
-        blueprint_version = as.character(utils::packageVersion("Blueprint")),
+        blueprint_version = as.character(utils::packageVersion("blueprint")),
 
         #' @description Create a new [Blueprint] object.
         #' @return A [R6][R6::R6] object of class [Blueprint].
