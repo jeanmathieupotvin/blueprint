@@ -47,26 +47,3 @@ is_scalar_numeric <- function(x)
 {
     return(if (missing(x)) FALSE else is.numeric(x) && length(x) == 1L)
 }
-
-
-# The following function standardizes how R6 instances return
-# errors stemming from their $validate() method. It is not useful
-# to the user, so we do not export it.
-
-is_valid_r6_instance <- function(...)
-{
-    errs <- c(...)
-
-    if (is.null(errs)) {
-        return(TRUE)
-    } else if (!is.character(errs)) {
-        stop("error messages ('errs') should be passed as a character vector.",
-             call. = FALSE)
-    } else {
-        stop(
-            "errors detected in object:\n",
-            sprintf("  %i. %s\n", seq_along(errs), errs),
-            call. = FALSE
-        )
-    }
-}
