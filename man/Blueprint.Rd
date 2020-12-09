@@ -36,7 +36,7 @@ You should consider it as a virtual class. It has an API mostly for
 consistency with other classes of the package.
 }
 \author{
-Jean-Mathieu Potvin (\href{mailto:jean-mathieu_potvin@cooperators.ca}{jean-mathieu_potvin@cooperators.ca})
+Jean-Mathieu Potvin (\href{mailto:info@jeanmathieupotvin.com}{info@jeanmathieupotvin.com})
 }
 \concept{Blueprint classes}
 \section{Public fields}{

@@ -14,7 +14,7 @@
 #' underlying tested object *is* something (that *something* is dictated by
 #' the function's name).
 #'
-#' @author Jean-Mathieu Potvin (<jean-mathieu_potvin@@cooperators.ca>)
+#' @author Jean-Mathieu Potvin (<info@@jeanmathieupotvin.com>)
 #'
 #' @family assertions
 
