@@ -9,19 +9,19 @@ NULL
 # is valid or not.
 #
 # TODO: is this function still needed in other branches? Investigate.
-valid_r6_instance <- function(x)
-{
-    if (!inherits(x, "R6") || !exists("validate", envir = x)) {
-        stop("'x' is not a R6 object or does not possess a $validate() method.",
-             call. = FALSE)
-    }
-
-    tryCatch(
-        { x$validate() },
-        error   = function() { return(FALSE) },
-        Warning = function() { return(FALSE) }
-    )
-}
+# valid_r6_instance <- function(x)
+# {
+#     if (!inherits(x, "R6") || !exists("validate", envir = x)) {
+#         stop("'x' is not a R6 object or does not possess a $validate() method.",
+#              call. = FALSE)
+#     }
+#
+#     tryCatch(
+#         { x$validate() },
+#         error   = function() { return(FALSE) },
+#         Warning = function() { return(FALSE) }
+#     )
+# }
 
 
 # The following function standardizes how Blueprint instances
