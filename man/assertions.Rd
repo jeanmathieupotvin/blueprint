@@ -30,6 +30,6 @@ used extensively in \pkg{blueprint} and are available to the users for
 convenience.
 }
 \author{
-Jean-Mathieu Potvin (\href{mailto:jean-mathieu_potvin@cooperators.ca}{jean-mathieu_potvin@cooperators.ca})
+Jean-Mathieu Potvin (\href{mailto:info@jeanmathieupotvin.com}{info@jeanmathieupotvin.com})
 }
 \concept{assertions}
