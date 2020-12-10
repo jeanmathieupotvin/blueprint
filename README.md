@@ -9,6 +9,24 @@
 ![](https://img.shields.io/badge/tests-67%20%2F%2067%20OK-green?style=for-the-badge)
 <!-- badges: end -->
 
+---
+
+*Yo, listen up here's a story*
+
+*About a little guy*
+
+*That lives in a blue world*
+
+*And all day and all night*
+
+*And everything he sees is just blue*
+
+*Like him inside and outside*
+
+\- A 90's classis from [Eiffel 65 (Blue)](https://www.youtube.com/watch?v=zA52uNzx7Y4).
+
+---
+
 Blueprint is an efficient generator of data schemas that aims to work for any
 kind of R objects. A *schema* is usually a concise description of how an object
 (such a `list` or a `data.frame`) is structured. It dictates what it *should*
