@@ -31,8 +31,9 @@ testthat::test_that("$validate() works",
 {
     b <- blueprint::Blueprint$new()
 
-    # Test if validator return $self when object is valid.
+    # Test if $validate() returns $self invisibly when valid.
     testthat::expect_identical(b$validate(), b)
+    testthat::expect_invisible(quiet(b$print()))
 
     # Inject type related errors.
     b$is_blueprint      <- "a character"
@@ -50,31 +51,59 @@ testthat::test_that("$validate() works",
 })
 
 
-testthat::test_that("method $print() works", {
+testthat::test_that("$print() works",
+{
+    b <- blueprint::Blueprint$new()
+
+    # Test if $print() returns $self invisibly when valid.
     testthat::expect_identical(quiet(b$print()), b)
+    testthat::expect_invisible(quiet(b$print()))
+
+    # Test if $print() prints something to the console.
     testthat::expect_output(b$print())
 })
 
 
-testthat::test_that("method $format() works", {
+testthat::test_that("$format() works",
+{
+    b <- blueprint::Blueprint$new()
+
+    # Test if $format() returns the appropriate string.
     testthat::expect_identical(b$format(), "<Blueprint>")
 })
 
 
 # We only test if wrapper effectively returns a Blueprint object.
-# Its actual structure is tested in the context of $new().
-testthat::test_that("constructor new_blueprint() function works", {
+# The underlying structure is tested in the context of $new().
+testthat::test_that("constructor new_blueprint() works",
+{
     testthat::expect_s3_class(new_blueprint(), "Blueprint")
 })
 
 
-testthat::test_that("introspector is_blueprint() function works", {
+testthat::test_that("introspector is_blueprint() works",
+{
+    b <- blueprint::Blueprint$new()
+
+    # Test if it normally works.
     testthat::expect_true(is_blueprint(b))
-    testthat::expect_false(is_blueprint(b_wrong_scalar))
-    testthat::expect_false(is_blueprint(b_wrong_vec))
+
+    # Test value related error.
+    # Should return FALSE if $is_blueprint is FALSE.
+    b$is_blueprint <- FALSE
+    testthat::expect_false(is_blueprint(b))
+
+    # Test type related error.
+    # Should return FALSE if $is_blueprint is not a scalar logical TRUE.
+    b$is_blueprint <- "false"
+    testthat::expect_false(is_blueprint(b))
 })
 
 
-testthat::test_that("test S3 internal methods dispatch", {
+testthat::test_that("test S3 internal methods dispatch",
+{
+    b <- blueprint::Blueprint$new()
+
+    # Test if $format() output is returned.
     testthat::expect_identical(format(b), "<Blueprint>")
 })
