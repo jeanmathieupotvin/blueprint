@@ -23,7 +23,7 @@
 
 *Like him inside and outside*
 
-\- A 90's classis from [Eiffel 65 (Blue)](https://www.youtube.com/watch?v=zA52uNzx7Y4).
+\- Wise words from a true 90's classic [(Eiffel 65, *Blue*)](https://www.youtube.com/watch?v=zA52uNzx7Y4).
 
 ---
 
