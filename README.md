@@ -1,11 +1,12 @@
 # Blueprint
 
 <!-- badges: start -->
+![](https://img.shields.io/badge/version%20-0.0.0.9001%20(dev)-green?style=for-the-badge)
 ![](https://img.shields.io/badge/lifecycle-experimental-orange?style=for-the-badge)
 ![](https://img.shields.io/badge/R%20BUILD-passing-green?style=for-the-badge)
 ![](https://img.shields.io/badge/R%20CMD%20CHECK-passing-green?style=for-the-badge)
 ![](https://img.shields.io/badge/covr-100%25-green?style=for-the-badge)
-![](https://img.shields.io/badge/tests-61%20%2F%2061%20OK-green?style=for-the-badge)
+![](https://img.shields.io/badge/tests-67%20%2F%2067%20OK-green?style=for-the-badge)
 <!-- badges: end -->
 
 Blueprint is an efficient generator of data schemas that aims to work for any
