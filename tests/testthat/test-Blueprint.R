@@ -1,26 +1,52 @@
-testthat::test_that("method $new() works", {
-    # Verify general structure.
-    testthat::expect_type(b, "environment")
-    testthat::expect_type(b$.__enclos_env__$self, "environment")
-    testthat::expect_type(b$.__enclos_env__$private, "NULL")
+testthat::test_that("$new() works and instance has an appropriate structure",
+{
+    b <- blueprint::Blueprint$new()
+    pkg_ver <- as.character(utils::packageVersion("blueprint"))
 
-    # Verify classes.
+    # Test general structure.
+    testthat::expect_type(b, "environment")
+
+    # Test public fields.
+    testthat::expect_type(b$is_blueprint, "logical")
+    testthat::expect_type(b$blueprint_version, "character")
+
+    # Test methods.
+    testthat::expect_type(b$initialize, "closure")
+    testthat::expect_type(b$validate, "closure")
+    testthat::expect_type(b$format, "closure")
+    testthat::expect_type(b$print, "closure")
+
+    # Test class inheritance.
     testthat::expect_s3_class(b, "Blueprint")
     testthat::expect_s3_class(b, "R6")
 
-    # Verify public fields.
-    testthat::expect_true(b$is_blueprint)
-    testthat::expect_identical(
-        object   = b$blueprint_version,
-        expected = as.character(utils::packageVersion("blueprint"))
-    )
+    # Test public fields.
+    # They should have constant values, so we check these.
+    testthat::expect_true(isTRUE(b$is_blueprint))
+    testthat::expect_identical(b$blueprint_version, pkg_ver)
 })
 
 
-testthat::test_that("method $validate() works", {
+testthat::test_that("$validate() works",
+{
+    b <- blueprint::Blueprint$new()
+
+    # Test if validator return $self when object is valid.
     testthat::expect_identical(b$validate(), b)
-    testthat::expect_error(b_wrong_vec$validate(), regexp = "errors detected")
-    testthat::expect_error(b_wrong_scalar$validate(), regexp = "errors detected")
+
+    # Inject type related errors.
+    b$is_blueprint      <- "a character"
+    b$blueprint_version <- 1L
+
+    # Test type related errors.
+    testthat::expect_error(b$validate(), regexp = "errors detected")
+
+    # Inject length related errors.
+    b$is_blueprint      <- c(TRUE, TRUE)
+    b$blueprint_version <- c("0.1.1", "0.1.2")
+
+    # Test length related errors.
+    testthat::expect_error(b$validate(), regexp = "errors detected")
 })
 
 
