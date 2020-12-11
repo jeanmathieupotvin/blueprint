@@ -43,27 +43,41 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
     ),
     public = list(
 
-        #' @field name A scalar character. A name for the field / vector.
+        #' @field name A scalar character. A name for the vector.
         name = NA_character_,
 
-        #' @field type A scalar character. The class of the field / vector.
+        #' @field type A scalar character. The class of the vector.
         type = NA_character_,
+
+        #' @field length A scalar integer. The length of the vector.
+        length = NULL,
 
         #' @description Create a new [VectorBlueprint] object.
         #' @param atom any atomic \R vector.
         #' See [is.atomic()][base::is.atomic()] for more information.
-        #' @param name A scalar character. The name of the vector passed to `x`.
+        #' @param name A scalar character. The name of the vector passed
+        #' to `atom`.
+        #' @param length A scalar integer. This argument is flexible. If
+        #' missing, `length` is ignore and not enforced.
         #' @return A [R6][R6::R6] object of class [VectorBlueprint].
 
         # Here, it is safer to use `[` than `[[` on atom, because extraction
         # will work on vectors of length 0. Result will be NA of the proper
         # type, which is fine for $prototype.
-        initialize = function(atom, name)
+        initialize = function(atom, name, length)
         {
             if (!is.atomic(atom)) {
                 stop("'atom' should be an atomic vector.",
                      " Consult ?is.atomic() for more information.",
                      call. = FALSE)
+            }
+            if (!missing(length)) {
+                length <- as.integer(length[[1L]])
+                if (!is.integer(length)) {
+                    stop("'length' should be an integer scalar.",
+                         call. = FALSE)
+                }
+                self$length <- length
             }
 
             private$prototype <- atom[1L]
@@ -82,10 +96,13 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
         {
             is_valid_r6_instance(
                 if (!is_scalar_character(self$name))  {
-                    "$name must be an character of length 1."
+                    "$name must be an scalar character."
                 },
                 if (!is_scalar_character(self$type)) {
-                    "$type must be a character of length 1."
+                    "$type must be a scalar character."
+                },
+                if (!is.null(self$length) && !is_scalar_integer(self$length)) {
+                    "$length must be a scalar integer or NULL."
                 }
             )
 
@@ -107,7 +124,17 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
         format = function()
         {
             self$validate()
-            return(sprintf("<name:%s type:%s>", self$name, self$type))
+            if (is.null(self$length)) {
+                return(
+                    sprintf("<VectorBlueprint >> name:%s type:%s>",
+                            self$name, self$type)
+                )
+            } else {
+                return(
+                    sprintf("<VectorBlueprint >> name:%s type:%s length:%s>",
+                            self$name, self$type, self$length)
+                )
+            }
         },
 
         #' @description Coerce a [VectorBlueprint] object into a list.
@@ -117,7 +144,7 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
         #' `type`      \tab A scalar character equal to `$type`.\cr
         #' `prototype` \tab A scalar [atomic][base::is.atomic()] value with a class equal to `$type`.
         #' }
-        as.list = function()
+        as_list = function()
         {
             self$validate()
             return(
@@ -130,7 +157,7 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
         #' @description Coerce a [VectorBlueprint] object into a character.
         #' @return A named character of length 2 with two elements:
         #' `name` and `type` that correspond to `$name` and `$type`.
-        as.character = function()
+        as_character = function()
         {
             self$validate()
             return(c(name = self$name, type = self$type))
@@ -212,7 +239,7 @@ format.VectorBlueprint <- function(x, ...)
 #' @keywords internal
 as.list.VectorBlueprint <- function(x, ...)
 {
-    return(x$as.list())
+    return(x$as_list())
 }
 
 
@@ -220,5 +247,5 @@ as.list.VectorBlueprint <- function(x, ...)
 #' @keywords internal
 as.character.VectorBlueprint <- function(x, ...)
 {
-    return(x$as.character())
+    return(x$as_character())
 }
