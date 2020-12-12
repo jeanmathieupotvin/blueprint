@@ -35,6 +35,11 @@ class names collisions.
 You should consider it as a virtual class. It has an API mostly for
 consistency with other classes of the package.
 }
+\seealso{
+Other Blueprint classes: 
+\code{\link{VectorBlueprints}},
+\code{\link{VectorBlueprint}}
+}
 \author{
 Jean-Mathieu Potvin (\href{mailto:info@jeanmathieupotvin.com}{info@jeanmathieupotvin.com})
 }
