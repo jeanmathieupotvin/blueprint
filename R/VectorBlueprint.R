@@ -58,23 +58,25 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
         #' @param name A scalar character. The name of the vector passed
         #' to `atom`.
         #' @param length A scalar integer. This argument is flexible. If
-        #' missing, `length` is ignore and not enforced.
+        #' `NULL`, `length` is ignored and not enforced.
         #' @return A [R6][R6::R6] object of class [VectorBlueprint].
 
         # Here, it is safer to use `[` than `[[` on atom, because extraction
         # will work on vectors of length 0. Result will be NA of the proper
         # type, which is fine for $prototype.
-        initialize = function(atom, name, length)
+        initialize = function(atom, name, length = NULL)
         {
             if (!is.atomic(atom)) {
-                stop("'atom' should be an atomic vector.",
+                stop("'atom' must be an atomic vector.",
                      " Consult ?is.atomic() for more information.",
                      call. = FALSE)
             }
-            if (!missing(length)) {
-                length <- as.integer(length[[1L]])
+            if (!is.null(length)) {
                 if (!is.integer(length)) {
-                    stop("'length' should be an integer scalar.",
+                    length <- as.integer(length[[1L]])
+                }
+                if (is.na(length) || length < 0L) {
+                    stop("when supplied, 'length' must be a positive integer scalar.",
                          call. = FALSE)
                 }
                 self$length <- length
@@ -101,8 +103,9 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
                 if (!is_scalar_character(self$type)) {
                     "$type must be a scalar character."
                 },
-                if (!is.null(self$length) && !is_scalar_integer(self$length)) {
-                    "$length must be a scalar integer or NULL."
+                if (!is.null(self$length) &&
+                    (!is_scalar_integer(self$length) || self$length < 0L)) {
+                    "$length must be a positive scalar integer or NULL."
                 }
             )
 
@@ -114,7 +117,7 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
         print = function()
         {
             self$validate()
-            cat("<VectorBlueprint>\n  ", self$format(), sep = "")
+            cat(self$format())
             return(invisible(self))
         },
 
@@ -124,17 +127,16 @@ VectorBlueprint <- R6::R6Class("VectorBlueprint",
         format = function()
         {
             self$validate()
-            if (is.null(self$length)) {
-                return(
-                    sprintf("<VectorBlueprint >> name:%s type:%s>",
-                            self$name, self$type)
-                )
+
+            out <- if (is.null(self$length)) {
+                sprintf("<VectorBlueprint ~ name:%s type:%s>",
+                        self$name, self$type)
             } else {
-                return(
-                    sprintf("<VectorBlueprint >> name:%s type:%s length:%s>",
-                            self$name, self$type, self$length)
-                )
+                sprintf("<VectorBlueprint ~ name:%s type:%s length:%s>",
+                        self$name, self$type, self$length)
             }
+
+            return(out)
         },
 
         #' @description Coerce a [VectorBlueprint] object into a list.
