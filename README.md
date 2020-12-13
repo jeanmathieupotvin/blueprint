@@ -48,3 +48,11 @@ install and/or use it for now.
 
 Blueprint is a personal project. Once it reaches a more comfortable
 state, I will gladly open the development process to everyone!
+
+# Questions
+
+Ask me any questions regarding the package by sending an email to
+<info@blueprint.potvin.xyz>, by opening a
+[public discussion](https://github.com/jeanmathieupotvin/blueprint/discussions/new)
+or by [opening an issue](https://github.com/jeanmathieupotvin/blueprint/issues/new).
+Issues should be reserved for bugs and suggestions (including feedback).
