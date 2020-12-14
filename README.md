@@ -11,7 +11,7 @@
 
 ---
 
-Latest development can be consulted in branch [dev/vector-blueprints-class](https://github.com/jeanmathieupotvin/blueprint/tree/dev/vector-blueprints-class).
+Latest development efforts can be consulted in branch [dev/vector-blueprints-class](https://github.com/jeanmathieupotvin/blueprint/tree/dev/vector-blueprints-class).
 
 ---
 
