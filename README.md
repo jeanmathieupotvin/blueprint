@@ -9,6 +9,12 @@
 ![](https://img.shields.io/badge/tests-67%20%2F%2067%20OK-green?style=for-the-badge)
 <!-- badges: end -->
 
+---
+
+Latest development can be consulted in branch [dev/vector-blueprints-class](https://github.com/jeanmathieupotvin/blueprint/tree/dev/vector-blueprints-class).
+
+---
+
 Blueprint is an efficient generator of data schemas that aims to work for any
 kind of R objects. A *schema* is usually a concise description of how an object
 (such a `list` or a `data.frame`) is structured. It dictates what it *should*
