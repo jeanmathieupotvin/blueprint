@@ -7,7 +7,8 @@
 ![](https://img.shields.io/badge/R%20CMD%20CHECK-passing-green?style=for-the-badge)
 ![](https://img.shields.io/badge/covr-100%25-green?style=for-the-badge)
 ![](https://img.shields.io/badge/tests-67%20%2F%2067%20OK-green?style=for-the-badge)
-[![R-CMD-check](https://github.com/jeanmathieupotvin/blueprint/workflows/R-CMD-check/badge.svg)](https://github.com/jeanmathieupotvin/blueprint/actions)
+<!--
+[![R-CMD-check](https://github.com/jeanmathieupotvin/blueprint/workflows/R-CMD-check/badge.svg)](https://github.com/jeanmathieupotvin/blueprint/actions) -->
 <!-- badges: end -->
 
 ---
@@ -25,6 +26,10 @@
 *Like him inside and outside*
 
 \- Wise words from a true 90's classic [(Eiffel 65, *Blue*)](https://www.youtube.com/watch?v=zA52uNzx7Y4).
+
+---
+
+Latest development efforts can be consulted in branch [dev/vector-blueprints-class](https://github.com/jeanmathieupotvin/blueprint/tree/dev/vector-blueprints-class).
 
 ---
 
