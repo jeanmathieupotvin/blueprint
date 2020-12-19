@@ -5,12 +5,12 @@ Authors@R:
     person(given = "Jean-Mathieu",
            family = "Potvin",
            role = c("aut", "cre"),
-           email = "info@potvin.xyz",
+           email = "jm@potvin.xyz",
            comment = c(ORCID = "0000-0002-8237-422X"))
 Description: An efficient and consistent interface to generate 
     all sorts of data schemas in R. Schemas are objects that 
     dictate what should be put in R data structures. Blueprint 
-    is neutral. It works with any kind of recursive structure. 
+    is neutral and works with any kind of recursive structure. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -19,14 +19,16 @@ RoxygenNote: 7.1.1
 Depends: 
     R (>= 3.5.0)
 Imports:
-    R6
+    R6, 
+    yaml,  
+    jsonlite 
 Suggests: 
     testthat
 ByteCompile: true
 NeedsCompilation: no 
-URL: https://github.com/jeanmathieupotvin/blueprint, https://blueprint.potvin.xyz
+URL: https://blueprint.potvin.xyz, https://github.com/jeanmathieupotvin/blueprint 
 BugReports: https://github.com/jeanmathieupotvin/blueprint/issues
-Contact: jean-mathieu_potvin@cooperators.ca
+Contact: info@blueprint.potvin.xyz
 Collate: 
     'assertions.R'
     'utilities.R'
