@@ -51,7 +51,7 @@ NULL
 #'
 #' @format NULL
 #'
-#' @author Jean-Mathieu Potvin (<jean-mathieu_potvin@@cooperators.ca>)
+#' @author Jean-Mathieu Potvin (<jm@@potvin.xyz>)
 #'
 #' @family Blueprint classes
 #'

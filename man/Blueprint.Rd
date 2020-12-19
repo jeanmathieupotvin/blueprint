@@ -41,7 +41,7 @@ Other Blueprint classes:
 \code{\link{VectorBlueprint}}
 }
 \author{
-Jean-Mathieu Potvin (\href{mailto:info@jeanmathieupotvin.com}{info@jeanmathieupotvin.com})
+Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 }
 \concept{Blueprint classes}
 \section{Public fields}{

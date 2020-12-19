@@ -22,7 +22,7 @@ NULL
 #'
 #' @format NULL
 #'
-#' @author Jean-Mathieu Potvin (<info@@jeanmathieupotvin.com>)
+#' @author Jean-Mathieu Potvin (<jm@@potvin.xyz>)
 #'
 #' @family Blueprint classes
 #'
