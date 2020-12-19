@@ -74,7 +74,8 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @return The [Blueprint] object invisibly.
         print = function()
         {
-            cat(self$format())
+            self$validate()
+            cat(sprintf("<Blueprint [%s]>", self$blueprint_version))
             return(invisible(self))
         },
 
