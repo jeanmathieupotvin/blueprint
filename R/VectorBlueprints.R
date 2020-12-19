@@ -74,7 +74,7 @@ VectorBlueprints <- R6::R6Class("VectorBlueprints",
         {
             if (missing(x) || is.null(x)) {
                 return("NULL")
-            } else if (is_field(x)) {
+            } else if (is_vector_blueprint(x)) {
                 return("VectorBlueprint")
             } else if (typeof(x) == "list") {
                 return("list")
@@ -134,7 +134,7 @@ VectorBlueprints <- R6::R6Class("VectorBlueprints",
 
                 blueprints <- list(...)
 
-                if (!all(vapply_1l(blueprints, FALSE, is_field))) {
+                if (!all(vapply_1l(blueprints, FALSE, is_vector_blueprint))) {
                     stop("when the first element passed to $new() is of class",
                          " 'VectorBlueprint',\nall other arguments passed to",
                          " $new() must also be of class 'VectorBlueprint'.\n",
@@ -177,7 +177,7 @@ VectorBlueprints <- R6::R6Class("VectorBlueprints",
                     if (is.null(names(self$blueprints))) {
                         "$blueprints must be a named list."
                     },
-                    if (!all(vapply_1l(self$blueprints, FALSE, is_field))) {
+                    if (!all(vapply_1l(self$blueprints, FALSE, is_vector_blueprint))) {
                         "$blueprints can only contain 'VectorBlueprint' objects."
                     },
                     if (anyDuplicated(field_names) > 0L) {
