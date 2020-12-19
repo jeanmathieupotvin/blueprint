@@ -34,3 +34,6 @@ vignettes/*.pdf
 
 # Files in development that should not be committed for a temporary period of time
 .dev/
+
+# Github workflows outputs
+.github/*.html

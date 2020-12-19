@@ -7,6 +7,7 @@
 ![](https://img.shields.io/badge/R%20CMD%20CHECK-passing-green?style=for-the-badge)
 ![](https://img.shields.io/badge/covr-100%25-green?style=for-the-badge)
 ![](https://img.shields.io/badge/tests-67%20%2F%2067%20OK-green?style=for-the-badge)
+[![R-CMD-check](https://github.com/jeanmathieupotvin/blueprint/workflows/R-CMD-check/badge.svg)](https://github.com/jeanmathieupotvin/blueprint/actions)
 <!-- badges: end -->
 
 ---
