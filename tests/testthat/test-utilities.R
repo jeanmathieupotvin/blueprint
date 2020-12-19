@@ -70,3 +70,89 @@ testthat::test_that("internal function to pad string works",
         expected = c("one/pad/pad", "two/pad/pad", "three")
     )
 })
+
+
+testthat::test_that("internal inject() function works on recursive structures",
+{
+    # Create simple list to be updated by inject().
+    simplelist <- list(opt1 = "test", opt2 = "test")
+
+    # Test normal injection.
+    testthat::expect_identical(
+        inject(simplelist,  opt2 = "succeed", opt3 = "new"),
+        list(opt1 = "test", opt2 = "succeed", opt3 = "new")
+    )
+
+    # Test injection of equal values (it should work).
+    testthat::expect_identical(
+        inject(simplelist,  opt1 = "test", opt2 = "new"),
+        list(opt1 = "test", opt2 = "new")
+    )
+
+    # Test injection failures with repeated names.
+    testthat::expect_error(
+        inject(simplelist, opt2 = "test1", opt2 = "test2"),
+        regexp = "passed to '\\.\\.\\.'"
+    )
+    testthat::expect_error(
+        inject(
+            list(opt1 = "contains", opt1 = "errors"),
+            opt1 = "test1", opt2 = "test2"
+        ),
+        regexp = "passed to '\\.Obj'"
+    )
+
+    # Test injection failures with unnamed values.
+    testthat::expect_error(
+        inject(simplelist, 1L),
+        regexp = "passed to '\\.\\.\\.'"
+    )
+    testthat::expect_error(
+        inject(list(1L, opt2 = "test"), opt1 = "test1"),
+        regexp = "passed to '\\.Obj'"
+    )
+})
+
+
+# This set of tests is directly derived from the tests performed on
+# inject() for recursive structures.
+testthat::test_that("internal inject() function works on atomic structures",
+{
+    # Create simple vector to be updated by inject().
+    simplevec <- c(opt1 = "test", opt2 = "test")
+
+    # Test normal injection.
+    testthat::expect_identical(
+        inject(simplevec,  opt2 = "succeed", opt3 = "new"),
+        c(opt1 = "test", opt2 = "succeed", opt3 = "new")
+    )
+
+    # Test injection of equal values (it should work).
+    testthat::expect_identical(
+        inject(simplevec,  opt1 = "test", opt2 = "new"),
+        c(opt1 = "test", opt2 = "new")
+    )
+
+    # Test injection failures with repeated names.
+    testthat::expect_error(
+        inject(simplevec, opt2 = "test1", opt2 = "test2"),
+        regexp = "passed to '\\.\\.\\.'"
+    )
+    testthat::expect_error(
+        inject(
+            c(opt1 = "contains", opt1 = "errors"),
+            opt1 = "test1", opt2 = "test2"
+        ),
+        regexp = "passed to '\\.Obj'"
+    )
+
+    # Test injection failures with unnamed values.
+    testthat::expect_error(
+        inject(simplevec, 1L),
+        regexp = "passed to '\\.\\.\\.'"
+    )
+    testthat::expect_error(
+        inject(c(1L, opt2 = "test"), opt1 = "test1"),
+        regexp = "passed to '\\.Obj'"
+    )
+})

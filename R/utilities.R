@@ -28,9 +28,8 @@ NULL
 # }
 
 
-# The following function standardizes how Blueprint instances
-# return errors stemming from their $validate() method. It is
-# not useful to the user, so we do not export it.
+# Standardize how Blueprint instances return errors stemming from their
+# $validate() method. It is not useful to the user, so we do not export it.
 is_valid_r6_instance <- function(...)
 {
     errs <- c(...)
@@ -50,16 +49,14 @@ is_valid_r6_instance <- function(...)
 }
 
 
-# The following function is a wrapper to vapply() with a predetermined
-# scalar logical return value.
+# Wrapper to vapply() with a predetermined scalar logical return value.
 vapply_1l <- function(x, names = TRUE, fun, ...)
 {
     return(vapply(x, fun, NA, ..., USE.NAMES = names))
 }
 
 
-# The following function is a wrapper to vapply() with a predetermined
-# scalar character return value.
+# Wrapper to vapply() with a predetermined scalar character return value.
 vapply_1c <- function(x, names = TRUE, fun, ...)
 {
     return(vapply(x, fun, NA_character_, ..., USE.NAMES = names))
@@ -73,4 +70,36 @@ pad_string <- function(x, pad = " ")
     stopifnot(is.character(x), is.character(pad), !anyNA(x))
     nchars <- nchar(x)
     return(sprintf("%s%s", x, strrep(pad, max(nchars) - nchars)))
+}
+
+
+# Inject named arguments into an existing named atomic or recursive
+# structure. Injection works by first updating x with values stemming
+# from matching names passed to ... and by appending the other name/
+# value pairs to x. Beware of automatic coercion if x is a vector!
+inject <- function(.Obj, ...)
+{
+    if (...length()) {
+        dots   <- if (is.recursive(.Obj)) list(...) else c(...)
+        nmdots <- names(dots)
+        nmobjs <- names(.Obj)
+
+        if (is.null(nmobjs) || any(!nzchar(nmobjs)) || anyDuplicated(nmobjs)) {
+            stop("all arguments passed to '.Obj' must have unique names.",
+                 call. = FALSE)
+        }
+        if (is.null(nmdots) || any(!nzchar(nmdots)) || anyDuplicated(nmdots)) {
+            stop("all arguments passed to '...' must have unique names.",
+                 call. = FALSE)
+        }
+
+        matches <- match(nmdots, nmobjs, 0L)
+        updates <- nmobjs[matches]
+        injects <- nmdots[matches == 0L]
+        .Obj[updates] <- dots[updates]
+
+        return(c(.Obj, dots[injects]))
+    } else {
+        return(.Obj)
+    }
 }
