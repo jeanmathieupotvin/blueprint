@@ -73,14 +73,6 @@ testthat::test_that("$format() works",
 })
 
 
-# We only test if wrapper effectively returns a Blueprint object.
-# The underlying structure is tested in the context of $new().
-testthat::test_that("constructor new_blueprint() works",
-{
-    testthat::expect_s3_class(new_blueprint(), "Blueprint")
-})
-
-
 testthat::test_that("introspector is_blueprint() works",
 {
     b <- blueprint::Blueprint$new()
@@ -97,6 +89,19 @@ testthat::test_that("introspector is_blueprint() works",
     # Should return FALSE if $is_blueprint is not a scalar logical TRUE.
     b$is_blueprint <- "false"
     testthat::expect_false(is_blueprint(b))
+})
+
+
+testthat::test_that("external validator valid_blueprint() works",
+{
+    b <- blueprint::Blueprint$new()
+
+    # Test if it normally works.
+    testthat::expect_s3_class(valid_blueprint(b), "R6")
+    testthat::expect_s3_class(valid_blueprint(b), "Blueprint")
+
+    # Test if an error is returned if tested object is not a Blueprint object.
+    testthat::expect_error(valid_blueprint(1L), regexp = "not a 'Blueprint'")
 })
 
 

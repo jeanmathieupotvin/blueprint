@@ -97,23 +97,6 @@ Blueprint <- R6::R6Class("Blueprint",
 #' @rdname Blueprint
 #'
 #' @usage
-#' ## Constructor function
-#' new_blueprint()
-#'
-#' @return
-#' * Constructor function [new_blueprint()] is a wrapper to
-#' [`$new()`][Blueprint] and returns a [R6][R6::R6] object of class [Blueprint].
-#'
-#' @export
-new_blueprint <- function()
-{
-    return(Blueprint$new())
-}
-
-
-#' @rdname Blueprint
-#'
-#' @usage
 #' ## Test if an object is a 'Blueprint' object
 #' is_blueprint(x)
 #'
@@ -126,6 +109,23 @@ new_blueprint <- function()
 is_blueprint <- function(x)
 {
     return(inherits(x, "Blueprint", FALSE) && isTRUE(x$is_blueprint))
+}
+
+
+#' @rdname Blueprint
+#'
+#' @usage
+#' ## Validate if an object is a proper 'Blueprint' object
+#' valid_blueprint(x)
+#'
+#' @export
+valid_blueprint <- function(x)
+{
+    if (!is_blueprint(x)) {
+        stop("'x' is not a 'Blueprint' object.", call. = FALSE)
+    }
+
+    return(valid_r6_instance(x))
 }
 
 
