@@ -33,4 +33,6 @@ Collate:
     'assertions.R'
     'utilities.R'
     'Blueprint.R'
+    'options.R'
     'Atomic.R'
+    'Blueprinter.R'
