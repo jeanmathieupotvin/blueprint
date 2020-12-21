@@ -2,15 +2,10 @@
 % Please edit documentation in R/Atomic.R
 \name{Atomic}
 \alias{Atomic}
-\alias{\%>>\%}
-\alias{Blueprinter}
 \alias{is_atomic}
 \alias{valid_atomic}
 \title{Atomic class}
 \usage{
-## Constructor operator
-atom \%>>\% symbol
-
 ## Test if an object is an 'Atomic' object
 is_atomic(x)
 
@@ -18,15 +13,9 @@ is_atomic(x)
 valid_atomic(x)
 }
 \arguments{
-\item{symbol}{A syntactic \link{name}, also known as an \emph{unquoted character name}.}
-
 \item{x}{any \R object.}
 }
 \value{
-The \code{\link[=Atomic]{\%>>\%}} operator is a wrapper to
-\code{\link[=Atomic]{Atomic$new()}} and returns a \link[R6:R6Class]{R6}
-object of class \link{Atomic}.
-
 External helper functions \code{\link[=is_atomic]{is_atomic()}} and
 \code{\link[=valid_atomic]{valid_atomic()}} return a logical scalar.
 }
@@ -36,31 +25,14 @@ External helper functions \code{\link[=is_atomic]{is_atomic()}} and
 \code{\link[base:data.frame]{data.frame}} objects). An instance of class
 \link{Atomic} registers the vector's underlying class and name.
 Behind the scenes, it also records all its super-classes and its
-prototype, which is set equal to \code{atom[1L]} (see arguments below to
-learn what \code{atom} means).
+prototype, which is set equal to \code{atomic[1L]} (see arguments below to
+learn what \code{atomic} means).
 }
 \section{Self-validation}{
 
 The contents of a \link{Atomic} object is checked each time a method
 (including \code{\link[=Atomic]{$new()}}). The performance loss is negligible
 and favored over errors introduced by a \emph{broken} \link{Atomic} instance.
-}
-
-\section{The \emph{Blueprinter} operator}{
-
-\link{Atomic} is an important class of the package, because it is
-the building block of more complicated \link{Blueprint} classes. Just like
-\link[=is.atomic]{atomic} vectors are the building blocks of all data
-structures in \R, the \link{Atomic} class is a fundamental building
-block for higher-order data schemas. For convenience, the
-\code{\link[=Atomic]{\%>>\%}} operator is a concise interface to
-\code{\link[=Atomic]{$new()}}. It binds an atomic vector to a name and
-creates a \link{Atomic} object. A length is automatically deduced
-from argument \code{atom} and passed to the \verb{$length} field of the object.
-
-Because \code{\link[=Atomic]{\%>>\%}} binds a name to a type/length pair, we
-call it the \emph{schematic bind} operator. This is a rather fancy name, so we
-often just call it the \emph{Blueprinter} operator.
 }
 
 \seealso{
@@ -111,17 +83,17 @@ Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 \subsection{Method \code{new()}}{
 Create a new \link{Atomic} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$new(atom, name, length = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$new(atomic, name, length = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{atom}}{any atomic \R vector.
+\item{\code{atomic}}{any atomic \R vector.
 See \link[base:is.recursive]{is.atomic()} for more information.}
 
 \item{\code{name}}{A scalar character. The name of the vector passed
-to \code{atom}.}
+to \code{atomic}.}
 
 \item{\code{length}}{A scalar integer. This argument is flexible. If
 \code{NULL}, \code{length} is ignored and not enforced.}
@@ -185,7 +157,7 @@ A character scalar representing the formatted
 \if{html}{\out{<a id="method-compare"></a>}}
 \if{latex}{\out{\hypertarget{method-compare}{}}}
 \subsection{Method \code{compare()}}{
-Compare a vector against a \link{Atomic}.
+Compare a vector against an \link{Atomic}.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Atomic$compare(object, validate = TRUE)}\if{html}{\out{</div>}}
 }
