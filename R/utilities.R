@@ -38,11 +38,9 @@ validate_blueprint <- function(...)
         stop("error messages ('errs') should be passed as a character vector.",
              call. = FALSE)
     } else {
-        stop(
-            "errors detected in object.\n",
-            sprintf("  %i. %s\n", seq_along(errs), errs),
-            call. = FALSE
-        )
+        stop("errors detected in object.\n",
+             sprintf("  %i. %s\n", seq_along(errs), errs),
+             call. = FALSE)
     }
 }
 
@@ -72,28 +70,32 @@ pad_string <- function(x, pad = " ")
 
 
 # Inject named arguments into an existing named atomic or recursive
-# structure. Injection works by first updating x with values stemming
-# from matching names passed to ... and by appending the other name/
-# value pairs to x. Beware of automatic coercion if x is a vector!
+# structure. Injection works by first updating .Obj with values
+# stemming from matching names passed to ... and by appending the
+# other name/value pairs to .Obj.
 inject <- function(.Obj, ...)
 {
     if (...length()) {
         dots   <- if (is.recursive(.Obj)) list(...) else c(...)
-        nmdots <- names(dots)
-        nmobjs <- names(.Obj)
+        dotnames <- names(dots)
+        objnames <- names(.Obj)
 
-        if (is.null(nmobjs) || any(!nzchar(nmobjs)) || anyDuplicated(nmobjs)) {
+        if (is.null(objnames) ||
+            any(!nzchar(objnames)) ||
+            anyDuplicated(objnames)) {
             stop("all arguments passed to '.Obj' must have unique names.",
                  call. = FALSE)
         }
-        if (is.null(nmdots) || any(!nzchar(nmdots)) || anyDuplicated(nmdots)) {
+        if (is.null(dotnames) ||
+            any(!nzchar(dotnames)) ||
+            anyDuplicated(dotnames)) {
             stop("all arguments passed to '...' must have unique names.",
                  call. = FALSE)
         }
 
-        matches <- match(nmdots, nmobjs, 0L)
-        updates <- nmobjs[matches]
-        injects <- nmdots[matches == 0L]
+        matches <- match(dotnames, objnames, 0L)
+        updates <- objnames[matches]
+        injects <- dotnames[matches == 0L]
         .Obj[updates] <- dots[updates]
 
         return(c(.Obj, dots[injects]))
