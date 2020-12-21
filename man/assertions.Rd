@@ -35,10 +35,10 @@ convenience.
 \section{Strict atomic values}{
 
 In package \pkg{blueprint}, a \emph{strict atomic value} is any value that has
-one these following types: \link[base:NULL]{NULL}, \link[base:logical]{logical},
+one of these following types: \link[base:NULL]{NULL}, \link[base:logical]{logical},
 \link[base:integer]{integer}, \link[base:numeric]{numeric},
 \link[base:complex]{complex}, \link[base:character]{character} or
-\link[base:raw]{raw}).
+\link[base:raw]{raw}.
 }
 
 \author{

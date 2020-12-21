@@ -84,8 +84,8 @@ Atomic <- R6::R6Class("Atomic",
         length = NULL,
 
         #' @description Create a new [Atomic] object.
-        #' @param atomic any atomic \R vector.
-        #' See [is.atomic()][base::is.atomic()] for more information.
+        #' @param atomic any strict atomic \R vector.
+        #' See [is_strict_atomic()] for more information.
         #' @param name A scalar character. The name of the vector passed
         #' to `atomic`.
         #' @param length A scalar integer. This argument is flexible. If
@@ -93,9 +93,9 @@ Atomic <- R6::R6Class("Atomic",
         #' @return A [R6][R6::R6] object of class [Atomic].
         initialize = function(atomic, name, length = NULL)
         {
-            if (!is.atomic(atomic)) {
+            if (!is_strict_atomic(atomic)) {
                 stop("'atomic' must be an atomic vector.",
-                     " Consult ?is.atomic() for more information.",
+                     " Consult ?is_strict_atomic() for more information.",
                      call. = FALSE)
             }
             if (!is.null(length)) {
@@ -184,9 +184,9 @@ Atomic <- R6::R6Class("Atomic",
         #' 2. if `$length` is **not** `NULL`, it has the same prescribed length.
         compare = function(object, validate = TRUE)
         {
-            if (!is.atomic(object)) {
+            if (!is_strict_atomic(object)) {
                 stop("'object' must be an atomic vector.",
-                     " Consult ?is.atomic() for more information.",
+                     " Consult ?is_strict_atomic() for more information.",
                      call. = FALSE)
             }
             if (validate) {
@@ -205,9 +205,8 @@ Atomic <- R6::R6Class("Atomic",
         #' `name`      \tab A scalar character equal to `$name`.\cr
         #' `type`      \tab A scalar character equal to `$type`.\cr
         #' `length`    \tab A scalar integer equal to `$length`.\cr
-        #' `prototype` \tab A scalar [atomic][base::is.atomic()] value with a class attribute equal to `$type`.
+        #' `prototype` \tab A scalar [strict atomic][is_strict_atomic()] value with a class attribute equal to `$type`.
         #' }
-        #' @details
         as_list = function(validate = TRUE)
         {
             if (validate) {
@@ -281,6 +280,7 @@ Atomic <- R6::R6Class("Atomic",
 
         #' @description Convert a [Atomic] object to a JSON text
         #' based format.
+        #' @param ... further arguments passed to [jsonlite::toJSON()].
         #' @return A scalar character holding a JSON string derived from
         #' method [`$as_list()`][Atomic]. Technically, the output
         #' is encapsulated into an object of class `json`. This class is

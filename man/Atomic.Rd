@@ -89,8 +89,8 @@ Create a new \link{Atomic} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{atomic}}{any atomic \R vector.
-See \link[base:is.recursive]{is.atomic()} for more information.}
+\item{\code{atomic}}{any strict atomic \R vector.
+See \code{\link[=is_strict_atomic]{is_strict_atomic()}} for more information.}
 
 \item{\code{name}}{A scalar character. The name of the vector passed
 to \code{atomic}.}
@@ -204,7 +204,7 @@ A named list of three elements:
 \code{name}      \tab A scalar character equal to \verb{$name}.\cr
 \code{type}      \tab A scalar character equal to \verb{$type}.\cr
 \code{length}    \tab A scalar integer equal to \verb{$length}.\cr
-\code{prototype} \tab A scalar \link[base:is.recursive]{atomic} value with a class attribute equal to \verb{$type}.
+\code{prototype} \tab A scalar \link[=is_strict_atomic]{strict atomic} value with a class attribute equal to \verb{$type}.
 }
 }
 }
@@ -289,6 +289,8 @@ based format.
 the method? This argument is \code{TRUE} by default.}
 
 \item{\code{file}}{A scalar character. The name of a file to be created.}
+
+\item{\code{...}}{further arguments passed to \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}}.}
 }
 \if{html}{\out{</div>}}
 }
