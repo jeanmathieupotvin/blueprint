@@ -1,4 +1,4 @@
-testthat::test_that("assertions for scalar characters work",
+testthat::test_that("is_scalar_character() works",
 {
     testthat::expect_false(is_scalar_character())
     testthat::expect_false(is_scalar_character(NULL))
@@ -9,7 +9,7 @@ testthat::test_that("assertions for scalar characters work",
 })
 
 
-testthat::test_that("assertions for scalar logicals work",
+testthat::test_that("is_scalar_logical() works",
 {
     testthat::expect_false(is_scalar_logical())
     testthat::expect_false(is_scalar_logical(NULL))
@@ -20,7 +20,7 @@ testthat::test_that("assertions for scalar logicals work",
 })
 
 
-testthat::test_that("assertions for scalar integers work",
+testthat::test_that("is_scalar_integer() works",
 {
     testthat::expect_false(is_scalar_integer())
     testthat::expect_false(is_scalar_integer(NULL))
@@ -32,7 +32,7 @@ testthat::test_that("assertions for scalar integers work",
 })
 
 
-testthat::test_that("assertions for scalar numerics work",
+testthat::test_that("is_scalar_numeric() works",
 {
     testthat::expect_false(is_scalar_numeric())
     testthat::expect_false(is_scalar_numeric(NULL))

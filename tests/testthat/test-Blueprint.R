@@ -73,7 +73,7 @@ testthat::test_that("$format() works",
 })
 
 
-testthat::test_that("introspector is_blueprint() works",
+testthat::test_that("is_blueprint() works",
 {
     b <- blueprint::Blueprint$new()
 
@@ -92,7 +92,7 @@ testthat::test_that("introspector is_blueprint() works",
 })
 
 
-testthat::test_that("external validator valid_blueprint() works",
+testthat::test_that("valid_blueprint() works",
 {
     b <- blueprint::Blueprint$new()
 

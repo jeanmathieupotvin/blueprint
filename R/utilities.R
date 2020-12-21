@@ -2,30 +2,28 @@
 NULL
 
 
-# All functions defined in this script are unexported. Preferably, they are
-# also tested, but not always.
+# Unexported internal utility functions.
 
 
-# The following function is a wrapper validator for R6 objects. It
-# first checks if underlying object inherits the R6 class, then checks
-# the existence of a $validate() method. If so, the latter is called
-# and a logical TRUE/FALSE is returned indicating whether the instance
-# is valid or not.
-#
-# TODO: is this function still needed in other branches? Investigate.
-# valid_r6_instance <- function(x)
-# {
-#     if (!inherits(x, "R6") || !exists("validate", envir = x)) {
-#         stop("'x' is not a R6 object or does not possess a $validate() method.",
-#              call. = FALSE)
-#     }
-#
-#     tryCatch(
-#         { x$validate() },
-#         error   = function() { return(FALSE) },
-#         Warning = function() { return(FALSE) }
-#     )
-# }
+# A safe wrapper to validate functions of R6 objects. It first checks if
+# the underlying object inherits the R6 class, then checks the existence
+# of a $validate() method. If so, the latter is called and a logical
+# TRUE/FALSE is returned indicating whether the instance is valid or not.
+valid_r6_instance <- function(x)
+{
+    if (!inherits(x, "R6") || !exists("validate", envir = x)) {
+        stop("'x' is not a R6 object or does not possess a $validate() method.",
+             call. = FALSE)
+    }
+
+    return(
+        tryCatch(
+            { x$validate() },
+            error   = function() { return(FALSE) },
+            Warning = function() { return(FALSE) }
+        )
+    )
+}
 
 
 # Standardize how Blueprint instances return errors stemming from their
