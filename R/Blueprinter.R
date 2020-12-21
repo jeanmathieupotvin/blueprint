@@ -29,7 +29,7 @@ NULL
 #' @export
 `%bp%` <- function(symbol, object)
 {
-    if (is.atomic(object)) {
+    if (is_strict_atomic(object)) {
         return(Atomic$new(object, deparse(substitute(symbol)), length(object)))
     } else {
         return(NULL)
