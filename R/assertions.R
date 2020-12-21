@@ -14,6 +14,13 @@
 #' underlying tested object *is* something (that *something* is dictated by
 #' the function's name).
 #'
+#' @section Strict atomic values:
+#' In package \pkg{blueprint}, a *strict atomic value* is any value that has
+#' one of these following types: [NULL][base::NULL], [logical][base::logical()],
+#' [integer][base::integer()], [numeric][base::numeric()],
+#' [complex][base::complex()], [character][base::character()] or
+#' [raw][base::raw()].
+#'
 #' @author Jean-Mathieu Potvin (<jm@@potvin.xyz>)
 #'
 #' @family assertions
@@ -46,4 +53,29 @@ is_scalar_integer <- function(x)
 is_scalar_numeric <- function(x)
 {
     return(if (missing(x)) FALSE else is.numeric(x) && length(x) == 1L)
+}
+
+
+#' @rdname assertions
+#' @export
+is_strict_atomic <- function(x)
+{
+    types <- c(
+        "NULL",
+        "logical",
+        "integer",
+        "numeric",
+        "double",
+        "complex",
+        "character",
+        "raw"
+    )
+
+    if (missing(x)) {
+        return(FALSE)
+    } else if (match(class(x)[[1L]], types, 0L)) {
+        return(TRUE)
+    } else {
+        return(FALSE)
+    }
 }

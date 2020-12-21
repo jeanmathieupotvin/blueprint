@@ -5,6 +5,7 @@
 \alias{is_scalar_logical}
 \alias{is_scalar_integer}
 \alias{is_scalar_numeric}
+\alias{is_strict_atomic}
 \title{Simple assertions}
 \usage{
 is_scalar_character(x)
@@ -14,6 +15,8 @@ is_scalar_logical(x)
 is_scalar_integer(x)
 
 is_scalar_numeric(x)
+
+is_strict_atomic(x)
 }
 \arguments{
 \item{x}{any \R object.}
@@ -29,6 +32,15 @@ is useful when implementing simple checks. These simple assertions are
 used extensively in \pkg{blueprint} and are available to the users for
 convenience.
 }
+\section{Strict atomic values}{
+
+In package \pkg{blueprint}, a \emph{strict atomic value} is any value that has
+one these following types: \link[base:NULL]{NULL}, \link[base:logical]{logical},
+\link[base:integer]{integer}, \link[base:numeric]{numeric},
+\link[base:complex]{complex}, \link[base:character]{character} or
+\link[base:raw]{raw}).
+}
+
 \author{
 Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 }
