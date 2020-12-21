@@ -33,5 +33,4 @@ Collate:
     'assertions.R'
     'utilities.R'
     'Blueprint.R'
-    'VectorBlueprint.R'
-    'VectorBlueprints.R'
+    'Atomic.R'
