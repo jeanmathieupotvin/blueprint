@@ -30,7 +30,7 @@ NULL
 
 # Standardize how Blueprint instances return errors stemming from their
 # $validate() method. It is not useful to the user, so we do not export it.
-is_valid_r6_instance <- function(...)
+validate_blueprint <- function(...)
 {
     errs <- c(...)
 

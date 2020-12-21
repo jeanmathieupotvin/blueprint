@@ -58,7 +58,7 @@ Blueprint <- R6::R6Class("Blueprint",
         #' `TRUE`.
         validate = function()
         {
-            is_valid_r6_instance(
+            validate_blueprint(
                 if (!is_scalar_logical(self$is_blueprint) || !self$is_blueprint) {
                     "$is_blueprint is FALSE. It should be a scalar TRUE."
                 },
