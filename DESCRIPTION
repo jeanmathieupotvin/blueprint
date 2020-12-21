@@ -9,7 +9,7 @@ Authors@R:
            comment = c(ORCID = "0000-0002-8237-422X"))
 Description: An efficient and consistent interface to generate 
     all sorts of data schemas in R. Schemas are objects that 
-    dictate what should be put in R data structures. Blueprint 
+    dictate what should go in R data structures. Blueprint 
     is neutral and works with any kind of recursive structure. 
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -20,8 +20,8 @@ Depends:
     R (>= 3.5.0)
 Imports:
     R6, 
-    yaml,  
-    jsonlite 
+    jsonlite, 
+    yaml 
 Suggests: 
     testthat
 ByteCompile: true
