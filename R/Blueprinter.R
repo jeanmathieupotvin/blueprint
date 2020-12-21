@@ -5,6 +5,8 @@ NULL
 
 #' @rdname Blueprinter
 #'
+#' @aliases Blueprinter
+#'
 #' @title Concise interface to blueprint
 #'
 #' @description
@@ -12,7 +14,7 @@ NULL
 #'
 #' @param symbol A syntactic [name], also known as an *unquoted name*.
 #'
-#' @param value Any \R value.
+#' @param object Any \R value.
 #'
 #' @return The [`%bp%`][Blueprinter] operator is a convenient wrapper to
 #' \pkg{blueprint}'s constructors and returns an appropriate [R6][R6::R6]

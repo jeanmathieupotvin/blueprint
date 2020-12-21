@@ -2,6 +2,7 @@
 % Please edit documentation in R/Blueprinter.R
 \name{\%bp\%}
 \alias{\%bp\%}
+\alias{Blueprinter}
 \title{Concise interface to blueprint}
 \usage{
 symbol \%bp\% object
@@ -9,7 +10,7 @@ symbol \%bp\% object
 \arguments{
 \item{symbol}{A syntactic \link{name}, also known as an \emph{unquoted name}.}
 
-\item{value}{Any \R value.}
+\item{object}{Any \R value.}
 }
 \value{
 The \code{\link[=Blueprinter]{\%bp\%}} operator is a convenient wrapper to
