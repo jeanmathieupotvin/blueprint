@@ -2,25 +2,20 @@
 % Please edit documentation in R/Blueprint.R
 \name{Blueprint}
 \alias{Blueprint}
-\alias{new_blueprint}
 \alias{is_blueprint}
+\alias{valid_blueprint}
 \title{The Blueprint (root) super-class}
 \usage{
-## Constructor function
-new_blueprint()
-
 ## Test if an object is a 'Blueprint' object
 is_blueprint(x)
+
+## Validate if an object is a proper 'Blueprint' object
+valid_blueprint(x)
 }
 \arguments{
 \item{x}{any \R object.}
 }
 \value{
-\itemize{
-\item Constructor function \code{\link[=new_blueprint]{new_blueprint()}} is a wrapper to
-\code{\link[=Blueprint]{$new()}} and returns a \link[R6:R6Class]{R6} object of class \link{Blueprint}.
-}
-
 \itemize{
 \item External helper functions \code{\link[=is_blueprint]{is_blueprint()}} returns a logical scalar.
 }
@@ -37,8 +32,7 @@ consistency with other classes of the package.
 }
 \seealso{
 Other Blueprint classes: 
-\code{\link{VectorBlueprints}},
-\code{\link{VectorBlueprint}}
+\code{\link{Atomic}}
 }
 \author{
 Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
