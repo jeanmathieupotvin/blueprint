@@ -1,5 +1,6 @@
 #' @include assertions.R
 #' @include utilities.R
+#' @include options.R
 #' @include Blueprint.R
 NULL
 
@@ -15,8 +16,8 @@ NULL
 #' [`data.frame`][base::data.frame()] objects). An instance of class
 #' [Atomic] registers the vector's underlying class and name.
 #' Behind the scenes, it also records all its super-classes and its
-#' prototype, which is set equal to `atom[1L]` (see arguments below to
-#' learn what `atom` means).
+#' prototype, which is set equal to `atomic[1L]` (see arguments below to
+#' learn what `atomic` means).
 #'
 #' @param validate A scalar logical. Validate the object before calling
 #' the method? This argument is `TRUE` by default.
@@ -55,7 +56,7 @@ Atomic <- R6::R6Class("Atomic",
         # its character arguments to UTF-8, even its prototype if
         # applicable. This is required when converting object to
         # YAML and JSON formats.
-        as_list_utf8 = function()
+        as_utf8_list = function()
         {
             return(
                 list(
@@ -83,21 +84,17 @@ Atomic <- R6::R6Class("Atomic",
         length = NULL,
 
         #' @description Create a new [Atomic] object.
-        #' @param atom any atomic \R vector.
+        #' @param atomic any atomic \R vector.
         #' See [is.atomic()][base::is.atomic()] for more information.
         #' @param name A scalar character. The name of the vector passed
-        #' to `atom`.
+        #' to `atomic`.
         #' @param length A scalar integer. This argument is flexible. If
         #' `NULL`, `length` is ignored and not enforced.
         #' @return A [R6][R6::R6] object of class [Atomic].
-
-        # Here, it is safer to use `[` than `[[` on atom, because extraction
-        # will work on vectors of length 0. Result will be NA of the proper
-        # type, which is fine for $prototype.
-        initialize = function(atom, name, length = NULL)
+        initialize = function(atomic, name, length = NULL)
         {
-            if (!is.atomic(atom)) {
-                stop("'atom' must be an atomic vector.",
+            if (!is.atomic(atomic)) {
+                stop("'atomic' must be an atomic vector.",
                      " Consult ?is.atomic() for more information.",
                      call. = FALSE)
             }
@@ -112,8 +109,12 @@ Atomic <- R6::R6Class("Atomic",
                 self$length <- length
             }
 
-            private$prototype <- atom[1L]
-            private$classes   <- class(atom)
+            # Here, it is safer to use `[` than `[[`, because
+            # extraction will work on vectors of length 0.
+            # Result will be NA of the proper type, which is
+            # fine for $prototype.
+            private$prototype <- atomic[1L]
+            private$classes   <- class(atomic)
 
             self$name <- name
             self$type <- private$classes[[1L]]
@@ -148,7 +149,7 @@ Atomic <- R6::R6Class("Atomic",
         #' @return The [Atomic] object invisibly.
         print = function()
         {
-            cat(sprintf("<Atomic [%s]>\n  ", self$blueprint_version),
+            cat(sprintf("<Atomic blueprint [%s]>\n  ", self$blueprint_version),
                 self$format(),
                 sep = ""
             )
@@ -264,7 +265,7 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            utf8list <- private$as_list_utf8()
+            utf8list <- private$as_utf8_list()
 
             if (missing(file)) {
                 return(yaml::as.yaml(utf8list, ...))
@@ -293,19 +294,11 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            utf8list <- private$as_list_utf8()
-            defaults <- list(
-                auto_unbox = TRUE,
-                pretty     = TRUE,
-                force      = FALSE,
-                complex    = "string",
-                raw        = "base64",
-                null       = "null",
-                na         = "null"
-            )
-
             if (missing(file)) {
-                args <- inject(defaults, x = utf8list)
+                args <- inject(
+                    jsonlite_atomic_opts(),
+                    x = private$as_utf8_list()
+                )
                 return(do.call(jsonlite::toJSON, args))
             } else {
                 if (!is_scalar_character(file)) {
@@ -313,7 +306,11 @@ Atomic <- R6::R6Class("Atomic",
                          call. = FALSE)
                 }
 
-                args <- inject(defaults, x = utf8list, path = file)
+                args <- inject(
+                    jsonlite_atomic_opts(),
+                    x    = private$as_utf8_list(),
+                    path = file
+                )
                 return(do.call(jsonlite::write_json, args))
             }
         }
@@ -322,42 +319,6 @@ Atomic <- R6::R6Class("Atomic",
 
 
 # External helpers -------------------------------------------------------------
-
-
-#' @rdname Atomic
-#'
-#' @aliases Blueprinter
-#'
-#' @usage
-#' ## Constructor operator
-#' atom \%>>\% symbol
-#'
-#' @param symbol A syntactic [name], also known as an *unquoted character name*.
-#'
-#' @return The [`%>>%`][Atomic] operator is a wrapper to
-#' [`Atomic$new()`][Atomic] and returns a [R6][R6::R6]
-#' object of class [Atomic].
-#'
-#' @section The *Blueprinter* operator:
-#' [Atomic] is an important class of the package, because it is
-#' the building block of more complicated [Blueprint] classes. Just like
-#' [atomic][is.atomic()] vectors are the building blocks of all data
-#' structures in \R, the [Atomic] class is a fundamental building
-#' block for higher-order data schemas. For convenience, the
-#' [`%>>%`][Atomic] operator is a concise interface to
-#' [`$new()`][Atomic]. It binds an atomic vector to a name and
-#' creates a [Atomic] object. A length is automatically deduced
-#' from argument `atom` and passed to the `$length` field of the object.
-#'
-#' Because [`%>>%`][Atomic] binds a name to a type/length pair, we
-#' call it the *schematic bind* operator. This is a rather fancy name, so we
-#' often just call it the *Blueprinter* operator.
-#'
-#' @export
-`%>>%` <- function(symbol, atom)
-{
-    return(Atomic$new(atom, deparse(substitute(symbol)), length(atom)))
-}
 
 
 #' @rdname Atomic
@@ -400,23 +361,23 @@ valid_atomic <- function(x)
 
 #' @export
 #' @keywords internal
-format.Atomic <- function(x, ...)
+format.Atomic <- function(x, validate = TRUE, ...)
 {
-    return(x$format())
+    return(x$format(validate))
 }
 
 
 #' @export
 #' @keywords internal
-as.list.Atomic <- function(x, ...)
+as.list.Atomic <- function(x, validate = TRUE, ...)
 {
-    return(x$as_list())
+    return(x$as_list(validate))
 }
 
 
 #' @export
 #' @keywords internal
-as.character.Atomic <- function(x, ...)
+as.character.Atomic <- function(x, validate = TRUE, ...)
 {
-    return(x$as_character())
+    return(x$as_character(validate))
 }
