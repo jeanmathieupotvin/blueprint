@@ -3,5 +3,5 @@
 quiet <- function(x, file = tempfile()) {
     sink(file)
     on.exit({ sink(); file.remove(file) })
-    invisible(force(x))
+    return(invisible(x))
 }
