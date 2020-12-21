@@ -1,3 +1,4 @@
+#' @include assertions.R
 #' @include Blueprint.R
 #' @include Atomic.R
 NULL
