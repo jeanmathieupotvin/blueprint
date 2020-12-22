@@ -180,6 +180,25 @@ Atomic <- R6::R6Class("Atomic",
             )
         },
 
+        #' @description Create a strict atomic vector from an [Atomic] object.
+        #' @return A vector. Its underlying `type` and `length` is given by
+        #' the fields `$type` and `$length`. It is initialized with values based
+        #' on an internal prototype.
+        generate = function(validate = TRUE)
+        {
+            if (validate) {
+                self$validate()
+            }
+
+            if (self$type == "NULL") {
+                return(NULL)
+            } else if (is.null(self$length)) {
+                return(private$prototype)
+            } else {
+                return(rep_len(private$prototype, self$length))
+            }
+        },
+
         #' @description Coerce a [Atomic] object into a list.
         #' @return A named list of three elements:
         #' \tabular{ll}{
