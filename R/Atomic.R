@@ -145,12 +145,13 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            out <- if (is.null(self$length)) {
-                sprintf("<name:%s type:%s>",
-                        self$name, self$type)
+            if (is.null(self$length)) {
+                return(sprintf("<name:%s type:%s>", self$name, self$type))
             } else {
-                sprintf("<name:%s type:%s length:%s>",
-                        self$name, self$type, self$length)
+                return(
+                    sprintf("<name:%s type:%s length:%s>",
+                            self$name, self$type, self$length)
+                )
             }
 
             return(out)
@@ -219,8 +220,7 @@ Atomic <- R6::R6Class("Atomic",
             return(
                 c(name   = self$name,
                   type   = self$type,
-                  length = as.character(self$length)
-                )
+                  length = as.character(self$length))
             )
         },
 
