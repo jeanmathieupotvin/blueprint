@@ -103,12 +103,3 @@ testthat::test_that("valid_blueprint() works",
     # Test if an error is returned if tested object is not a Blueprint object.
     testthat::expect_error(valid_blueprint(1L), regexp = "not a 'Blueprint'")
 })
-
-
-testthat::test_that("test S3 internal methods dispatch",
-{
-    b <- blueprint::Blueprint$new()
-
-    # Test if $format() output is returned.
-    testthat::expect_identical(format(b), "<Blueprint>")
-})

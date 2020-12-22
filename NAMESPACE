@@ -2,8 +2,6 @@
 
 S3method(as.character,Atomic)
 S3method(as.list,Atomic)
-S3method(format,Atomic)
-S3method(format,Blueprint)
 export("%bp%")
 export(Atomic)
 export(Blueprint)

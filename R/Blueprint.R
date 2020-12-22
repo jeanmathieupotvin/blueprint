@@ -127,14 +127,3 @@ valid_blueprint <- function(x)
 
     return(valid_r6_instance(x))
 }
-
-
-# S3 methods dispatch ----------------------------------------------------------
-
-
-#' @export
-#' @keywords internal
-format.Blueprint <- function(x, ...)
-{
-    return(x$format())
-}

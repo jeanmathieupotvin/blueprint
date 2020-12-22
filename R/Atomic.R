@@ -361,14 +361,6 @@ valid_atomic <- function(x)
 
 #' @export
 #' @keywords internal
-format.Atomic <- function(x, validate = TRUE, ...)
-{
-    return(x$format(validate))
-}
-
-
-#' @export
-#' @keywords internal
 as.list.Atomic <- function(x, validate = TRUE, ...)
 {
     return(x$as_list(validate))
