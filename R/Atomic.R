@@ -46,31 +46,11 @@ Atomic <- R6::R6Class("Atomic",
     inherit    = Blueprint,
     private    = list(
 
-        # Record all classes of the vector.
+        # Record the class of the vector.
         classes   = NA_character_,
 
         # Record a prototype of the vector.
-        prototype = NULL,
-
-        # A method identical to $as_list() but that also re-encodes
-        # its character arguments to UTF-8, even its prototype if
-        # applicable. This is required when converting object to
-        # YAML and JSON formats.
-        as_utf8_list = function()
-        {
-            return(
-                list(
-                    name      = enc2utf8(self$name),
-                    type      = enc2utf8(self$type),
-                    length    = self$length,
-                    prototype = if (self$type == "character") {
-                        enc2utf8(private$prototype)
-                    } else {
-                        private$prototype
-                    }
-                )
-            )
-        }
+        prototype = NULL
     ),
     public = list(
 
@@ -264,17 +244,17 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            utf8list <- private$as_utf8_list()
-
             if (missing(file)) {
-                return(yaml::as.yaml(utf8list, ...))
+                return(yaml::as.yaml(as_utf8(self$as_list()), ...))
             } else {
                 if (!is_scalar_character(file)) {
                     stop("'file' must be a scalar character.",
                          call. = FALSE)
                 }
 
-                return(yaml::write_yaml(utf8list, file, "UTF-8", ...))
+                return(
+                    yaml::write_yaml(as_utf8(self$as_list()), file, "UTF-8", ...)
+                )
             }
         },
 
@@ -297,7 +277,7 @@ Atomic <- R6::R6Class("Atomic",
             if (missing(file)) {
                 args <- inject(
                     jsonlite_atomic_opts(),
-                    x = private$as_utf8_list()
+                    x = as_utf8(self$as_list())
                 )
                 return(do.call(jsonlite::toJSON, args))
             } else {
@@ -308,7 +288,7 @@ Atomic <- R6::R6Class("Atomic",
 
                 args <- inject(
                     jsonlite_atomic_opts(),
-                    x    = private$as_utf8_list(),
+                    x    = as_utf8(self$as_list()),
                     path = file
                 )
                 return(do.call(jsonlite::write_json, args))

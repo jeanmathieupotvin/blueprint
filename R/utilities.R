@@ -103,3 +103,12 @@ inject <- function(.Obj, ...)
         return(.Obj)
     }
 }
+
+
+# Encode strings contained in objects to UTF-8. This is
+# required when converting object to YAML and JSON formats.
+# The default method is useful for recursive structures.
+as_utf8           <- function(x, ...) { UseMethod("as_utf8") }
+as_utf8.list      <- function(x, ...) { return(lapply(x, as_utf8)) }
+as_utf8.character <- function(x, ...) { return(base::enc2utf8(x)) }
+as_utf8.default   <- function(x, ...) { return(x) }

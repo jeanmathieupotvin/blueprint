@@ -210,3 +210,35 @@ testthat::test_that("inject() works on atomic structures",
         regexp = "passed to '\\.Obj'"
     )
 })
+
+
+testthat::test_that("as_utf8() works on all structures",
+{
+    # Encoding returns UTF-8 for UTF-8 marked characters.
+    # ASCII character are never marked. Encoding() returns
+    # unknown for them.
+
+    # Create an atomic structure.
+    astruct <- c(unknown = "eagjh", unknown = "1234", `UTF-8` = "éèë½¾")
+
+    # Create an atomic structure.
+    rstruct <- list(
+        unknown = "eagjh",
+        unknown = "1234",
+        `UTF-8` = "é",
+        recurse = list(`UTF-8` = "éèë½¾", `UTF-8` = "ê", unknown = "+-")
+    )
+
+    # Test if character are correctly converted
+    # to UTF-8 in atomic structures.
+    testthat::expect_equal(as_utf8(astruct), astruct)
+    testthat::expect_equal(Encoding(as_utf8(astruct)), names(astruct))
+
+    # Test if character are correctly converted
+    # to UTF-8 in recursive structures.
+    testthat::expect_equal(as_utf8(rstruct), rstruct)
+    testthat::expect_equivalent(
+        list("unknown", "unknown", "UTF-8", list("UTF-8", "UTF-8", "unknown")),
+        rapply(as_utf8(rstruct), Encoding, how = "replace")
+    )
+})
