@@ -45,28 +45,97 @@ testthat::test_that("is_scalar_numeric() works",
 
 testthat::test_that("is_strict_atomic() works",
 {
-    # Test normal usage on atomic types.
-    testthat::expect_true(is_strict_atomic(NULL))                         # NULL.
-    testthat::expect_true(is_strict_atomic(logical(2L)))                  # Logical.
-    testthat::expect_true(is_strict_atomic(single(2L)))                   # Single (numeric with a Csingle attribute).
-    testthat::expect_true(is_strict_atomic(integer(2L)))                  # Integer.
-    testthat::expect_true(is_strict_atomic(numeric(2L)))                  # Numeric.
-    testthat::expect_true(is_strict_atomic(double(2L)))                   # Numeric.
-    testthat::expect_true(is_strict_atomic(complex(2L)))                  # Complex.
-    testthat::expect_true(is_strict_atomic(character(2L)))                # Character.
-    testthat::expect_true(is_strict_atomic(raw(2L)))                      # Raw.
+    # The function uses the output of class(). This function returns
+    # either an S3 class, an S4 class, an implicit class or typeof().
+    # It always follow that order / hierarchy. We must test all these
+    # cases stemming from R bad objects' design.
+    #
+    # ----------------- ------------------- ------------------------------------
+    # Class             Formally tested?    Constructor / Prototype
+    # ----------------- ------------------- ------------------------------------
+    # all S4 classes    Yes                 methods::new("mle")
+    # all S3 classes    Yes                 data.frame()
+    # matrix            Yes                 matrix()
+    # array             Yes                 array()
+    # function          Yes                 function(){}
+    # if                Yes                 call("if")
+    # while             Yes                 call("while")
+    # for               Yes                 call("for")
+    # =                 Yes                 call("=")
+    # <-                Yes                 call("<-")
+    # (                 Yes                 call("(")
+    # {                 Yes                 call("{")
+    # call              Yes                 call("call")
+    # NULL              Yes                 NULL
+    # logical           Yes                 logical()
+    # integer           Yes                 integer()
+    # double            Yes                 single(), double(), numeric()
+    # complex           Yes                 complex()
+    # character         Yes                 character()
+    # raw               Yes                 raw()
+    # list              Yes                 list()
+    # closure           Yes                 function(){}
+    # special           Yes                 .Internal
+    # builtin           Yes                 `+`
+    # environment       Yes                 environment()
+    # S4                Yes                 methods::new("mle"), methods::new("externalptr")
+    # symbol            Yes                 as.name("test")
+    # pairlist          Yes                 pairlist(a = 1)
+    # promise           No                  None
+    # language          Indirectly          as.name("test"), call("call"), expression()
+    # char              No                  None
+    # ...               No                  None
+    # any               No                  None
+    # expression        Yes                 expression()
+    # externalptr       Yes                 methods::new("externalptr")
+    # bytecode          No                  None
+    # weakref           No                  None
 
-    # Test normal usage on some recursive structures.
-    testthat::expect_false(is_strict_atomic(list()))                      # Lists.
-    testthat::expect_false(is_strict_atomic(pairlist(test = 1L)))         # Pairlists.
-    testthat::expect_false(is_strict_atomic(matrix()))                    # Implicit: matrices.
-    testthat::expect_false(is_strict_atomic(array()))                     # Implicit: arrays.
+    # Test if required packages are installed first. Else, throw an error.
+    if (!requireNamespace("methods", quietly = TRUE) ||
+        !requireNamespace("stats4", quietly = TRUE)) {
+        stop("packages 'methods' and 'stats4' are required to ",
+             "run tests of the Assertions context.",
+             call. = FALSE)
+    }
 
-    # Test normal usage on some R low-level types.
-    testthat::expect_false(is_strict_atomic(function(){}))                # Functions and closures.
-    testthat::expect_false(is_strict_atomic(as.name("test")))             # Names and symbols.
-    testthat::expect_false(is_strict_atomic(environment()))               # Environment.
-    testthat::expect_false(is_strict_atomic(call("vector")))              # Calls.
-    testthat::expect_false(is_strict_atomic(str2expression("test")))      # Expression (language).
-    testthat::expect_false(is_strict_atomic(methods::new("externalptr"))) # Externalptr.
+    # Test normal usage on missing value.
+    # By design, we return FALSE.
+    testthat::expect_false(is_strict_atomic())
+
+    # Test normal usage on strict atomic types.
+    # Single values are also tested. These are double
+    # values with a Csingle attribute, useful for .C().
+    testthat::expect_true(is_strict_atomic(NULL))
+    testthat::expect_true(is_strict_atomic(logical()))
+    testthat::expect_true(is_strict_atomic(integer()))
+    testthat::expect_true(is_strict_atomic(single()))
+    testthat::expect_true(is_strict_atomic(numeric()))
+    testthat::expect_true(is_strict_atomic(double()))
+    testthat::expect_true(is_strict_atomic(complex()))
+    testthat::expect_true(is_strict_atomic(character()))
+    testthat::expect_true(is_strict_atomic(raw()))
+
+    # Test normal usage on various R classes.
+    # By design, we return FALSE.
+    testthat::expect_false(is_strict_atomic(methods::new("mle")))
+    testthat::expect_false(is_strict_atomic(data.frame()))
+    testthat::expect_false(is_strict_atomic(matrix()))
+    testthat::expect_false(is_strict_atomic(array()))
+    testthat::expect_false(is_strict_atomic(function(){}))
+    testthat::expect_false(is_strict_atomic(call("if")))
+    testthat::expect_false(is_strict_atomic(call("while")))
+    testthat::expect_false(is_strict_atomic(call("for")))
+    testthat::expect_false(is_strict_atomic(call("=")))
+    testthat::expect_false(is_strict_atomic(call("(")))
+    testthat::expect_false(is_strict_atomic(call("{")))
+    testthat::expect_false(is_strict_atomic(call("call")))
+    testthat::expect_false(is_strict_atomic(list()))
+    testthat::expect_false(is_strict_atomic(`+`))
+    testthat::expect_false(is_strict_atomic(.Internal))
+    testthat::expect_false(is_strict_atomic(environment()))
+    testthat::expect_false(is_strict_atomic(as.name("test")))
+    testthat::expect_false(is_strict_atomic(pairlist(a = 1L)))
+    testthat::expect_false(is_strict_atomic(expression()))
+    testthat::expect_false(is_strict_atomic(methods::new("externalptr")))
 })
