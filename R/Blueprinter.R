@@ -19,13 +19,10 @@ NULL
 #'
 #' @return The [`%bp%`][Blueprinter] operator is a convenient wrapper to
 #' \pkg{blueprint}'s constructors and returns an appropriate [R6][R6::R6]
-#' object, a [Blueprint] that corresponds to the underlying type of `value`.
+#' object, a [Blueprint] that corresponds to the underlying type of `object`.
 #'
-#' * If value is of a *strict atomic* type (one of [NULL][base::NULL],
-#' [logical][base::logical()], [integer][base::integer()],
-#' [numeric][base::numeric()], [complex][base::complex()],
-#' [character][base::character()] or [raw][base::raw()]), an
-#' instance of class [Atomic] is returned.
+#' * If `object` is a [strict atomic value][is_strict_atomic()],
+#' an [Atomic] object is returned.
 #'
 #' @export
 `%bp%` <- function(symbol, object)
