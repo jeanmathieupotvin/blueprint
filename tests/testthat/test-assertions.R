@@ -49,7 +49,6 @@ testthat::test_that("is_strict_atomic() works",
     # either an S3 class, an S4 class, an implicit class or typeof().
     # It always follow that order / hierarchy. We must test all these
     # cases stemming from R bad objects' design.
-    #
     # ----------------- ------------------- ------------------------------------
     # Class             Formally tested?    Constructor / Prototype
     # ----------------- ------------------- ------------------------------------
