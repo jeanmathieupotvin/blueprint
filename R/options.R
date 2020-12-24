@@ -16,7 +16,7 @@ opts_jsonlite_atomic <- function()
             complex    = "string",
             raw        = "base64",
             null       = "null",
-            na         = "null"
+            na         = "string"
         )
     )
 }
