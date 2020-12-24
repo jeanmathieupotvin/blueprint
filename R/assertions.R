@@ -126,7 +126,6 @@ is_strict_atomic <- function(x)
     } else if (is.atomic(x)) {
 
         # Fast catch of atomic types, including NULL.
-        # TODO(JMP): catch attributes.
         return(TRUE)
     } else {
 
