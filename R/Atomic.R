@@ -46,9 +46,6 @@ Atomic <- R6::R6Class("Atomic",
     inherit    = Blueprint,
     private    = list(
 
-        # Record the class of the vector.
-        classes   = NA_character_,
-
         # Record a prototype of the vector.
         prototype = NULL
     ),
@@ -74,7 +71,7 @@ Atomic <- R6::R6Class("Atomic",
         initialize = function(atomic, name, length = NULL)
         {
             if (!is_strict_atomic(atomic)) {
-                stop("'atomic' must be an atomic vector.",
+                stop("'atomic' must be a strict atomic vector.",
                      " Consult ?is_strict_atomic() for more information.",
                      call. = FALSE)
             }
@@ -89,15 +86,20 @@ Atomic <- R6::R6Class("Atomic",
                 self$length <- length
             }
 
+            self$name <- name
+            self$type <- if (is_single(atomic)) "single" else typeof(atomic)
+
             # Here, it is safer to use `[` than `[[`, because
             # extraction will work on vectors of length 0.
             # Result will be NA of the proper type, which is
-            # fine for $prototype.
-            private$prototype <- atomic[1L]
-            private$classes   <- class(atomic)
-
-            self$name <- name
-            self$type <- private$classes[[1L]]
+            # fine for $prototype. We only need to watch out
+            # for single values of length 0 passed to atomic.
+            # `[` drops the Csingle attribute, but it must be kept.
+            private$prototype <- if (is_single(atomic) && length(atomic) == 0L) {
+                single(1L)
+            } else {
+                atomic[1L]
+            }
 
             return(self$validate())
         },
@@ -109,12 +111,20 @@ Atomic <- R6::R6Class("Atomic",
         {
             super$validate()
 
+            atypes <- c(
+                "NULL", "logical", "integer", "single",
+                "double", "complex", "character", "raw"
+            )
+
             validate_blueprint(
                 if (!is_scalar_character(self$name))  {
                     "$name must be an scalar character."
                 },
                 if (!is_scalar_character(self$type)) {
                     "$type must be a scalar character."
+                },
+                if (is.na(match(self$type, atypes))) {
+                    "$type should be a strict atomic type."
                 },
                 if (!is.null(self$length) &&
                     (!is_scalar_integer(self$length) || self$length < 0L)) {
@@ -153,8 +163,6 @@ Atomic <- R6::R6Class("Atomic",
                             self$name, self$type, self$length)
                 )
             }
-
-            return(out)
         },
 
         #' @description Compare a vector against an [Atomic].
@@ -165,19 +173,33 @@ Atomic <- R6::R6Class("Atomic",
         #' 2. if `$length` is **not** `NULL`, it has the same prescribed length.
         compare = function(object, validate = TRUE)
         {
-            if (!is_strict_atomic(object)) {
-                stop("'object' must be an atomic vector.",
-                     " Consult ?is_strict_atomic() for more information.",
-                     call. = FALSE)
-            }
             if (validate) {
                 self$validate()
             }
 
-            return(
-                class(object) == self$type &&
-                if (!is.null(self$length)) length(object) == self$length else TRUE
-            )
+            # We compare lengths only if $length is not NULL.
+            is_same_length <- (!is.null(self$length) &&
+                                   length(object) == self$length) || TRUE
+
+            if (self$type == "single") {
+
+                # We only have to check if object is a single
+                # with our convenient is_single() function if
+                # $type is single. We also put is_same_length
+                # in first since it is already computed. Makes
+                # the function faster if it is FALSE (the rest
+                # is not evaluated).
+                return(is_same_length && is_single(object))
+            } else {
+
+                # For other atomic types, we check lengths,
+                # strictness and types.
+                return(
+                    is_same_length &&
+                        is_strict_atomic(object) &&
+                        typeof(object) == self$type
+                )
+            }
         },
 
         #' @description Create a strict atomic vector from an [Atomic] object.
@@ -190,12 +212,32 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            if (self$type == "NULL") {
-                return(NULL)
-            } else if (is.null(self$length)) {
+            if (is.null(self$length)) {
+
+                # If $length is NULL, just return the prototype.
                 return(private$prototype)
+            } else if (self$type == "NULL") {
+
+                # If $type is NULL, just return NULL, no
+                # matter the length. A NULL is always a
+                # scalar, never a vector.
+                return(NULL)
+            } else if (self$type == "single") {
+
+                # If $type is single and $length is not NULL,
+                # the Csingle attribute must be kept and passed
+                # to generated vector.
+                return(
+                    structure(
+                        rep.int(private$prototype, self$length),
+                        Csingle = TRUE
+                    )
+                )
             } else {
-                return(rep_len(private$prototype, self$length))
+
+                # If $type is single and $length is not NULL,
+                # just replicate the prototype $length times.
+                return(rep.int(private$prototype, self$length))
             }
         },
 
