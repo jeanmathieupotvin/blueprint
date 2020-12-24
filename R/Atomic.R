@@ -295,7 +295,7 @@ Atomic <- R6::R6Class("Atomic",
 
             if (missing(file)) {
                 args <- inject(
-                    jsonlite_atomic_opts(),
+                    opts_jsonlite_atomic(),
                     x = as_utf8(self$as_list())
                 )
                 return(do.call(jsonlite::toJSON, args))
@@ -306,7 +306,7 @@ Atomic <- R6::R6Class("Atomic",
                 }
 
                 args <- inject(
-                    jsonlite_atomic_opts(),
+                    opts_jsonlite_atomic(),
                     x    = as_utf8(self$as_list()),
                     path = file
                 )

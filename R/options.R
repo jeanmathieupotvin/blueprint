@@ -6,7 +6,7 @@ NULL
 
 
 # Default jsonlite options used by method $as_json() of class Atomic.
-jsonlite_atomic_opts <- function()
+opts_jsonlite_atomic <- function()
 {
     return(
         list(
