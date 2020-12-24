@@ -1,3 +1,15 @@
+testthat::test_that("is_single() works",
+{
+    # Test normal usage on single values.
+    testthat::expect_true(is_single(single()))
+    testthat::expect_true(is_single(structure(double(), Csingle = TRUE)))
+
+    # Test normal usage on regular double values.
+    testthat::expect_false(is_single(double()))
+    testthat::expect_false(is_single(numeric()))
+})
+
+
 testthat::test_that("is_scalar_character() works",
 {
     testthat::expect_false(is_scalar_character())
@@ -114,6 +126,17 @@ testthat::test_that("is_strict_atomic() works",
     testthat::expect_true(is_strict_atomic(complex()))
     testthat::expect_true(is_strict_atomic(character()))
     testthat::expect_true(is_strict_atomic(raw()))
+
+    # Test normal usage on atomic vectors with attributes.
+    vctr_with_names <- c(a = 1L, b = 2L, c = 3L)
+    vctr_with_attrs <- structure(
+        vctr_with_names,
+        comment = "Hello, this is a test.",
+        length  = 3
+    )
+
+    testthat::expect_false(is_strict_atomic(vctr_with_names))
+    testthat::expect_false(is_strict_atomic(vctr_with_attrs))
 
     # Test normal usage on various R classes.
     # By design, we return FALSE.
