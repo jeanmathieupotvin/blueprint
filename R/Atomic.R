@@ -19,7 +19,7 @@ NULL
 #' prototype, which is set equal to `atomic[1L]` (see arguments below to
 #' learn what `atomic` means).
 #'
-#' @param validate A scalar logical. Validate the object before calling
+#' @param .validate A scalar logical. Validate the object before calling
 #' the method? This argument is `TRUE` by default.
 #'
 #' @param file A scalar character. The name of a file to be created.
@@ -155,9 +155,9 @@ Atomic <- R6::R6Class("Atomic",
 
         #' @description Format a [Atomic] object.
         #' @return A character scalar representing the formatted [Atomic] object.
-        format = function(validate = TRUE)
+        format = function(.validate = TRUE)
         {
-            if (validate) {
+            if (.validate) {
                 self$validate()
             }
 
@@ -177,9 +177,9 @@ Atomic <- R6::R6Class("Atomic",
         #' compliance with the underlying [Atomic]:
         #' 1. it has the same `$type` and
         #' 2. if `$length` is **not** `NULL`, it has the same prescribed length.
-        compare = function(object, validate = TRUE)
+        compare = function(object, .validate = TRUE)
         {
-            if (validate) {
+            if (.validate) {
                 self$validate()
             }
 
@@ -212,9 +212,9 @@ Atomic <- R6::R6Class("Atomic",
         #' @return A vector. Its underlying `type` and `length` is given by
         #' the fields `$type` and `$length`. It is initialized with values based
         #' on an internal prototype.
-        generate = function(validate = TRUE)
+        generate = function(.validate = TRUE)
         {
-            if (validate) {
+            if (.validate) {
                 self$validate()
             }
 
@@ -255,9 +255,9 @@ Atomic <- R6::R6Class("Atomic",
         #' `length`    \tab A scalar integer equal to `$length`.\cr
         #' `prototype` \tab A scalar [strict atomic][is_strict_atomic()] value with a class attribute equal to `$type`.
         #' }
-        as_list = function(validate = TRUE)
+        as_list = function(.validate = TRUE)
         {
-            if (validate) {
+            if (.validate) {
                 self$validate()
             }
 
@@ -278,9 +278,9 @@ Atomic <- R6::R6Class("Atomic",
         #' `type`   \tab A scalar character equal to `$type`.\cr
         #' `length` \tab A scalar character equal to the coerced value of `$length` (from integer to character).
         #' }
-        as_character = function(validate = TRUE)
+        as_character = function(.validate = TRUE)
         {
-            if (validate) {
+            if (.validate) {
                 self$validate()
             }
 
@@ -305,14 +305,18 @@ Atomic <- R6::R6Class("Atomic",
         #'
         #' Method [`$as_list()`][Atomic] re-encodes its fields to
         #' UTF-8 (if applicable) before returning or writing the YAML output.
-        as_yaml = function(validate = TRUE, file, ...)
+        as_yaml = function(file, headers, ..., .validate = TRUE)
         {
-            if (validate) {
+            if (.validate) {
                 self$validate()
             }
 
+            out <- as_utf8(
+                add_headers(self$as_list(), headers, "Atomic", "as_yaml")
+            )
+
             if (missing(file)) {
-                return(yaml::as.yaml(as_utf8(self$as_list()), ...))
+                return(yaml::as.yaml(out, ...))
             } else {
                 if (!is_scalar_character(file)) {
                     stop("'file' must be a scalar character.",
@@ -320,7 +324,7 @@ Atomic <- R6::R6Class("Atomic",
                 }
 
                 return(
-                    yaml::write_yaml(as_utf8(self$as_list()), file, "UTF-8", ...)
+                    yaml::write_yaml(out, file, "UTF-8", ...)
                 )
             }
         },
@@ -335,17 +339,16 @@ Atomic <- R6::R6Class("Atomic",
         #' normal character.
         #' @details
         #' JSON.
-        as_json = function(validate = TRUE, file, ...)
+        as_json = function(file, headers, ..., .validate = TRUE)
         {
-            if (validate) {
+            if (.validate) {
                 self$validate()
             }
 
+            out <- add_headers(self$as_list(), headers, "Atomic", "as_json")
+
             if (missing(file)) {
-                args <- inject(
-                    opts_jsonlite_atomic(),
-                    x = as_utf8(self$as_list())
-                )
+                args <- inject(opts_jsonlite_atomic(), x = as_utf8(out))
                 return(do.call(jsonlite::toJSON, args))
             } else {
                 if (!is_scalar_character(file)) {
@@ -355,7 +358,7 @@ Atomic <- R6::R6Class("Atomic",
 
                 args <- inject(
                     opts_jsonlite_atomic(),
-                    x    = as_utf8(self$as_list()),
+                    x    = as_utf8(out),
                     path = file
                 )
                 return(do.call(jsonlite::write_json, args))
@@ -408,15 +411,15 @@ valid_atomic <- function(x)
 
 #' @export
 #' @keywords internal
-as.list.Atomic <- function(x, validate = TRUE, ...)
+as.list.Atomic <- function(x, ..., .validate = TRUE)
 {
-    return(x$as_list(validate))
+    return(x$as_list(.validate = .validate))
 }
 
 
 #' @export
 #' @keywords internal
-as.character.Atomic <- function(x, validate = TRUE, ...)
+as.character.Atomic <- function(x, ..., .validate = TRUE)
 {
-    return(x$as_character(validate))
+    return(x$as_character(.validate = .validate))
 }
