@@ -242,3 +242,66 @@ testthat::test_that("as_utf8() works on all structures",
         rapply(as_utf8(rstruct), Encoding, how = "replace")
     )
 })
+
+
+testthat::test_that("add_headers() works",
+{
+    # Create a body. Define elements used to construct header.
+    body   <- list(this = "is", a = "body")
+    type   <- "test"
+    caller <- "test_that"
+
+    # Define additional headers to be added to body.
+    headers <- list(new = 1, headers = 2L, to = "be", be = NULL, included = "yes")
+
+    # Add standard header to body and create minimal messages.
+    msg          <- add_headers(body, type = type, caller = caller, embed = FALSE)
+    msg_embedded <- add_headers(body, type = type, caller = caller, embed = TRUE)
+    msg_headers  <- add_headers(body, headers, type, caller, embed = FALSE)
+
+    # Test structure.
+    testthat::expect_type(msg, "list")
+    testthat::expect_length(msg, length(body) + 1L)
+    testthat::expect_named(msg, c("source", names(body)))
+
+    # Test source header.
+    testthat::expect_true(grepl("(R\\[v\\d.\\d.\\d\\])", msg$source))
+    testthat::expect_true(grepl("(blueprint\\[v\\d.\\d.\\d(.\\d+)?\\])", msg$source))
+    testthat::expect_true(grepl(type, msg$source))
+    testthat::expect_true(grepl(caller, msg$source))
+
+    # Test if embed option/flag works.
+    testthat::expect_type(msg_embedded, "list")
+    testthat::expect_length(msg_embedded, 2L)
+    testthat::expect_named(msg_embedded, c("source", type))
+
+    testthat::expect_type(msg_embedded$test, "list")
+    testthat::expect_length(msg_embedded$test, length(body))
+    testthat::expect_named(msg_embedded$test, names(body))
+
+    # Test if adding additional headers works fine.
+    testthat::expect_type(msg_headers, "list")
+    testthat::expect_length(msg_headers, length(body) + length(headers) + 1L)
+    testthat::expect_named(msg_headers, c("source", names(headers), names(body)))
+
+    # Test arguments checks.
+    testthat::expect_error(add_headers(c(a = 1L),    type = "t", caller = "c"))
+    testthat::expect_error(add_headers(list(1L),     type = "t", caller = "c"))
+    testthat::expect_error(add_headers(list(a = 1L), type = 1L,  caller = "c"))
+    testthat::expect_error(add_headers(list(a = 1L), type = "t", caller = 1L))
+    testthat::expect_error(add_headers(list(a = 1L), type = 1L,  caller = "c", embed = 1L))
+    testthat::expect_error(
+        add_headers(list(a = 1L), list(1L), "t", "c"),
+        regexp = "'headers' must be a list"
+    )
+
+    # Test if errors are returned when forbidden
+    # names are used in argument headers.
+    testthat::expect_error(
+        add_headers(list(a = 1L), list(source = 1L), "t", "c"),
+        regexp = "source"
+    )
+    testthat::expect_error(
+        add_headers(list(a = 1L), list(test = 1L), "test", "c"),
+        regexp = "test"
+    )
