@@ -144,27 +144,17 @@ testthat::test_that("inject() works on recursive structures",
     )
 
     # Test injection failures with repeated names.
-    testthat::expect_error(
-        inject(simplelist, opt2 = "test1", opt2 = "test2"),
-        regexp = "passed to '\\.\\.\\.'"
-    )
+    testthat::expect_error(inject(simplelist, opt2 = "test1", opt2 = "test2"))
     testthat::expect_error(
         inject(
             list(opt1 = "contains", opt1 = "errors"),
             opt1 = "test1", opt2 = "test2"
-        ),
-        regexp = "passed to '\\.Obj'"
+        )
     )
 
     # Test injection failures with unnamed values.
-    testthat::expect_error(
-        inject(simplelist, 1L),
-        regexp = "passed to '\\.\\.\\.'"
-    )
-    testthat::expect_error(
-        inject(list(1L, opt2 = "test"), opt1 = "test1"),
-        regexp = "passed to '\\.Obj'"
-    )
+    testthat::expect_error(inject(simplelist, 1L))
+    testthat::expect_error(inject(list(1L, opt2 = "test"), opt1 = "test1"))
 })
 
 
@@ -188,27 +178,17 @@ testthat::test_that("inject() works on atomic structures",
     )
 
     # Test injection failures with repeated names.
-    testthat::expect_error(
-        inject(simplevec, opt2 = "test1", opt2 = "test2"),
-        regexp = "passed to '\\.\\.\\.'"
-    )
+    testthat::expect_error(inject(simplevec, opt2 = "test1", opt2 = "test2"))
     testthat::expect_error(
         inject(
             c(opt1 = "contains", opt1 = "errors"),
             opt1 = "test1", opt2 = "test2"
-        ),
-        regexp = "passed to '\\.Obj'"
+        )
     )
 
     # Test injection failures with unnamed values.
-    testthat::expect_error(
-        inject(simplevec, 1L),
-        regexp = "passed to '\\.\\.\\.'"
-    )
-    testthat::expect_error(
-        inject(c(1L, opt2 = "test"), opt1 = "test1"),
-        regexp = "passed to '\\.Obj'"
-    )
+    testthat::expect_error(inject(simplevec, 1L))
+    testthat::expect_error(inject(c(1L, opt2 = "test"), opt1 = "test1"))
 })
 
 
@@ -305,3 +285,4 @@ testthat::test_that("add_headers() works",
         add_headers(list(a = 1L), list(test = 1L), "test", "c"),
         regexp = "test"
     )
+})
