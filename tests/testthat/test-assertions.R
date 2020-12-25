@@ -1,10 +1,7 @@
 testthat::test_that("is_single() works",
 {
-    # Test normal usage on single values.
     testthat::expect_true(is_single(single()))
     testthat::expect_true(is_single(structure(double(), Csingle = TRUE)))
-
-    # Test normal usage on regular double values.
     testthat::expect_false(is_single(double()))
     testthat::expect_false(is_single(numeric()))
 })
@@ -102,18 +99,6 @@ testthat::test_that("is_strict_atomic() works",
     # bytecode          No                  None
     # weakref           No                  None
 
-    # Test if required packages are installed first. Else, throw an error.
-    if (!requireNamespace("methods", quietly = TRUE) ||
-        !requireNamespace("stats4", quietly = TRUE)) {
-        stop("packages 'methods' and 'stats4' are required to ",
-             "run tests of the Assertions context.",
-             call. = FALSE)
-    }
-
-    # Test normal usage on missing value.
-    # By design, we return FALSE.
-    testthat::expect_false(is_strict_atomic())
-
     # Test normal usage on strict atomic types.
     # Single values are also tested. These are double
     # values with a Csingle attribute, useful for .C().
@@ -132,15 +117,14 @@ testthat::test_that("is_strict_atomic() works",
     vctr_with_attrs <- structure(
         vctr_with_names,
         comment = "Hello, this is a test.",
-        length  = 3
+        length  = 3L
     )
 
     testthat::expect_false(is_strict_atomic(vctr_with_names))
     testthat::expect_false(is_strict_atomic(vctr_with_attrs))
 
     # Test normal usage on various R classes.
-    # By design, we return FALSE.
-    testthat::expect_false(is_strict_atomic(methods::new("mle")))
+    testthat::expect_false(is_strict_atomic())
     testthat::expect_false(is_strict_atomic(data.frame()))
     testthat::expect_false(is_strict_atomic(matrix()))
     testthat::expect_false(is_strict_atomic(array()))
@@ -159,5 +143,11 @@ testthat::test_that("is_strict_atomic() works",
     testthat::expect_false(is_strict_atomic(as.name("test")))
     testthat::expect_false(is_strict_atomic(pairlist(a = 1L)))
     testthat::expect_false(is_strict_atomic(expression()))
+
+    # Test the following classes only if stats4 and methods can
+    # be loaded. Else, skip them.
+    skip_if_not_installed("stats4")
+    skip_if_not_installed("methods")
+    testthat::expect_false(is_strict_atomic(methods::new("mle")))
     testthat::expect_false(is_strict_atomic(methods::new("externalptr")))
 })
