@@ -147,7 +147,7 @@ add_headers <- function(body, headers, type, caller, embed = TRUE)
             stop("'headers' cannot contain an additional header named 'source'.",
                  call. = FALSE)
         }
-        if (match(type, tolower(headernames), 0L)) {
+        if (match(tolower(type), tolower(headernames), 0L)) {
             stop(
                 "'headers' cannot contain an additional header",
                 sprintf(" named after a parent class (here, '%s').", type),
