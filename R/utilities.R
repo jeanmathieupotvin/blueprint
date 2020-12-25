@@ -2,7 +2,9 @@
 NULL
 
 
-# Unexported internal utility functions.
+# Unexported internal utility functions. Use minimal argument checks and
+# make them as fast as possible. Favor stopifnot() for concise code, unless
+# the message is intended to be passed to users.
 
 
 # A safe wrapper to validate functions of R6 objects. It first checks if
@@ -76,22 +78,14 @@ pad_string <- function(x, pad = " ")
 inject <- function(.Obj, ...)
 {
     if (...length()) {
-        dots   <- if (is.recursive(.Obj)) list(...) else c(...)
+        dots     <- if (is.recursive(.Obj)) list(...) else c(...)
         dotnames <- names(dots)
         objnames <- names(.Obj)
 
-        if (is.null(objnames) ||
-            any(!nzchar(objnames)) ||
-            anyDuplicated(objnames)) {
-            stop("all arguments passed to '.Obj' must have unique names.",
-                 call. = FALSE)
-        }
-        if (is.null(dotnames) ||
-            any(!nzchar(dotnames)) ||
-            anyDuplicated(dotnames)) {
-            stop("all arguments passed to '...' must have unique names.",
-                 call. = FALSE)
-        }
+        stopifnot(
+            !is.null(objnames), all(nzchar(objnames)), !anyDuplicated(objnames),
+            !is.null(dotnames), all(nzchar(dotnames)), !anyDuplicated(dotnames)
+        )
 
         matches <- match(dotnames, objnames, 0L)
         updates <- objnames[matches]
