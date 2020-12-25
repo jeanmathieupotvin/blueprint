@@ -107,7 +107,7 @@ Atomic <- R6::R6Class("Atomic",
             # fine for $prototype. We only need to watch out
             # for single values of length 0 passed to atomic.
             # `[` drops the Csingle attribute, but it must be kept.
-            private$prototype <- if (is_single(atomic) && length(atomic) == 0L) {
+            private$prototype <- if (is_single(atomic) && !length(atomic)) {
                 single(1L)
             } else {
                 atomic[1L]
@@ -154,8 +154,7 @@ Atomic <- R6::R6Class("Atomic",
         },
 
         #' @description Format a [Atomic] object.
-        #' @return A character scalar representing the formatted
-        #' [Atomic] object.
+        #' @return A character scalar representing the formatted [Atomic] object.
         format = function(validate = TRUE)
         {
             if (validate) {
