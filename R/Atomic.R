@@ -47,7 +47,19 @@ Atomic <- R6::R6Class("Atomic",
     private    = list(
 
         # Record a prototype of the vector.
-        prototype = NULL
+        prototype = NULL,
+
+        # Record (valid) strict atomic types.
+        valid_types = c(
+            "NULL",
+            "logical",
+            "integer",
+            "single",
+            "double",
+            "complex",
+            "character",
+            "raw"
+        )
     ),
     public = list(
 
@@ -111,11 +123,6 @@ Atomic <- R6::R6Class("Atomic",
         {
             super$validate()
 
-            atypes <- c(
-                "NULL", "logical", "integer", "single",
-                "double", "complex", "character", "raw"
-            )
-
             validate_blueprint(
                 if (!is_scalar_character(self$name))  {
                     "$name must be an scalar character."
@@ -123,7 +130,7 @@ Atomic <- R6::R6Class("Atomic",
                 if (!is_scalar_character(self$type)) {
                     "$type must be a scalar character."
                 },
-                if (is.na(match(self$type, atypes))) {
+                if (is.na(match(self$type, private$valid_types))) {
                     "$type should be a strict atomic type."
                 },
                 if (!is.null(self$length) &&
