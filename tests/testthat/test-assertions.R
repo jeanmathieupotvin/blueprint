@@ -1,58 +1,66 @@
-testthat::test_that("is_single() works",
+test_that("is_single() works",
 {
-    testthat::expect_true(is_single(single()))
-    testthat::expect_true(is_single(structure(double(), Csingle = TRUE)))
-    testthat::expect_false(is_single(double()))
-    testthat::expect_false(is_single(numeric()))
+    # A single value is a double with a Csingle attribute set equal to TRUE.
+
+    expect_true(is_single(single()))
+    expect_true(is_single(structure(double(), Csingle = TRUE)))
+
+    expect_false(is_single(double()))
+    expect_false(is_single(numeric()))
+    expect_false(is_single(structure(double(), Csingle = FALSE)))
 })
 
 
-testthat::test_that("is_scalar_character() works",
+test_that("is_scalar_character() works",
 {
-    testthat::expect_false(is_scalar_character())
-    testthat::expect_false(is_scalar_character(NULL))
-    testthat::expect_false(is_scalar_character(1L))
-    testthat::expect_false(is_scalar_character(c("vector", "string")))
-    testthat::expect_false(is_scalar_character(list("string")))
-    testthat::expect_true(is_scalar_character("string"))
+    expect_true(is_scalar_character("string"))
+
+    expect_false(is_scalar_character())
+    expect_false(is_scalar_character(NULL))
+    expect_false(is_scalar_character(1L))
+    expect_false(is_scalar_character(c("vector", "string")))
+    expect_false(is_scalar_character(list("string")))
 })
 
 
-testthat::test_that("is_scalar_logical() works",
+test_that("is_scalar_logical() works",
 {
-    testthat::expect_false(is_scalar_logical())
-    testthat::expect_false(is_scalar_logical(NULL))
-    testthat::expect_false(is_scalar_logical(1L))
-    testthat::expect_false(is_scalar_logical(c(TRUE, FALSE)))
-    testthat::expect_false(is_scalar_logical(list(TRUE)))
-    testthat::expect_true(is_scalar_logical(TRUE))
+    expect_true(is_scalar_logical(TRUE))
+
+    expect_false(is_scalar_logical())
+    expect_false(is_scalar_logical(NULL))
+    expect_false(is_scalar_logical(1L))
+    expect_false(is_scalar_logical(c(TRUE, FALSE)))
+    expect_false(is_scalar_logical(list(TRUE)))
 })
 
 
-testthat::test_that("is_scalar_integer() works",
+test_that("is_scalar_integer() works",
 {
-    testthat::expect_false(is_scalar_integer())
-    testthat::expect_false(is_scalar_integer(NULL))
-    testthat::expect_false(is_scalar_integer(1))
-    testthat::expect_false(is_scalar_integer(TRUE))
-    testthat::expect_false(is_scalar_integer(c(1L, 2L)))
-    testthat::expect_false(is_scalar_integer(list(1L)))
-    testthat::expect_true(is_scalar_integer(1L))
+    expect_true(is_scalar_integer(1L))
+
+    expect_false(is_scalar_integer())
+    expect_false(is_scalar_integer(NULL))
+    expect_false(is_scalar_integer(1))
+    expect_false(is_scalar_integer(TRUE))
+    expect_false(is_scalar_integer(c(1L, 2L)))
+    expect_false(is_scalar_integer(list(1L)))
 })
 
 
-testthat::test_that("is_scalar_numeric() works",
+test_that("is_scalar_numeric() works",
 {
-    testthat::expect_false(is_scalar_numeric())
-    testthat::expect_false(is_scalar_numeric(NULL))
-    testthat::expect_false(is_scalar_numeric(c(1, 2)))
-    testthat::expect_false(is_scalar_numeric(list(1)))
-    testthat::expect_true(is_scalar_numeric(1L))
-    testthat::expect_true(is_scalar_numeric(1))
+    expect_true(is_scalar_numeric(1L))
+    expect_true(is_scalar_numeric(1))
+
+    expect_false(is_scalar_numeric())
+    expect_false(is_scalar_numeric(NULL))
+    expect_false(is_scalar_numeric(c(1, 2)))
+    expect_false(is_scalar_numeric(list(1)))
 })
 
 
-testthat::test_that("is_strict_atomic() works",
+test_that("is_strict_atomic() works",
 {
     # The function uses the output of class(). This function returns
     # either an S3 class, an S4 class, an implicit class or typeof().
@@ -102,17 +110,17 @@ testthat::test_that("is_strict_atomic() works",
     # Test normal usage on strict atomic types.
     # Single values are also tested. These are double
     # values with a Csingle attribute, useful for .C().
-    testthat::expect_true(is_strict_atomic(NULL))
-    testthat::expect_true(is_strict_atomic(logical()))
-    testthat::expect_true(is_strict_atomic(integer()))
-    testthat::expect_true(is_strict_atomic(single()))
-    testthat::expect_true(is_strict_atomic(numeric()))
-    testthat::expect_true(is_strict_atomic(double()))
-    testthat::expect_true(is_strict_atomic(complex()))
-    testthat::expect_true(is_strict_atomic(character()))
-    testthat::expect_true(is_strict_atomic(raw()))
+    expect_true(is_strict_atomic(NULL))
+    expect_true(is_strict_atomic(logical()))
+    expect_true(is_strict_atomic(integer()))
+    expect_true(is_strict_atomic(single()))
+    expect_true(is_strict_atomic(numeric()))
+    expect_true(is_strict_atomic(double()))
+    expect_true(is_strict_atomic(complex()))
+    expect_true(is_strict_atomic(character()))
+    expect_true(is_strict_atomic(raw()))
 
-    # Test normal usage on atomic vectors with attributes.
+    # Test normal usage on non-strict atomic vectors (atomic structures).
     vctr_with_names <- c(a = 1L, b = 2L, c = 3L)
     vctr_with_attrs <- structure(
         vctr_with_names,
@@ -120,34 +128,34 @@ testthat::test_that("is_strict_atomic() works",
         length  = 3L
     )
 
-    testthat::expect_false(is_strict_atomic(vctr_with_names))
-    testthat::expect_false(is_strict_atomic(vctr_with_attrs))
+    expect_false(is_strict_atomic(vctr_with_names))
+    expect_false(is_strict_atomic(vctr_with_attrs))
 
     # Test normal usage on various R classes.
-    testthat::expect_false(is_strict_atomic())
-    testthat::expect_false(is_strict_atomic(data.frame()))
-    testthat::expect_false(is_strict_atomic(matrix()))
-    testthat::expect_false(is_strict_atomic(array()))
-    testthat::expect_false(is_strict_atomic(function(){}))
-    testthat::expect_false(is_strict_atomic(call("if")))
-    testthat::expect_false(is_strict_atomic(call("while")))
-    testthat::expect_false(is_strict_atomic(call("for")))
-    testthat::expect_false(is_strict_atomic(call("=")))
-    testthat::expect_false(is_strict_atomic(call("(")))
-    testthat::expect_false(is_strict_atomic(call("{")))
-    testthat::expect_false(is_strict_atomic(call("call")))
-    testthat::expect_false(is_strict_atomic(list()))
-    testthat::expect_false(is_strict_atomic(`+`))
-    testthat::expect_false(is_strict_atomic(.Internal))
-    testthat::expect_false(is_strict_atomic(environment()))
-    testthat::expect_false(is_strict_atomic(as.name("test")))
-    testthat::expect_false(is_strict_atomic(pairlist(a = 1L)))
-    testthat::expect_false(is_strict_atomic(expression()))
+    expect_false(is_strict_atomic())
+    expect_false(is_strict_atomic(data.frame()))
+    expect_false(is_strict_atomic(matrix()))
+    expect_false(is_strict_atomic(array()))
+    expect_false(is_strict_atomic(function(){}))
+    expect_false(is_strict_atomic(call("if")))
+    expect_false(is_strict_atomic(call("while")))
+    expect_false(is_strict_atomic(call("for")))
+    expect_false(is_strict_atomic(call("=")))
+    expect_false(is_strict_atomic(call("(")))
+    expect_false(is_strict_atomic(call("{")))
+    expect_false(is_strict_atomic(call("call")))
+    expect_false(is_strict_atomic(list()))
+    expect_false(is_strict_atomic(`+`))
+    expect_false(is_strict_atomic(.Internal))
+    expect_false(is_strict_atomic(environment()))
+    expect_false(is_strict_atomic(as.name("test")))
+    expect_false(is_strict_atomic(pairlist(a = 1L)))
+    expect_false(is_strict_atomic(expression()))
 
     # Test the following classes only if stats4 and methods can
     # be loaded. Else, skip them.
     skip_if_not_installed("stats4")
     skip_if_not_installed("methods")
-    testthat::expect_false(is_strict_atomic(methods::new("mle")))
-    testthat::expect_false(is_strict_atomic(methods::new("externalptr")))
+        expect_false(is_strict_atomic(methods::new("mle")))
+        expect_false(is_strict_atomic(methods::new("externalptr")))
 })

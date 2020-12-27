@@ -1,105 +1,105 @@
-testthat::test_that("$new() works and instance has an appropriate structure",
+test_that("$new() works and instance has an appropriate structure",
 {
-    b <- blueprint::Blueprint$new()
+    b <- Blueprint$new()
     pkg_ver <- as.character(utils::packageVersion("blueprint"))
 
     # Test general structure.
-    testthat::expect_type(b, "environment")
+    expect_type(b, "environment")
 
     # Test public fields.
-    testthat::expect_type(b$is_blueprint, "logical")
-    testthat::expect_type(b$blueprint_version, "character")
+    expect_type(b$is_blueprint, "logical")
+    expect_type(b$blueprint_version, "character")
 
     # Test methods.
-    testthat::expect_type(b$initialize, "closure")
-    testthat::expect_type(b$validate, "closure")
-    testthat::expect_type(b$format, "closure")
-    testthat::expect_type(b$print, "closure")
+    expect_type(b$initialize, "closure")
+    expect_type(b$validate, "closure")
+    expect_type(b$format, "closure")
+    expect_type(b$print, "closure")
 
     # Test class inheritance.
-    testthat::expect_s3_class(b, "Blueprint")
-    testthat::expect_s3_class(b, "R6")
+    expect_s3_class(b, "Blueprint")
+    expect_s3_class(b, "R6")
 
     # Test public fields.
     # They should have constant values, so we check these.
-    testthat::expect_true(isTRUE(b$is_blueprint))
-    testthat::expect_identical(b$blueprint_version, pkg_ver)
+    expect_true(isTRUE(b$is_blueprint))
+    expect_identical(b$blueprint_version, pkg_ver)
 })
 
 
-testthat::test_that("$validate() works",
+test_that("$validate() works",
 {
-    b <- blueprint::Blueprint$new()
+    b <- Blueprint$new()
 
     # Test if $validate() returns $self invisibly when valid.
-    testthat::expect_identical(b$validate(), b)
-    testthat::expect_invisible(quiet(b$print()))
+    expect_identical(b$validate(), b)
+    expect_invisible(quiet(b$print()))
 
     # Inject type related errors.
     b$is_blueprint      <- "a character"
     b$blueprint_version <- 1L
 
     # Test type related errors.
-    testthat::expect_error(b$validate(), regexp = "errors detected")
+    expect_error(b$validate(), regexp = "errors detected")
 
     # Inject length related errors.
     b$is_blueprint      <- c(TRUE, TRUE)
     b$blueprint_version <- c("0.1.1", "0.1.2")
 
     # Test length related errors.
-    testthat::expect_error(b$validate(), regexp = "errors detected")
+    expect_error(b$validate(), regexp = "errors detected")
 })
 
 
-testthat::test_that("$print() works",
+test_that("$print() works",
 {
-    b <- blueprint::Blueprint$new()
+    b <- Blueprint$new()
 
     # Test if $print() returns $self invisibly when valid.
-    testthat::expect_identical(quiet(b$print()), b)
-    testthat::expect_invisible(quiet(b$print()))
+    expect_identical(quiet(b$print()), b)
+    expect_invisible(quiet(b$print()))
 
     # Test if $print() prints something to the console.
-    testthat::expect_output(b$print())
+    expect_output(b$print())
 })
 
 
-testthat::test_that("$format() works",
+test_that("$format() works",
 {
-    b <- blueprint::Blueprint$new()
+    b <- Blueprint$new()
 
     # Test if $format() returns the appropriate string.
-    testthat::expect_identical(b$format(), "<Blueprint>")
+    expect_identical(b$format(), "<Blueprint>")
 })
 
 
-testthat::test_that("is_blueprint() works",
+test_that("is_blueprint() works",
 {
-    b <- blueprint::Blueprint$new()
+    b <- Blueprint$new()
 
     # Test if it normally works.
-    testthat::expect_true(is_blueprint(b))
+    expect_true(is_blueprint(b))
 
     # Test value related error.
     # Should return FALSE if $is_blueprint is FALSE.
     b$is_blueprint <- FALSE
-    testthat::expect_false(is_blueprint(b))
+    expect_false(is_blueprint(b))
 
     # Test type related error.
     # Should return FALSE if $is_blueprint is not a scalar logical TRUE.
     b$is_blueprint <- "false"
-    testthat::expect_false(is_blueprint(b))
+    expect_false(is_blueprint(b))
 })
 
 
-testthat::test_that("valid_blueprint() works",
+test_that("valid_blueprint() works",
 {
-    b <- blueprint::Blueprint$new()
+    b <- Blueprint$new()
 
     # Test if it normally works.
-    testthat::expect_s3_class(valid_blueprint(b), "R6")
-    testthat::expect_s3_class(valid_blueprint(b), "Blueprint")
+    expect_s3_class(valid_blueprint(b), "R6")
+    expect_s3_class(valid_blueprint(b), "Blueprint")
 
     # Test if an error is returned if tested object is not a Blueprint object.
-    testthat::expect_error(valid_blueprint(1L), regexp = "not a 'Blueprint'")
+    expect_error(valid_blueprint(1L), regexp = "not a 'Blueprint'")
 })
