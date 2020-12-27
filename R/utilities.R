@@ -71,6 +71,15 @@ pad_string <- function(x, pad = " ")
 }
 
 
+# Encode strings contained in objects to UTF-8. This is
+# required when converting object to YAML and JSON formats.
+# The default method is useful for recursive structures.
+as_utf8           <- function(x, ...) { UseMethod("as_utf8") }
+as_utf8.list      <- function(x, ...) { return(lapply(x, as_utf8)) }
+as_utf8.character <- function(x, ...) { return(base::enc2utf8(x)) }
+as_utf8.default   <- function(x, ...) { return(x) }
+
+
 # Inject named arguments into an existing named atomic or recursive
 # structure. Injection works by first updating .Obj with values
 # stemming from matching names passed to ... and by appending the
@@ -97,15 +106,6 @@ inject <- function(.Obj, ...)
         return(.Obj)
     }
 }
-
-
-# Encode strings contained in objects to UTF-8. This is
-# required when converting object to YAML and JSON formats.
-# The default method is useful for recursive structures.
-as_utf8           <- function(x, ...) { UseMethod("as_utf8") }
-as_utf8.list      <- function(x, ...) { return(lapply(x, as_utf8)) }
-as_utf8.character <- function(x, ...) { return(base::enc2utf8(x)) }
-as_utf8.default   <- function(x, ...) { return(x) }
 
 
 # Create a suitable list of elements to be passed to I/O functions
