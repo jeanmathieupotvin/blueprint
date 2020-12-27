@@ -3,3 +3,4 @@
 ^\.gitignore$
 ^\.dev$
 ^\.github$
+^man-roxygen$
