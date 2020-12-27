@@ -11,12 +11,12 @@ NULL
 #' @description
 #' [Blueprint] is the root super-class of all [R6][R6::R6] classes of package
 #' \pkg{blueprint}. In other words, all classes defined in package
-#' \pkg{blueprint} inherit class [Blueprint]. This class is **definitely not
-#' useful to the user** and is mostly used has a safeguard against probable
-#' class names collisions.
+#' \pkg{blueprint} inherit class [Blueprint].
 #'
-#' You should consider it as a virtual class. It has an API mostly for
-#' consistency with other classes of the package.
+#' This class is **definitely not useful for typical users**. You should
+#' consider it as a virtual class.
+#'
+#' @template param-validate
 #'
 #' @usage NULL
 #'
@@ -40,8 +40,8 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @field is_blueprint A scalar logical always equal to `TRUE`.
         is_blueprint = TRUE,
 
-        #' @field blueprint_version A scalar character that holds the
-        #' \pkg{blueprint} package's version when an object is created.
+        #' @field blueprint_version A scalar character that registers
+        #' \pkg{blueprint}'s version at the moment the object is created.
         blueprint_version = as.character(utils::packageVersion("blueprint")),
 
         #' @description Create a new [Blueprint] object.
@@ -54,8 +54,6 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @description Validate a [Blueprint] object.
         #' @return The [Blueprint] object invisibly if the object is valid.
         #' Else, an error explaining what is wrong with the object.
-        #' @details A [Blueprint] instance is valid if `$is_blueprint` is
-        #' `TRUE`.
         validate = function()
         {
             validate_blueprint(
@@ -72,9 +70,12 @@ Blueprint <- R6::R6Class("Blueprint",
 
         #' @description Print a [Blueprint] object.
         #' @return The [Blueprint] object invisibly.
-        print = function()
+        print = function(.validate = TRUE)
         {
-            self$validate()
+            if (.validate) {
+                self$validate()
+            }
+
             cat(sprintf("<Blueprint [%s]>", self$blueprint_version))
             return(invisible(self))
         },
@@ -82,9 +83,12 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @description Format a [Blueprint] object.
         #' @return A character scalar representing the formatted
         #' [Blueprint] object.
-        format = function()
+        format = function(.validate = TRUE)
         {
-            self$validate()
+            if (.validate) {
+                self$validate()
+            }
+
             return("<Blueprint>")
         }
     )
@@ -103,7 +107,7 @@ Blueprint <- R6::R6Class("Blueprint",
 #' @param x any \R object.
 #'
 #' @return
-#' * External helper functions [is_blueprint()] returns a logical scalar.
+#' * External helper function [is_blueprint()] returns a logical scalar.
 #'
 #' @export
 is_blueprint <- function(x)
@@ -117,6 +121,10 @@ is_blueprint <- function(x)
 #' @usage
 #' ## Validate if an object is a proper 'Blueprint' object
 #' valid_blueprint(x)
+#'
+#' @return
+#' * External helper function [valid_blueprint()] returns a logical scalar if
+#' the object is valid. Else, an error explaining what is wrong is returned.
 #'
 #' @export
 valid_blueprint <- function(x)

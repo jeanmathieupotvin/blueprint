@@ -3,27 +3,26 @@
 #' @title Simple assertions
 #'
 #' @description
-#' Check if an object is of a proper type, class and length. This is
-#' useful when implementing simple checks. These simple assertions are
-#' used extensively in package \pkg{blueprint} and are all available
-#' to the users for convenience.
+#' Check if an object is of a proper type, class and/or length. This is
+#' useful when implementing simple checks. These are used extensively in
+#' package \pkg{blueprint} and are all available to the users for convenience.
 #'
 #' @param x any \R object.
 #'
 #' @return All functions return a scalar logical. A `TRUE` implies that the
-#' underlying tested object *is* something (that *something* is dictated by
+#' underlying tested object *is* something (that *something* is given by
 #' the function's name).
 #'
 #' @section Numeric versus double values:
-#' [Numeric][base::numeric()] is a (totally useless) synonym of
-#' [double][base::double()]. The distinction stems from (stupid) historical
-#' choices that are described [here][base::double()].
+#' [Numeric][base::numeric()] is a synonym of [double][base::double()]. The
+#' distinction stems from historical choices that are described
+#' [here][base::double()].
 #'
 #' @section Strict atomic values:
 #' In package \pkg{blueprint}, a *strict atomic value* is any \R value
-#' (including `NULL`) that respects the following criteria.
+#' that respects the following criteria.
 #'
-#' 1. It has an atomic \R type:
+#' 1. It is an atomic \R type:
 #' [`NULL`][base::NULL],
 #' [logical][base::logical()],
 #' [integer][base::integer()],
