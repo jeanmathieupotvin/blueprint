@@ -5,7 +5,7 @@ NULL
 # Internal options and values.
 
 
-# Default jsonlite options used by method $as_json() of class Atomic.
+# Default jsonlite options used by method Atomic$as_json().
 opts_jsonlite_atomic <- function()
 {
     return(
