@@ -6,24 +6,22 @@ test_that("$new() works and instance has an appropriate structure",
     # Test general structure.
     expect_type(b, "environment")
 
-    # Test public fields.
-    expect_type(b$is_blueprint, "logical")
-    expect_type(b$blueprint_version, "character")
-
-    # Test methods.
-    expect_type(b$initialize, "closure")
-    expect_type(b$validate, "closure")
-    expect_type(b$format, "closure")
-    expect_type(b$print, "closure")
-
     # Test class inheritance.
     expect_s3_class(b, "Blueprint")
     expect_s3_class(b, "R6")
 
-    # Test public fields.
+    # Test methods.
+    expect_type(b$initialize, "closure")
+    expect_type(b$validate,   "closure")
+    expect_type(b$print,      "closure")
+    expect_type(b$format,     "closure")
+    expect_type(b$get,        "closure")
+    expect_type(b$set,        "closure")
+
+    # Test active fields.
     # They should have constant values, so we check these.
-    expect_true(isTRUE(b$is_blueprint))
-    expect_identical(b$blueprint_version, pkg_ver)
+    expect_true(b$is_blueprint)
+    expect_identical(b$version, pkg_ver)
 })
 
 
@@ -31,75 +29,50 @@ test_that("$validate() works",
 {
     b <- Blueprint$new()
 
-    # Test if $validate() returns $self invisibly when valid.
+    expect_invisible(b$validate())
     expect_identical(b$validate(), b)
-    expect_invisible(quiet(b$print()))
-
-    # Inject type related errors.
-    b$is_blueprint      <- "a character"
-    b$blueprint_version <- 1L
-
-    # Test type related errors.
-    expect_error(b$validate(), regexp = "errors detected")
-
-    # Inject length related errors.
-    b$is_blueprint      <- c(TRUE, TRUE)
-    b$blueprint_version <- c("0.1.1", "0.1.2")
-
-    # Test length related errors.
-    expect_error(b$validate(), regexp = "errors detected")
 })
 
 
 test_that("$print() works",
 {
-    b <- Blueprint$new()
-
-    # Test if $print() returns $self invisibly when valid.
-    expect_identical(quiet(b$print()), b)
-    expect_invisible(quiet(b$print()))
-
-    # Test if $print() prints something to the console.
-    expect_output(b$print())
+    expect_output(Blueprint$new()$print())
 })
 
 
 test_that("$format() works",
 {
-    b <- Blueprint$new()
+    expect_identical(Blueprint$new()$format(), "<Blueprint>")
+})
 
-    # Test if $format() returns the appropriate string.
-    expect_identical(b$format(), "<Blueprint>")
+
+test_that("$get() works",
+{
+    expect_true(Blueprint$new()$get("is_blueprint"))
+    expect_null(Blueprint$new()$get("not_existent_field"))
+})
+
+
+test_that("set() works",
+{
+    # $set() can only be tested partially in the context of
+    # class Blueprint because it has no modifiable fields.
+
+    expect_error(Blueprint$new()$set("field"),        "cannot be missing")
+    expect_error(Blueprint$new()$set(value = 1L),     "cannot be missing")
+    expect_error(Blueprint$new()$set("version", "1"), "no modifiable")
 })
 
 
 test_that("is_blueprint() works",
 {
-    b <- Blueprint$new()
-
-    # Test if it normally works.
-    expect_true(is_blueprint(b))
-
-    # Test value related error.
-    # Should return FALSE if $is_blueprint is FALSE.
-    b$is_blueprint <- FALSE
-    expect_false(is_blueprint(b))
-
-    # Test type related error.
-    # Should return FALSE if $is_blueprint is not a scalar logical TRUE.
-    b$is_blueprint <- "false"
-    expect_false(is_blueprint(b))
+    expect_true(is_blueprint(Blueprint$new()))
+    expect_false(is_blueprint(1L))
 })
 
 
 test_that("valid_blueprint() works",
 {
-    b <- Blueprint$new()
-
-    # Test if it normally works.
-    expect_s3_class(valid_blueprint(b), "R6")
-    expect_s3_class(valid_blueprint(b), "Blueprint")
-
-    # Test if an error is returned if tested object is not a Blueprint object.
-    expect_error(valid_blueprint(1L), regexp = "not a 'Blueprint'")
+    expect_s3_class(valid_blueprint(Blueprint$new()), "Blueprint")
+    expect_error(valid_blueprint(1L), "not a 'Blueprint'")
 })

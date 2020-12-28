@@ -86,7 +86,7 @@ cat(ab$as_yaml(headers = myheaders))
 ab$as_yaml(file = "my_atomic.yaml", headers = myheaders)
 
 ## Output is always encoded to UTF-8.
-Encoding(ab$as_yaml(headers = list(utf8char = "Ã©"))) == "UTF-8"
+Encoding(ab$as_yaml(headers = list(utf8char = "`"))) == "UTF-8"
 
 ## You can pass additional parameters to yaml::as.yaml().
 cat(ab$as_yaml(indent = 4L))
@@ -109,7 +109,7 @@ cat(ab$as_json(headers = myheaders))
 ab$as_json(file = "my_atomic.json", headers = myheaders)
 
 ## Output is always encoded to UTF-8.
-Encoding(ab$as_json(headers = list(utf8char = "Ã©"))) == "UTF-8"
+Encoding(ab$as_json(headers = list(utf8char = "`"))) == "UTF-8"
 
 ## You can pass additional parameters to jsonlite::toJSON().
 cat(ab$as_json(headers = list(test = 1.23456789)))
@@ -156,6 +156,8 @@ it is ignored by the class instance.}
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
+\item \out{<span class="pkg-link" data-pkg="blueprint" data-topic="Blueprint" data-id="get">}\href{../../blueprint/html/Blueprint.html#method-get}{\code{blueprint::Blueprint$get()}}\out{</span>}
+\item \out{<span class="pkg-link" data-pkg="blueprint" data-topic="Blueprint" data-id="set">}\href{../../blueprint/html/Blueprint.html#method-set}{\code{blueprint::Blueprint$set()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -183,6 +185,7 @@ to \code{atomic}.}
 }
 \subsection{Returns}{
 A \link[R6:R6Class]{R6} object of class \link{Atomic}.
+It is returned invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -447,7 +450,7 @@ cat(ab$as_yaml(headers = myheaders))
 ab$as_yaml(file = "my_atomic.yaml", headers = myheaders)
 
 ## Output is always encoded to UTF-8.
-Encoding(ab$as_yaml(headers = list(utf8char = "Ã©"))) == "UTF-8"
+Encoding(ab$as_yaml(headers = list(utf8char = "`"))) == "UTF-8"
 
 ## You can pass additional parameters to yaml::as.yaml().
 cat(ab$as_yaml(indent = 4L))
@@ -521,7 +524,7 @@ cat(ab$as_json(headers = myheaders))
 ab$as_json(file = "my_atomic.json", headers = myheaders)
 
 ## Output is always encoded to UTF-8.
-Encoding(ab$as_json(headers = list(utf8char = "Ã©"))) == "UTF-8"
+Encoding(ab$as_json(headers = list(utf8char = "`"))) == "UTF-8"
 
 ## You can pass additional parameters to jsonlite::toJSON().
 cat(ab$as_json(headers = list(test = 1.23456789)))
