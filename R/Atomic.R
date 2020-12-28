@@ -517,17 +517,19 @@ valid_atomic <- function(x)
 # S3 methods dispatch ----------------------------------------------------------
 
 
+# @param ... Ignored.
 #' @export
 #' @keywords internal
-as.list.Atomic <- function(x, .validate = TRUE)
+as.list.Atomic <- function(x, .validate = TRUE, ...)
 {
     return(x$as_list(.validate = .validate))
 }
 
 
+# @param ... Ignored.
 #' @export
 #' @keywords internal
-as.character.Atomic <- function(x, .validate = TRUE)
+as.character.Atomic <- function(x, .validate = TRUE, ...)
 {
     return(x$as_character(.validate = .validate))
 }
