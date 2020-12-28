@@ -116,8 +116,17 @@ Atomic <- R6::R6Class("Atomic",
             # fine for $prototype. We only need to watch out
             # for single values of length 0 passed to atomic.
             # `[` drops the Csingle attribute, but it must be kept.
-            private$prototype <- if (is_single(atomic) && !length(atomic)) {
-                single(1L)
+            private$prototype <- if (is_single(atomic)) {
+                if (length(atomic)) {
+
+                    # Ensure that a single is returned.
+                    structure(atomic[1L], Csingle = TRUE)
+                } else {
+
+                    # Create a NA_single_ value derived
+                    # from single value definition.
+                    structure(NA_real_, Csingle = TRUE)
+                }
             } else {
                 atomic[1L]
             }
