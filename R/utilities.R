@@ -74,10 +74,36 @@ pad_string <- function(x, pad = " ")
 # Encode strings contained in objects to UTF-8. This is
 # required when converting object to YAML and JSON formats.
 # The default method is useful for recursive structures.
-as_utf8           <- function(x, ...) { UseMethod("as_utf8") }
-as_utf8.list      <- function(x, ...) { return(lapply(x, as_utf8)) }
-as_utf8.character <- function(x, ...) { return(base::enc2utf8(x)) }
-as_utf8.default   <- function(x, ...) { return(x) }
+# Important! Following R 4.0 changes, S3 methods must always
+# be exported (and included in NAMESPACE), even if the underlying
+# generic function is to be kept private/unexported.
+# See https://github.com/r-lib/devtools/issues/2293.
+# Else, R CMD CHECK and examples will fail.
+as_utf8 <- function(x, ...)
+{
+    UseMethod("as_utf8")
+}
+
+
+#' @export
+as_utf8.list <- function(x)
+{
+    return(lapply(x, as_utf8))
+}
+
+
+#' @export
+as_utf8.character <- function(x)
+{
+    return(base::enc2utf8(x))
+}
+
+
+#' @export
+as_utf8.default <- function(x)
+{
+    return(x)
+}
 
 
 # Inject named arguments into an existing named atomic or recursive

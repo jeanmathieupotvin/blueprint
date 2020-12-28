@@ -2,6 +2,9 @@
 
 S3method(as.character,Atomic)
 S3method(as.list,Atomic)
+S3method(as_utf8,character)
+S3method(as_utf8,default)
+S3method(as_utf8,list)
 export("%bp%")
 export(Atomic)
 export(Blueprint)
