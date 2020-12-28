@@ -15,15 +15,11 @@ This is a major building block of the package.
 * New `roxygen2` templates.
 * Major progress on development environment. Much more mature now.
 
----
-
 # blueprint 0.0.0.9001
 
 * Initial version of class `Blueprint` is released.
 * Progress on setting a suitable development environment.
 * Structure tests and doc. Use testthat and roxygen2.
-
----
 
 # blueprint 0.0.0.9000
 
