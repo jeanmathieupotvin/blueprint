@@ -6,7 +6,8 @@ This is a major building block of the package.
 * Significant changes to class `Blueprint` to ensure consistency with class
 `Atomic`.
 * New unit tests. Use a simpler revamped test structure.
-* New `%bp%` operator, a concise way to construct blueprints.
+* New `%bp%` operator, a concise way to construct blueprints. We call it the
+*Blueprinter*.
 * New package doc file.
 * New utility functions.
 * New assertion functions.
