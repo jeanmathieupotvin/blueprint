@@ -8,26 +8,24 @@ NULL
 # Class ------------------------------------------------------------------------
 
 
-#' @title Atomic class
+#' @title Atomic: a class for strict atomic vectors
 #'
 #' @description
-#' [Atomic] is a simple class that holds useful metadata on
-#' \R atomic vectors (usually, objects that can be inserted into
-#' [`data.frame`][base::data.frame()] objects). An instance of class
-#' [Atomic] registers the vector's underlying class and name.
-#' Behind the scenes, it also records all its super-classes and its
-#' prototype, which is set equal to `atomic[1L]` (see arguments below to
-#' learn what `atomic` means).
-#'
-#' @param .validate A scalar logical. Validate the object before calling
-#' the method? This argument is `TRUE` by default.
+#' [Atomic] is an important building block of \pkg{blueprint}: it creates
+#' blueprints for [strict atomic vectors][is_strict_atomic()] (vectors of
+#' any \R atomic type, including `NULL`, that has no attribute). Instances
+#' of the [Atomic] class hold useful (derived) metadata on strict vectors:
+#' their types, names, prototypes and optionally, their lengths.
 #'
 #' @param file A scalar character. The name of a file to be created.
 #'
-#' @section Self-validation:
-#' The contents of a [Atomic] object is checked each time a method
-#' (including [`$new()`][Atomic]). The performance loss is negligible
-#' and favored over errors introduced by a *broken* [Atomic] instance.
+#' @param headers A non-empty named list that holds additional key/value
+#' pairs to include in text representations of the object (either JSON or YAML).
+#' Ignore this argument if not needed.
+#'
+#' @template param-validate
+#'
+#' @template section-self-validation
 #'
 #' @usage NULL
 #'
@@ -69,17 +67,28 @@ Atomic <- R6::R6Class("Atomic",
         #' @field type A scalar character. The class of the vector.
         type = NA_character_,
 
-        #' @field length A scalar integer. The length of the vector.
+        #' @field length A scalar integer. The length of the vector. If `NULL`,
+        #' it is ignored by the class instance.
         length = NULL,
 
-        #' @description Create a new [Atomic] object.
-        #' @param atomic any strict atomic \R vector.
-        #' See [is_strict_atomic()] for more information.
+        #' @description Create an [Atomic] object.
+        #'
+        #' @param atomic any [strict atomic][is_strict_atomic()] \R vector.
+        #'
         #' @param name A scalar character. The name of the vector passed
         #' to `atomic`.
+        #'
         #' @param length A scalar integer. This argument is flexible. If
-        #' `NULL`, `length` is ignored and not enforced.
+        #' `NULL`, `$length` is ignored.
+        #'
         #' @return A [R6][R6::R6] object of class [Atomic].
+        #'
+        #' @examples
+        #' ## Create a blueprint and do not enforce a length.
+        #' Atomic$new(1L, "myVectorName")
+        #'
+        #' ## Create a blueprint that enforces a specific length; here, 10.
+        #' Atomic$new(1L, "myVectorName", 10L)
         initialize = function(atomic, name, length = NULL)
         {
             if (!is_strict_atomic(atomic)) {
@@ -116,9 +125,10 @@ Atomic <- R6::R6Class("Atomic",
             return(self$validate())
         },
 
-        #' @description Validate a [Atomic] object.
-        #' @return The [Atomic] object invisibly if the object is
-        #' valid. Else, an error explaining what is wrong with the object.
+        #' @description Validate an [Atomic] object.
+        #'
+        #' @return The [Atomic] object invisibly if the object is valid.
+        #' Else, an error explaining what is wrong with the object.
         validate = function()
         {
             super$validate()
@@ -142,7 +152,8 @@ Atomic <- R6::R6Class("Atomic",
             return(invisible(self))
         },
 
-        #' @description Print a [Atomic] object.
+        #' @description Print an [Atomic] object.
+        #'
         #' @return The [Atomic] object invisibly.
         print = function()
         {
@@ -153,8 +164,10 @@ Atomic <- R6::R6Class("Atomic",
             return(invisible(self))
         },
 
-        #' @description Format a [Atomic] object.
-        #' @return A character scalar representing the formatted [Atomic] object.
+        #' @description Format an [Atomic] object.
+        #'
+        #' @return A character scalar representing the formatted [Atomic]
+        #' object.
         format = function(.validate = TRUE)
         {
             if (.validate) {
@@ -171,12 +184,29 @@ Atomic <- R6::R6Class("Atomic",
             }
         },
 
-        #' @description Compare a vector against an [Atomic].
-        #' @param object Any [atomic] \R object.
+        #' @description Compare an object against an [Atomic].
+        #'
+        #' @param object Any \R object.
+        #'
         #' @return A scalar logical. A `TRUE` means that `object` is in
         #' compliance with the underlying [Atomic]:
         #' 1. it has the same `$type` and
         #' 2. if `$length` is **not** `NULL`, it has the same prescribed length.
+        #'
+        #' @examples
+        #' ## Compare values against an Atomic blueprint that do not enforce a length.
+        #' bp_no_length <- Atomic$new("hello", "myBlueprint")
+        #'
+        #' bp_no_length$compare(c("hi", "bye")) # TRUE
+        #' bp_no_length$compare("bye")          # TRUE
+        #' bp_no_length$compare(1)              # FALSE
+        #'
+        #' ## Compare values against an Atomic blueprint that enforces a length.
+        #' bp_length <- Atomic$new("hello", "myBlueprint", 1L)
+        #'
+        #' bp_length$compare(c("hi", "bye")) # FALSE
+        #' bp_length$compare("bye")          # TRUE
+        #' bp_length$compare(1)              # FALSE
         compare = function(object, .validate = TRUE)
         {
             if (.validate) {
@@ -208,10 +238,14 @@ Atomic <- R6::R6Class("Atomic",
             }
         },
 
-        #' @description Create a strict atomic vector from an [Atomic] object.
-        #' @return A vector. Its underlying `type` and `length` is given by
-        #' the fields `$type` and `$length`. It is initialized with values based
-        #' on an internal prototype.
+        #' @description
+        #' Create (*spawn*) a strict atomic vector from an [Atomic] object.
+        #'
+        #' @return A [strict atomic vector][is_strict_atomic()]. Its underlying
+        #' `type` and `length` is respectively given by fields `$type` and
+        #' `$length`. It is initialized with a suitable prototype derived from
+        #' argument `atomic` (see [`new()`][Atomic]) and registered internally
+        #' when the object is created.
         generate = function(.validate = TRUE)
         {
             if (.validate) {
@@ -247,13 +281,16 @@ Atomic <- R6::R6Class("Atomic",
             }
         },
 
-        #' @description Coerce a [Atomic] object into a list.
-        #' @return A named list of three elements:
+        #' @description Coerce an [Atomic] object to a list.
+        #'
+        #' @return A named list of four elements:
         #' \tabular{ll}{
         #' `name`      \tab A scalar character equal to `$name`.\cr
         #' `type`      \tab A scalar character equal to `$type`.\cr
-        #' `length`    \tab A scalar integer equal to `$length`.\cr
-        #' `prototype` \tab A scalar [strict atomic][is_strict_atomic()] value with a class attribute equal to `$type`.
+        #' `length`    \tab A scalar integer equal to `$length` or `NULL`.\cr
+        #' `prototype` \tab A scalar [strict atomic value][is_strict_atomic()]
+        #' with a [class][base::class()] and a [type][base::typeof()] attribute
+        #' equal to `$type`.
         #' }
         as_list = function(.validate = TRUE)
         {
@@ -271,12 +308,15 @@ Atomic <- R6::R6Class("Atomic",
             )
         },
 
-        #' @description Coerce a [Atomic] object into a character.
+        #' @description Coerce an [Atomic] object to a character.
+        #'
         #' @return A named character of three elements:
         #' \tabular{ll}{
         #' `name`   \tab A scalar character equal to `$name`.\cr
         #' `type`   \tab A scalar character equal to `$type`.\cr
-        #' `length` \tab A scalar character equal to the coerced value of `$length` (from integer to character).
+        #' `length` \tab A scalar character equal to the coerced
+        #' value of `$length` (from integer to character). If
+        #' `$length` is `NULL`, the string `"NULL"` is returned.
         #' }
         as_character = function(.validate = TRUE)
         {
@@ -287,36 +327,64 @@ Atomic <- R6::R6Class("Atomic",
             return(
                 c(name   = self$name,
                   type   = self$type,
-                  length = as.character(self$length))
+                  length = if (is.null(self$length)) {
+                      "NULL"
+                  } else {
+                      as.character(self$length)
+                  }
+                )
             )
         },
 
-        #' @description Convert a [Atomic] object to a YAML text
+        #' @description Convert an [Atomic] object to a YAML text
         #' based format.
-        #' @param ... further arguments passed to [yaml::as.yaml()].
-        #' @return A scalar character holding a YAML string derived from
-        #' method [`$as_list()`][Atomic].
-        #' @details
-        #' YAML is a human friendly data serialization standard for all
-        #' programming languages. The acronym stands for *YAML Ain't Markup
-        #' Language* (it is a *recursive* name). It is also designed to be a
-        #' strict super-set of JSON (see [`$as_json()`][Atomic]).
-        #' To learn more, visit [yaml.org](https://yaml.org/).
         #'
-        #' Method [`$as_list()`][Atomic] re-encodes its fields to
-        #' UTF-8 (if applicable) before returning or writing the YAML output.
+        #' @param ... further arguments passed to [yaml::as.yaml()].
+        #'
+        #' @return A scalar character holding a YAML string derived from
+        #' method [`as_list()`][Atomic].
+        #'
+        #' @details
+        #' YAML (*YAML Ain't Markup Language*, a recursive name) is a
+        #' human-friendly data serialization standard usable in almost
+        #' any programming language. It is designed to be a strict
+        #' super-set of JSON (see [`as_json()`][Atomic]).
+        #' To learn more, visit [yaml.org](https://yaml.org).
+        #'
+        #' Method [`as_yaml()`][Atomic] automatically re-encodes its
+        #' fields to UTF-8 (if applicable) before returning or writing
+        #' the YAML output. Additional headers passed to `headers` are
+        #' also re-encoded, if applicable.
+        #'
+        #' @examples
+        #' ## Create an Atomic object.
+        #' ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
+        #'
+        #' ## Create a simple YAML representation and print it.
+        #' cat(ab$as_yaml())
+        #'
+        #' ## Add additional headers to output.
+        #' myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+        #' cat(ab$as_yaml(headers = myheaders))
+        #'
+        #' ## Write output to a file.
+        #' ab$as_yaml(file = "my_atomic.yaml", headers = myheaders)
+        #'
+        #' ## Output is always encoded to UTF-8.
+        #' Encoding(ab$as_yaml(headers = list(utf8char = "é"))) == "UTF-8"
+        #'
+        #' ## You can pass additional parameters to yaml::as.yaml().
+        #' cat(ab$as_yaml(indent = 4L))
         as_yaml = function(file, headers, ..., .validate = TRUE)
         {
             if (.validate) {
                 self$validate()
             }
 
-            out <- as_utf8(
-                add_headers(self$as_list(), headers, "Atomic", "as_yaml")
-            )
+            out <- add_headers(self$as_list(), headers, "Atomic", "as_yaml")
 
             if (missing(file)) {
-                return(yaml::as.yaml(out, ...))
+                return(yaml::as.yaml(as_utf8(out), ...))
             } else {
                 if (!is_scalar_character(file)) {
                     stop("'file' must be a scalar character.",
@@ -324,21 +392,54 @@ Atomic <- R6::R6Class("Atomic",
                 }
 
                 return(
-                    yaml::write_yaml(out, file, "UTF-8", ...)
+                    yaml::write_yaml(as_utf8(out), file, "UTF-8", ...)
                 )
             }
         },
 
-        #' @description Convert a [Atomic] object to a JSON text
+        #' @description Convert an [Atomic] object to a JSON text
         #' based format.
+        #'
         #' @param ... further arguments passed to [jsonlite::toJSON()].
+        #'
         #' @return A scalar character holding a JSON string derived from
-        #' method [`$as_list()`][Atomic]. Technically, the output
-        #' is encapsulated into an object of class `json`. This class is
-        #' internally defined in package \pkg{jsonlite} and behave like a
-        #' normal character.
+        #' method [`as_list()`][Atomic]. This string is encapsulated into
+        #' an object of class `json`, which is internally defined in package
+        #' \pkg{jsonlite} and behaves like a normal character.
+        #'
         #' @details
-        #' JSON.
+        #' JSON (*JavaScript Object Notation*) is a lightweight and
+        #' human-friendly data serialization format usable in almost
+        #' any programming language. Its design is derived from
+        #' JavaScript's objects notation. Compared to YAML, it is
+        #' slightly more verbose. To learn more, visit
+        #' [www.json.org](https://www.json.org).
+        #'
+        #' Method [`as_json()`][Atomic] automatically re-encodes its
+        #' fields to UTF-8 (if applicable) before returning or writing
+        #' the JSON output. Additional headers passed to `headers` are
+        #' also re-encoded, if applicable.
+        #'
+        #' @examples
+        #' ## Create an Atomic object.
+        #' ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
+        #'
+        #' ## Create a simple JSON representation and print it.
+        #' cat(ab$as_json())
+        #'
+        #' ## Add additional headers to output.
+        #' myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+        #' cat(ab$as_json(headers = myheaders))
+        #'
+        #' ## Write output to a file.
+        #' ab$as_json(file = "my_atomic.json", headers = myheaders)
+        #'
+        #' ## Output is always encoded to UTF-8.
+        #' Encoding(ab$as_json(headers = list(utf8char = "é"))) == "UTF-8"
+        #'
+        #' ## You can pass additional parameters to jsonlite::toJSON().
+        #' cat(ab$as_json(headers = list(test = 1.23456789)))
+        #' cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
         as_json = function(file, headers, ..., .validate = TRUE)
         {
             if (.validate) {
@@ -348,7 +449,8 @@ Atomic <- R6::R6Class("Atomic",
             out <- add_headers(self$as_list(), headers, "Atomic", "as_json")
 
             if (missing(file)) {
-                args <- inject(opts_jsonlite_atomic(), x = as_utf8(out))
+                args <- inject(opts_jsonlite_atomic(), x = as_utf8(out), ...)
+
                 return(do.call(jsonlite::toJSON, args))
             } else {
                 if (!is_scalar_character(file)) {
@@ -359,8 +461,10 @@ Atomic <- R6::R6Class("Atomic",
                 args <- inject(
                     opts_jsonlite_atomic(),
                     x    = as_utf8(out),
-                    path = file
+                    path = file,
+                    ...
                 )
+
                 return(do.call(jsonlite::write_json, args))
             }
         }
@@ -379,8 +483,8 @@ Atomic <- R6::R6Class("Atomic",
 #'
 #' @param x any \R object.
 #'
-#' @return External helper functions [is_atomic()] and
-#' [valid_atomic()] return a logical scalar.
+#' @return
+#' * External helper function [is_atomic()] returns a logical scalar.
 #'
 #' @export
 is_atomic <- function(x)
@@ -394,6 +498,10 @@ is_atomic <- function(x)
 #' @usage
 #' ## Validate if an object is a proper 'Atomic' object
 #' valid_atomic(x)
+#'
+#' @return
+#' * External helper function [valid_atomic()] returns a logical scalar if
+#' the object is valid. Else, an error explaining what is wrong is returned.
 #'
 #' @export
 valid_atomic <- function(x)
@@ -411,7 +519,7 @@ valid_atomic <- function(x)
 
 #' @export
 #' @keywords internal
-as.list.Atomic <- function(x, ..., .validate = TRUE)
+as.list.Atomic <- function(x, .validate = TRUE)
 {
     return(x$as_list(.validate = .validate))
 }
@@ -419,7 +527,7 @@ as.list.Atomic <- function(x, ..., .validate = TRUE)
 
 #' @export
 #' @keywords internal
-as.character.Atomic <- function(x, ..., .validate = TRUE)
+as.character.Atomic <- function(x, .validate = TRUE)
 {
     return(x$as_character(.validate = .validate))
 }
