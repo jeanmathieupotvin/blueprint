@@ -4,3 +4,4 @@
 ^\.dev$
 ^\.github$
 ^man-roxygen$
+^tests\\testthat\\\_snaps$
