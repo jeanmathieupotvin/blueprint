@@ -15,7 +15,8 @@ NULL
 #' operator. The output's class is automatically deduced from argument
 #' `object`.
 #'
-#' @param symbol A syntactic [name], also known as an *unquoted name*.
+#' @param symbol A syntactic [name], also known as an *unquoted name*, or a
+#' scalar character.
 #'
 #' @param object Any \R value.
 #'
@@ -33,12 +34,22 @@ NULL
 #' @export
 `%bp%` <- function(symbol, object)
 {
+    name <- if (is.name(substitute(symbol))) {
+        deparse(substitute(symbol))
+    } else if (is_scalar_character(symbol)) {
+        symbol
+    } else {
+        stop("inappropriate 'symbol' value.",
+             " It should be a name or a scalar character.",
+             call. = FALSE)
+    }
+
     if (is_strict_atomic(object)) {
-        return(Atomic$new(object, deparse(substitute(symbol)), length(object)))
+        objlen <- length(object)
+        return(Atomic$new(object, name, if (objlen == 0L) NULL else objlen))
     } else {
         warning("No suitable blueprint class was found for argument 'object'.",
                 call. = FALSE)
-
         return(NULL)
     }
 }
