@@ -14,16 +14,19 @@ symbol \%bp\% object
 }
 \value{
 The \code{\link[=Blueprinter]{\%bp\%}} operator is a convenient wrapper to
-\pkg{blueprint}'s constructors and returns an appropriate \link[R6:R6Class]{R6}
-object, a \link{Blueprint} that corresponds to the underlying type of \code{value}.
+\pkg{blueprint}'s constructor functions and always returns an appropriate
+\link[R6:R6Class]{R6} object. The output is always a \link{Blueprint} that corresponds
+to the underlying type of \code{object}.
 \itemize{
-\item If value is of a \emph{strict atomic} type (one of \link[base:NULL]{NULL},
-\link[base:logical]{logical}, \link[base:integer]{integer},
-\link[base:numeric]{numeric}, \link[base:complex]{complex},
-\link[base:character]{character} or \link[base:raw]{raw}), an
-instance of class \link{Atomic} is returned.
+\item If \code{object} is a \link[=is_strict_atomic]{strict atomic value},
+an \link{Atomic} object is returned.
 }
+
+If no \link{Blueprint} class corresponding to \code{object} is available, a
+\code{NULL} value is returned with a warning.
 }
 \description{
-Create instances of \pkg{blueprint}'s classes faster and more easily.
+Create instances of \pkg{blueprint}'s classes with a fast and concise
+operator. The output's class is automatically deduced from argument
+\code{object}.
 }

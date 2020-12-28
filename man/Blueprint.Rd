@@ -17,18 +17,21 @@ valid_blueprint(x)
 }
 \value{
 \itemize{
-\item External helper functions \code{\link[=is_blueprint]{is_blueprint()}} returns a logical scalar.
+\item External helper function \code{\link[=is_blueprint]{is_blueprint()}} returns a logical scalar.
+}
+
+\itemize{
+\item External helper function \code{\link[=valid_blueprint]{valid_blueprint()}} returns a logical scalar if
+the object is valid. Else, an error explaining what is wrong is returned.
 }
 }
 \description{
 \link{Blueprint} is the root super-class of all \link[R6:R6Class]{R6} classes of package
 \pkg{blueprint}. In other words, all classes defined in package
-\pkg{blueprint} inherit class \link{Blueprint}. This class is \strong{definitely not
-useful to the user} and is mostly used has a safeguard against probable
-class names collisions.
+\pkg{blueprint} inherit class \link{Blueprint}.
 
-You should consider it as a virtual class. It has an API mostly for
-consistency with other classes of the package.
+This class is \strong{definitely not useful for typical users}. You should
+consider it as a virtual class.
 }
 \seealso{
 Other Blueprint classes: 
@@ -43,8 +46,8 @@ Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 \describe{
 \item{\code{is_blueprint}}{A scalar logical always equal to \code{TRUE}.}
 
-\item{\code{blueprint_version}}{A scalar character that holds the
-\pkg{blueprint} package's version when an object is created.}
+\item{\code{blueprint_version}}{A scalar character that registers
+\pkg{blueprint}'s version at the moment the object is created.}
 }
 \if{html}{\out{</div>}}
 }
@@ -79,11 +82,6 @@ Validate a \link{Blueprint} object.
 \if{html}{\out{<div class="r">}}\preformatted{Blueprint$validate()}\if{html}{\out{</div>}}
 }
 
-\subsection{Details}{
-A \link{Blueprint} instance is valid if \verb{$is_blueprint} is
-\code{TRUE}.
-}
-
 \subsection{Returns}{
 The \link{Blueprint} object invisibly if the object is valid.
 Else, an error explaining what is wrong with the object.
@@ -95,9 +93,19 @@ Else, an error explaining what is wrong with the object.
 \subsection{Method \code{print()}}{
 Print a \link{Blueprint} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Blueprint$print()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$print(.validate = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 The \link{Blueprint} object invisibly.
 }
@@ -108,9 +116,19 @@ The \link{Blueprint} object invisibly.
 \subsection{Method \code{format()}}{
 Format a \link{Blueprint} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Blueprint$format()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$format(.validate = TRUE)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
+}
+\if{html}{\out{</div>}}
+}
 \subsection{Returns}{
 A character scalar representing the formatted
 \link{Blueprint} object.

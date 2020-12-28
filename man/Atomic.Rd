@@ -4,7 +4,7 @@
 \alias{Atomic}
 \alias{is_atomic}
 \alias{valid_atomic}
-\title{Atomic class}
+\title{Atomic: a class for strict atomic vectors}
 \usage{
 ## Test if an object is an 'Atomic' object
 is_atomic(x)
@@ -16,25 +16,105 @@ valid_atomic(x)
 \item{x}{any \R object.}
 }
 \value{
-External helper functions \code{\link[=is_atomic]{is_atomic()}} and
-\code{\link[=valid_atomic]{valid_atomic()}} return a logical scalar.
+\itemize{
+\item External helper function \code{\link[=is_atomic]{is_atomic()}} returns a logical scalar.
+}
+
+\itemize{
+\item External helper function \code{\link[=valid_atomic]{valid_atomic()}} returns a logical scalar if
+the object is valid. Else, an error explaining what is wrong is returned.
+}
 }
 \description{
-\link{Atomic} is a simple class that holds useful metadata on
-\R atomic vectors (usually, objects that can be inserted into
-\code{\link[base:data.frame]{data.frame}} objects). An instance of class
-\link{Atomic} registers the vector's underlying class and name.
-Behind the scenes, it also records all its super-classes and its
-prototype, which is set equal to \code{atomic[1L]} (see arguments below to
-learn what \code{atomic} means).
+\link{Atomic} is an important building block of \pkg{blueprint}: it creates
+blueprints for \link[=is_strict_atomic]{strict atomic vectors} (vectors of
+any \R atomic type, including \code{NULL}, that has no attribute). Instances
+of the \link{Atomic} class hold useful (derived) metadata on strict vectors:
+their types, names, prototypes and optionally, their lengths.
 }
 \section{Self-validation}{
 
-The contents of a \link{Atomic} object is checked each time a method
-(including \code{\link[=Atomic]{$new()}}). The performance loss is negligible
-and favored over errors introduced by a \emph{broken} \link{Atomic} instance.
+The contents of an instance is checked when it is initialized and each time
+a method is called afterward.
 }
 
+\examples{
+
+## ------------------------------------------------
+## Method `Atomic$new`
+## ------------------------------------------------
+
+## Create a blueprint and do not enforce a length.
+Atomic$new(1L, "myVectorName")
+
+## Create a blueprint that enforces a specific length; here, 10.
+Atomic$new(1L, "myVectorName", 10L)
+
+## ------------------------------------------------
+## Method `Atomic$compare`
+## ------------------------------------------------
+
+## Compare values against an Atomic blueprint that do not enforce a length.
+bp_no_length <- Atomic$new("hello", "myBlueprint")
+
+bp_no_length$compare(c("hi", "bye")) # TRUE
+bp_no_length$compare("bye")          # TRUE
+bp_no_length$compare(1)              # FALSE
+
+## Compare values against an Atomic blueprint that enforces a length.
+bp_length <- Atomic$new("hello", "myBlueprint", 1L)
+
+bp_length$compare(c("hi", "bye")) # FALSE
+bp_length$compare("bye")          # TRUE
+bp_length$compare(1)              # FALSE
+
+## ------------------------------------------------
+## Method `Atomic$as_yaml`
+## ------------------------------------------------
+
+## Create an Atomic object.
+ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
+
+## Create a simple YAML representation and print it.
+cat(ab$as_yaml())
+
+## Add additional headers to output.
+myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+cat(ab$as_yaml(headers = myheaders))
+
+## Write output to a file.
+ab$as_yaml(file = "my_atomic.yaml", headers = myheaders)
+
+## Output is always encoded to UTF-8.
+Encoding(ab$as_yaml(headers = list(utf8char = "Ã©"))) == "UTF-8"
+
+## You can pass additional parameters to yaml::as.yaml().
+cat(ab$as_yaml(indent = 4L))
+
+## ------------------------------------------------
+## Method `Atomic$as_json`
+## ------------------------------------------------
+
+## Create an Atomic object.
+ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
+
+## Create a simple JSON representation and print it.
+cat(ab$as_json())
+
+## Add additional headers to output.
+myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+cat(ab$as_json(headers = myheaders))
+
+## Write output to a file.
+ab$as_json(file = "my_atomic.json", headers = myheaders)
+
+## Output is always encoded to UTF-8.
+Encoding(ab$as_json(headers = list(utf8char = "Ã©"))) == "UTF-8"
+
+## You can pass additional parameters to jsonlite::toJSON().
+cat(ab$as_json(headers = list(test = 1.23456789)))
+cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
+}
 \seealso{
 Other Blueprint classes: 
 \code{\link{Blueprint}}
@@ -53,7 +133,8 @@ Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 
 \item{\code{type}}{A scalar character. The class of the vector.}
 
-\item{\code{length}}{A scalar integer. The length of the vector.}
+\item{\code{length}}{A scalar integer. The length of the vector. If \code{NULL},
+it is ignored by the class instance.}
 }
 \if{html}{\out{</div>}}
 }
@@ -65,6 +146,7 @@ Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 \item \href{#method-print}{\code{Atomic$print()}}
 \item \href{#method-format}{\code{Atomic$format()}}
 \item \href{#method-compare}{\code{Atomic$compare()}}
+\item \href{#method-generate}{\code{Atomic$generate()}}
 \item \href{#method-as_list}{\code{Atomic$as_list()}}
 \item \href{#method-as_character}{\code{Atomic$as_character()}}
 \item \href{#method-as_yaml}{\code{Atomic$as_yaml()}}
@@ -81,7 +163,7 @@ Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new \link{Atomic} object.
+Create an \link{Atomic} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Atomic$new(atomic, name, length = NULL)}\if{html}{\out{</div>}}
 }
@@ -89,40 +171,51 @@ Create a new \link{Atomic} object.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{atomic}}{any strict atomic \R vector.
-See \code{\link[=is_strict_atomic]{is_strict_atomic()}} for more information.}
+\item{\code{atomic}}{any \link[=is_strict_atomic]{strict atomic} \R vector.}
 
 \item{\code{name}}{A scalar character. The name of the vector passed
 to \code{atomic}.}
 
 \item{\code{length}}{A scalar integer. This argument is flexible. If
-\code{NULL}, \code{length} is ignored and not enforced.}
+\code{NULL}, \verb{$length} is ignored.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
 A \link[R6:R6Class]{R6} object of class \link{Atomic}.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Create a blueprint and do not enforce a length.
+Atomic$new(1L, "myVectorName")
+
+## Create a blueprint that enforces a specific length; here, 10.
+Atomic$new(1L, "myVectorName", 10L)
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-validate"></a>}}
 \if{latex}{\out{\hypertarget{method-validate}{}}}
 \subsection{Method \code{validate()}}{
-Validate a \link{Atomic} object.
+Validate an \link{Atomic} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Atomic$validate()}\if{html}{\out{</div>}}
 }
 
 \subsection{Returns}{
-The \link{Atomic} object invisibly if the object is
-valid. Else, an error explaining what is wrong with the object.
+The \link{Atomic} object invisibly if the object is valid.
+Else, an error explaining what is wrong with the object.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-print"></a>}}
 \if{latex}{\out{\hypertarget{method-print}{}}}
 \subsection{Method \code{print()}}{
-Print a \link{Atomic} object.
+Print an \link{Atomic} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Atomic$print()}\if{html}{\out{</div>}}
 }
@@ -135,40 +228,44 @@ The \link{Atomic} object invisibly.
 \if{html}{\out{<a id="method-format"></a>}}
 \if{latex}{\out{\hypertarget{method-format}{}}}
 \subsection{Method \code{format()}}{
-Format a \link{Atomic} object.
+Format an \link{Atomic} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$format(validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$format(.validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default.}
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A character scalar representing the formatted
-\link{Atomic} object.
+A character scalar representing the formatted \link{Atomic}
+object.
 }
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-compare"></a>}}
 \if{latex}{\out{\hypertarget{method-compare}{}}}
 \subsection{Method \code{compare()}}{
-Compare a vector against an \link{Atomic}.
+Compare an object against an \link{Atomic}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$compare(object, validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$compare(object, .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{object}}{Any \link{atomic} \R object.}
+\item{\code{object}}{Any \R object.}
 
-\item{\code{validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default.}
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -180,31 +277,82 @@ compliance with the underlying \link{Atomic}:
 \item if \verb{$length} is \strong{not} \code{NULL}, it has the same prescribed length.
 }
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Compare values against an Atomic blueprint that do not enforce a length.
+bp_no_length <- Atomic$new("hello", "myBlueprint")
+
+bp_no_length$compare(c("hi", "bye")) # TRUE
+bp_no_length$compare("bye")          # TRUE
+bp_no_length$compare(1)              # FALSE
+
+## Compare values against an Atomic blueprint that enforces a length.
+bp_length <- Atomic$new("hello", "myBlueprint", 1L)
+
+bp_length$compare(c("hi", "bye")) # FALSE
+bp_length$compare("bye")          # TRUE
+bp_length$compare(1)              # FALSE
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-as_list"></a>}}
-\if{latex}{\out{\hypertarget{method-as_list}{}}}
-\subsection{Method \code{as_list()}}{
-Coerce a \link{Atomic} object into a list.
+\if{html}{\out{<a id="method-generate"></a>}}
+\if{latex}{\out{\hypertarget{method-generate}{}}}
+\subsection{Method \code{generate()}}{
+Create (\emph{spawn}) a strict atomic vector from an \link{Atomic} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_list(validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$generate(.validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default.}
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-A named list of three elements:
+A \link[=is_strict_atomic]{strict atomic vector}. Its underlying
+\code{type} and \code{length} is respectively given by fields \verb{$type} and
+\verb{$length}. It is initialized with a suitable prototype derived from
+argument \code{atomic} (see \code{\link[=Atomic]{new()}}) and registered internally
+when the object is created.
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-as_list"></a>}}
+\if{latex}{\out{\hypertarget{method-as_list}{}}}
+\subsection{Method \code{as_list()}}{
+Coerce an \link{Atomic} object to a list.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_list(.validate = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+A named list of four elements:
 \tabular{ll}{
 \code{name}      \tab A scalar character equal to \verb{$name}.\cr
 \code{type}      \tab A scalar character equal to \verb{$type}.\cr
-\code{length}    \tab A scalar integer equal to \verb{$length}.\cr
-\code{prototype} \tab A scalar \link[=is_strict_atomic]{strict atomic} value with a class attribute equal to \verb{$type}.
+\code{length}    \tab A scalar integer equal to \verb{$length} or \code{NULL}.\cr
+\code{prototype} \tab A scalar \link[=is_strict_atomic]{strict atomic value}
+with a \link[base:class]{class} and a \link[base:typeof]{type} attribute
+equal to \verb{$type}.
 }
 }
 }
@@ -212,16 +360,18 @@ A named list of three elements:
 \if{html}{\out{<a id="method-as_character"></a>}}
 \if{latex}{\out{\hypertarget{method-as_character}{}}}
 \subsection{Method \code{as_character()}}{
-Coerce a \link{Atomic} object into a character.
+Coerce an \link{Atomic} object to a character.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_character(validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_character(.validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default.}
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -230,7 +380,9 @@ A named character of three elements:
 \tabular{ll}{
 \code{name}   \tab A scalar character equal to \verb{$name}.\cr
 \code{type}   \tab A scalar character equal to \verb{$type}.\cr
-\code{length} \tab A scalar character equal to the coerced value of \verb{$length} (from integer to character).
+\code{length} \tab A scalar character equal to the coerced
+value of \verb{$length} (from integer to character). If
+\verb{$length} is \code{NULL}, the string \code{"NULL"} is returned.
 }
 }
 }
@@ -238,72 +390,146 @@ A named character of three elements:
 \if{html}{\out{<a id="method-as_yaml"></a>}}
 \if{latex}{\out{\hypertarget{method-as_yaml}{}}}
 \subsection{Method \code{as_yaml()}}{
-Convert a \link{Atomic} object to a YAML text
+Convert an \link{Atomic} object to a YAML text
 based format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_yaml(validate = TRUE, file, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_yaml(file, headers, ..., .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default.}
-
 \item{\code{file}}{A scalar character. The name of a file to be created.}
 
+\item{\code{headers}}{A non-empty named list that holds additional key/value
+pairs to include in text representations of the object (either JSON or YAML).
+Ignore this argument if not needed.}
+
 \item{\code{...}}{further arguments passed to \code{\link[yaml:as.yaml]{yaml::as.yaml()}}.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-YAML is a human friendly data serialization standard for all
-programming languages. The acronym stands for \emph{YAML Ain't Markup
-Language} (it is a \emph{recursive} name). It is also designed to be a
-strict super-set of JSON (see \code{\link[=Atomic]{$as_json()}}).
-To learn more, visit \href{https://yaml.org/}{yaml.org}.
+YAML (\emph{YAML Ain't Markup Language}, a recursive name) is a
+human-friendly data serialization standard usable in almost
+any programming language. It is designed to be a strict
+super-set of JSON (see \code{\link[=Atomic]{as_json()}}).
+To learn more, visit \href{https://yaml.org}{yaml.org}.
 
-Method \code{\link[=Atomic]{$as_list()}} re-encodes its fields to
-UTF-8 (if applicable) before returning or writing the YAML output.
+Method \code{\link[=Atomic]{as_yaml()}} automatically re-encodes its
+fields to UTF-8 (if applicable) before returning or writing
+the YAML output. Additional headers passed to \code{headers} are
+also re-encoded, if applicable.
 }
 
 \subsection{Returns}{
 A scalar character holding a YAML string derived from
-method \code{\link[=Atomic]{$as_list()}}.
+method \code{\link[=Atomic]{as_list()}}.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Create an Atomic object.
+ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
+
+## Create a simple YAML representation and print it.
+cat(ab$as_yaml())
+
+## Add additional headers to output.
+myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+cat(ab$as_yaml(headers = myheaders))
+
+## Write output to a file.
+ab$as_yaml(file = "my_atomic.yaml", headers = myheaders)
+
+## Output is always encoded to UTF-8.
+Encoding(ab$as_yaml(headers = list(utf8char = "Ã©"))) == "UTF-8"
+
+## You can pass additional parameters to yaml::as.yaml().
+cat(ab$as_yaml(indent = 4L))
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-as_json"></a>}}
 \if{latex}{\out{\hypertarget{method-as_json}{}}}
 \subsection{Method \code{as_json()}}{
-Convert a \link{Atomic} object to a JSON text
+Convert an \link{Atomic} object to a JSON text
 based format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_json(validate = TRUE, file, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_json(file, headers, ..., .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default.}
-
 \item{\code{file}}{A scalar character. The name of a file to be created.}
 
+\item{\code{headers}}{A non-empty named list that holds additional key/value
+pairs to include in text representations of the object (either JSON or YAML).
+Ignore this argument if not needed.}
+
 \item{\code{...}}{further arguments passed to \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}}.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Details}{
-JSON.
+JSON (\emph{JavaScript Object Notation}) is a lightweight and
+human-friendly data serialization format usable in almost
+any programming language. Its design is derived from
+JavaScript's objects notation. Compared to YAML, it is
+slightly more verbose. To learn more, visit
+\href{https://www.json.org}{www.json.org}.
+
+Method \code{\link[=Atomic]{as_json()}} automatically re-encodes its
+fields to UTF-8 (if applicable) before returning or writing
+the JSON output. Additional headers passed to \code{headers} are
+also re-encoded, if applicable.
 }
 
 \subsection{Returns}{
 A scalar character holding a JSON string derived from
-method \code{\link[=Atomic]{$as_list()}}. Technically, the output
-is encapsulated into an object of class \code{json}. This class is
-internally defined in package \pkg{jsonlite} and behave like a
-normal character.
+method \code{\link[=Atomic]{as_list()}}. This string is encapsulated into
+an object of class \code{json}, which is internally defined in package
+\pkg{jsonlite} and behaves like a normal character.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Create an Atomic object.
+ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
+
+## Create a simple JSON representation and print it.
+cat(ab$as_json())
+
+## Add additional headers to output.
+myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+cat(ab$as_json(headers = myheaders))
+
+## Write output to a file.
+ab$as_json(file = "my_atomic.json", headers = myheaders)
+
+## Output is always encoded to UTF-8.
+Encoding(ab$as_json(headers = list(utf8char = "Ã©"))) == "UTF-8"
+
+## You can pass additional parameters to jsonlite::toJSON().
+cat(ab$as_json(headers = list(test = 1.23456789)))
+cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 }
