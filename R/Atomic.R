@@ -42,6 +42,7 @@ Atomic <- R6::R6Class("Atomic",
     lock_class = TRUE,
     cloneable  = FALSE,
     inherit    = Blueprint,
+    active     = NULL,
     private    = list(
 
         # Record a prototype of the vector.
@@ -82,6 +83,7 @@ Atomic <- R6::R6Class("Atomic",
         #' `NULL`, `$length` is ignored.
         #'
         #' @return A [R6][R6::R6] object of class [Atomic].
+        #' It is returned invisibly.
         #'
         #' @examples
         #' ## Create a blueprint and do not enforce a length.
@@ -142,6 +144,9 @@ Atomic <- R6::R6Class("Atomic",
         {
             super$validate()
 
+            # Errors are accumulated before being returned.
+            # Therefore, $type needs to be a scalar for match(),
+            # so we check its first element only.
             validate_blueprint(
                 if (!is_scalar_character(self$name))  {
                     "$name must be an scalar character."
@@ -149,7 +154,7 @@ Atomic <- R6::R6Class("Atomic",
                 if (!is_scalar_character(self$type)) {
                     "$type must be a scalar character."
                 },
-                if (is.na(match(self$type, private$valid_types))) {
+                if (!match(self$type[[1L]], private$valid_types, 0L)) {
                     "$type should be a strict atomic type."
                 },
                 if (!is.null(self$length) &&
@@ -166,7 +171,7 @@ Atomic <- R6::R6Class("Atomic",
         #' @return The [Atomic] object invisibly.
         print = function()
         {
-            cat(sprintf("<Atomic blueprint [%s]>\n  ", self$blueprint_version),
+            cat(sprintf("<Atomic blueprint [%s]>\n  ", self$version),
                 self$format(),
                 sep = ""
             )
@@ -380,7 +385,7 @@ Atomic <- R6::R6Class("Atomic",
         #' ab$as_yaml(file = "my_atomic.yaml", headers = myheaders)
         #'
         #' ## Output is always encoded to UTF-8.
-        #' Encoding(ab$as_yaml(headers = list(utf8char = "é"))) == "UTF-8"
+        #' Encoding(ab$as_yaml(headers = list(utf8char = "`"))) == "UTF-8"
         #'
         #' ## You can pass additional parameters to yaml::as.yaml().
         #' cat(ab$as_yaml(indent = 4L))
@@ -444,7 +449,7 @@ Atomic <- R6::R6Class("Atomic",
         #' ab$as_json(file = "my_atomic.json", headers = myheaders)
         #'
         #' ## Output is always encoded to UTF-8.
-        #' Encoding(ab$as_json(headers = list(utf8char = "é"))) == "UTF-8"
+        #' Encoding(ab$as_json(headers = list(utf8char = "`"))) == "UTF-8"
         #'
         #' ## You can pass additional parameters to jsonlite::toJSON().
         #' cat(ab$as_json(headers = list(test = 1.23456789)))
