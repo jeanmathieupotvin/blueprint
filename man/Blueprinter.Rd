@@ -8,7 +8,8 @@
 symbol \%bp\% object
 }
 \arguments{
-\item{symbol}{A syntactic \link{name}, also known as an \emph{unquoted name}.}
+\item{symbol}{A syntactic \link{name}, also known as an \emph{unquoted name}, or a
+scalar character.}
 
 \item{object}{Any \R value.}
 }
