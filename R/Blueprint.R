@@ -59,7 +59,6 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @description Create a new [Blueprint] object.
         #'
         #' @return A [R6][R6::R6] object of class [Blueprint].
-        #' It is returned invisibly.
         initialize = function()
         {
             return(self$validate())
@@ -99,7 +98,7 @@ Blueprint <- R6::R6Class("Blueprint",
         get = function(field)
         {
             if (missing(field)) {
-                return(invisible(self))
+                return(self$validate())
             } else {
                 return(self[[field]])
             }
