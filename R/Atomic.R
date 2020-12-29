@@ -100,7 +100,7 @@ Atomic <- R6::R6Class("Atomic",
             }
             if (!is.null(length)) {
                 if (!is.integer(length)) {
-                    length <- as.integer(length[[1L]])
+                    length <- suppressWarnings(as.integer(length[[1L]]))
                 }
                 if (is.na(length) || length < 0L) {
                     stop("when supplied, 'length' must be a positive integer scalar.",
