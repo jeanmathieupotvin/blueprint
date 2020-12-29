@@ -48,8 +48,11 @@ test_that("$format() works",
 
 test_that("$get() works",
 {
-    expect_true(Blueprint$new()$get("is_blueprint"))
-    expect_null(Blueprint$new()$get("not_existent_field"))
+    b <- Blueprint$new()
+
+    expect_identical(b$get(), b)
+    expect_true(b$get("is_blueprint"))
+    expect_null(b$get("not_existent_field"))
 })
 
 

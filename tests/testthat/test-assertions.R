@@ -5,6 +5,7 @@ test_that("is_single() works",
     expect_true(is_single(single()))
     expect_true(is_single(structure(double(), Csingle = TRUE)))
 
+    expect_false(is_single())
     expect_false(is_single(double()))
     expect_false(is_single(numeric()))
     expect_false(is_single(structure(double(), Csingle = FALSE)))

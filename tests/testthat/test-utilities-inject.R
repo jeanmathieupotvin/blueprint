@@ -3,6 +3,7 @@ test_that("inject() works on atomic structures",
     simplevec <- c(opt1 = "test", opt2 = "test")
 
     # Test normal usage.
+    expect_identical(inject(simplevec), simplevec)
     expect_identical(
         inject(simplevec, opt2 = "succeed", opt3 = "new"),
         c(opt1 = "test", opt2 = "succeed", opt3 = "new")
@@ -33,6 +34,7 @@ test_that("inject() works on recursive structures",
     simplelist <- list(opt1 = "test", opt2 = "test")
 
     # Test normal usage.
+    expect_identical(inject(simplelist), simplelist)
     expect_identical(
         inject(simplelist,  opt2 = "succeed", opt3 = "new"),
         list(opt1 = "test", opt2 = "succeed", opt3 = "new")
