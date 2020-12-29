@@ -172,8 +172,8 @@ Atomic <- R6::R6Class("Atomic",
         {
             # $print() does not call $validate() because
             # it is indirectly called through $format().
-            cat(sprintf("<Atomic blueprint [%s]>\n  ", self$version),
-                self$format(),
+            fmt <- self$format()
+            cat(sprintf("<Atomic blueprint [%s]>\n  ", self$version), fmt,
                 sep = ""
             )
             return(invisible(self))
