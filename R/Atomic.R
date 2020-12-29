@@ -397,7 +397,7 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            out <- add_headers(self$as_list(), headers, "Atomic", "as_yaml")
+            out <- add_headers(self$as_list(), "Atomic", "as_yaml", headers)
 
             if (missing(file)) {
                 return(yaml::as.yaml(as_utf8(out), ...))
@@ -460,7 +460,7 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            out <- add_headers(self$as_list(), headers, "Atomic", "as_json")
+            out <- add_headers(self$as_list(), "Atomic", "as_json", headers)
 
             if (missing(file)) {
                 args <- inject(opts_jsonlite_atomic(), x = as_utf8(out), ...)

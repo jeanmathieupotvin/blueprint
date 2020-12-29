@@ -143,7 +143,7 @@ inject <- function(.Obj, ...)
 # that are derived from the underlying class/method that calls this
 # function. Finally, the embed flag controls whether the body should
 # be embedded into another list of length 1 under a name given by type.
-add_headers <- function(body, headers, type, caller, embed = TRUE)
+add_headers <- function(body, type, caller, headers, embed = TRUE)
 {
     stopifnot(
         is.list(body),
