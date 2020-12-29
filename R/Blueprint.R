@@ -16,8 +16,7 @@ NULL
 #' **This class is definitely not useful for typical users**. You should
 #' consider it a virtual class.
 #'
-#' @param field A scalar character. The name of a field. If missing,
-#' the whole object is returned invisibly.
+#' @param field A scalar character. The name of a field.
 #'
 #' @param value Any \R value. The value to use when updating a field. Its
 #' type must match the field's underlying structure.
@@ -94,8 +93,9 @@ Blueprint <- R6::R6Class("Blueprint",
 
         #' @description Extract a field's value from a [Blueprint] object.
         #'
-        #' @return The underlying value corresponding to the chosen field.
-        #' If it does not exist, `NULL` is returned.
+        #' @return The value corresponding to the chosen `field`. If it
+        #' does not exist, `NULL` is returned. If `field` is missing,
+        #' the underlying [Blueprint] object is returned invisibly.
         get = function(field)
         {
             if (missing(field)) {
