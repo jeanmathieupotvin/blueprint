@@ -78,6 +78,7 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @return The [Blueprint] object invisibly.
         print = function()
         {
+            self$validate()
             cat(sprintf("<Blueprint [%s]>", self$version))
             return(invisible(self))
         },
@@ -94,7 +95,7 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @description Extract a field's value from a [Blueprint] object.
         #'
         #' @return The underlying value corresponding to the chosen field.
-        #' If it does not exist, a `NULL` is returned.
+        #' If it does not exist, `NULL` is returned.
         get = function(field)
         {
             if (missing(field)) {

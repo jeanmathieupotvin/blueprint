@@ -171,6 +171,8 @@ Atomic <- R6::R6Class("Atomic",
         #' @return The [Atomic] object invisibly.
         print = function()
         {
+            # $print() does not call $validate() because
+            # it is indirectly called through $format().
             cat(sprintf("<Atomic blueprint [%s]>\n  ", self$version),
                 self$format(),
                 sep = ""
@@ -405,9 +407,7 @@ Atomic <- R6::R6Class("Atomic",
                          call. = FALSE)
                 }
 
-                return(
-                    yaml::write_yaml(as_utf8(out), file, "UTF-8", ...)
-                )
+                return(yaml::write_yaml(as_utf8(out), file, "UTF-8", ...))
             }
         },
 
@@ -464,7 +464,6 @@ Atomic <- R6::R6Class("Atomic",
 
             if (missing(file)) {
                 args <- inject(opts_jsonlite_atomic(), x = as_utf8(out), ...)
-
                 return(do.call(jsonlite::toJSON, args))
             } else {
                 if (!is_scalar_character(file)) {
