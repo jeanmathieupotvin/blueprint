@@ -1,17 +1,17 @@
 test_that("operator %bp% works",
 {
     # Test normal usage.
-    expect_s3_class(test %bp% 1.0, c("Atomic", "Blueprint"))
+    expect_s3_class(test   %bp% 1.0, c("Atomic", "Blueprint"))
     expect_s3_class("test" %bp% 1.0, c("Atomic", "Blueprint"))
-
-    # Test arguments checks.
-    expect_error(1L %bp% raw(), regexp = "inappropriate 'symbol'")
-    expect_error(c("bad", "name") %bp% raw(), regexp = "inappropriate 'symbol'")
 
     # Test fallback case for unsupported classes.
     # Currently, we use function `+` that has type/class "builtin".
     expect_null(suppressWarnings(test %bp% `+`))
-    expect_warning(test %bp% `+`, regexp = "No suitable blueprint")
+    expect_warning(test %bp% `+`, "No suitable blueprint")
+
+    # Test arguments checks.
+    expect_error(1L %bp% raw(),               "inappropriate 'symbol'")
+    expect_error(c("bad", "name") %bp% raw(), "inappropriate 'symbol'")
 })
 
 

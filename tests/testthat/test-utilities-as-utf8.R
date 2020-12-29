@@ -4,7 +4,8 @@
 
 test_that("as_utf8() generic works",
 {
-    # Test dispatch. Any non UTF-8 R values should just be returned as is.
+    # Test dispatch.
+    # Any non UTF-8 R values should just be returned as is.
     expect_identical(as_utf8(list()), list())
     expect_identical(as_utf8(character()), character())
     expect_identical(as_utf8(double()), double())
@@ -13,9 +14,9 @@ test_that("as_utf8() generic works",
 
 test_that("as_utf8() works on atomic structures",
 {
-    # Create an atomic structure (not strict).
     struct <- c(unknown = "eagjh", unknown = "1234", `UTF-8` = "éèë½¾")
 
+    # Test normal usage. Ensure encoding is UTF-8.
     expect_equal(as_utf8(struct), struct)
     expect_equal(Encoding(as_utf8(struct)), names(struct))
 })
@@ -23,7 +24,6 @@ test_that("as_utf8() works on atomic structures",
 
 test_that("as_utf8() works on recursive structures",
 {
-    # Create a recursive structure itself containing a recursive structure.
     struct <- list(
         unknown = "eagjh",
         unknown = "1234",
@@ -35,6 +35,7 @@ test_that("as_utf8() works on recursive structures",
         )
     )
 
+    # Test normal usage. Ensure encoding is UTF-8.
     expect_equal(as_utf8(struct), struct)
     expect_equivalent(
         list("unknown", "unknown", "UTF-8", list("UTF-8", "UTF-8", "unknown")),

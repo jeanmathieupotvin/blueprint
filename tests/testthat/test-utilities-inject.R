@@ -1,60 +1,32 @@
 test_that("inject() works on atomic structures",
 {
-    simplevec <- c(opt1 = "test", opt2 = "test")
+    v <- c(a = "a", b = "b")
 
     # Test normal usage.
-    expect_identical(inject(simplevec), simplevec)
-    expect_identical(
-        inject(simplevec, opt2 = "succeed", opt3 = "new"),
-        c(opt1 = "test", opt2 = "succeed", opt3 = "new")
-    )
-
-    # Test injection of equal values (it should work).
-    expect_identical(
-        inject(simplevec, opt1 = "test", opt2 = "new"),
-        c(opt1 = "test", opt2 = "new")
-    )
+    expect_identical(inject(v), v)
+    expect_identical(inject(v, b = "bb", c = "c"), c(a = "a", b = "bb", c = "c"))
+    expect_identical(inject(v, a = "a", b = "b"),  c(a = "a", b = "b"))
 
     # Test argument checks.
-    # We focus on unnamed values and/or not unique names in either .Obj or ...
-    expect_error(inject(simplevec, opt2 = "test1", opt2 = "test2"))
-    expect_error(
-        inject(
-            c(opt1 = "contains", opt1 = "errors"),
-            opt1 = "test1", opt2 = "test2"
-        )
-    )
-    expect_error(inject(simplevec, 1L))
-    expect_error(inject(c(1L, opt2 = "test"), opt1 = "test1"))
+    expect_error(inject(v, 1L),                         "dotnames")
+    expect_error(inject(v, b = "b", b = "bb"),          "dotnames")
+    expect_error(inject(c(a = "a", a = "aa"), b = "b"), "objnames")
+    expect_error(inject(c(1L, b = "b"), c = "c"),       "objnames")
 })
 
 
 test_that("inject() works on recursive structures",
 {
-    simplelist <- list(opt1 = "test", opt2 = "test")
+    l <- list(a = "a", b = "b")
 
     # Test normal usage.
-    expect_identical(inject(simplelist), simplelist)
-    expect_identical(
-        inject(simplelist,  opt2 = "succeed", opt3 = "new"),
-        list(opt1 = "test", opt2 = "succeed", opt3 = "new")
-    )
-
-    # Test injection of equal values (it should work).
-    expect_identical(
-        inject(simplelist,  opt1 = "test", opt2 = "new"),
-        list(opt1 = "test", opt2 = "new")
-    )
+    expect_identical(inject(l), l)
+    expect_identical(inject(l, b = "bb", c = "c"), list(a = "a", b = "bb", c = "c"))
+    expect_identical(inject(l, a = "a", b = "b"),  list(a = "a", b = "b"))
 
     # Test argument checks.
-    # We focus on unnamed values and/or not unique names in either .Obj or ...
-    expect_error(inject(simplelist, opt2 = "test1", opt2 = "test2"))
-    expect_error(
-        inject(
-            list(opt1 = "contains", opt1 = "errors"),
-            opt1 = "test1", opt2 = "test2"
-        )
-    )
-    expect_error(inject(simplelist, 1L))
-    expect_error(inject(list(1L, opt2 = "test"), opt1 = "test1"))
+    expect_error(inject(l, 1L),                            "dotnames")
+    expect_error(inject(l, b = "b", b = "bb"),             "dotnames")
+    expect_error(inject(list(a = "a", a = "aa"), b = "b"), "objnames")
+    expect_error(inject(list(1L, b = "b"), c = "c"),       "objnames")
 })

@@ -2,12 +2,12 @@ test_that("vapply_1l() works",
 {
     # Test normal usage.
     expect_identical(
-        object   = vapply_1l(month.name, TRUE, is.character),
-        expected = sapply(month.name, is.character)
+        vapply_1l(month.name, TRUE, is.character),
+        sapply(month.name, is.character)
     )
     expect_identical(
-        object   = vapply_1l(month.name, FALSE, is.character),
-        expected = sapply(month.name, is.character, USE.NAMES = FALSE)
+        vapply_1l(month.name, FALSE, is.character),
+        sapply(month.name, is.character, USE.NAMES = FALSE)
     )
 
     # Test argument checks.

@@ -62,8 +62,6 @@ test_that("set() works",
     # class Blueprint because it has no modifiable fields.
     # It is thoroughly tested elsewhere.
 
-    expect_error(Blueprint$new()$set("field"),        "cannot be missing")
-    expect_error(Blueprint$new()$set(value = 1L),     "cannot be missing")
     expect_error(Blueprint$new()$set("version", "1"), "no modifiable")
 })
 
