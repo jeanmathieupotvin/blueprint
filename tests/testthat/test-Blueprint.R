@@ -36,7 +36,12 @@ test_that("$validate() works",
 
 test_that("$print() works",
 {
-    expect_output(Blueprint$new()$print())
+    b <- Blueprint$new()
+
+    expect_output(b$print(), "Blueprint")
+    expect_output(b$print(), "(\\[\\d.\\d.\\d(.\\d+)?\\])")
+
+    expect_invisible(quiet(b$print()))
 })
 
 
