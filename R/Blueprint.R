@@ -114,11 +114,6 @@ Blueprint <- R6::R6Class("Blueprint",
         #' Beware! Class [Blueprint] has no modifiable fields.
         set = function(field, value)
         {
-            if (missing(field) || missing(value)) {
-                stop("arguments 'field' and 'value' cannot be missing.",
-                     call. = FALSE)
-            }
-
             # By design, classes in blueprint refers to
             # the underlying object generator and we can
             # get fields easily from these generators.
