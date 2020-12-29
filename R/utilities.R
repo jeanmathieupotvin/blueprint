@@ -21,8 +21,8 @@ valid_r6_instance <- function(x)
     return(
         tryCatch(
             { x$validate() },
-            error   = function() { return(FALSE) },
-            Warning = function() { return(FALSE) }
+            error   = function(e) { return(FALSE) },
+            warning = function(w) { return(FALSE) }
         )
     )
 }
