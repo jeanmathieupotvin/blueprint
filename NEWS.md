@@ -1,7 +1,7 @@
 # blueprint 0.0.0.9002
 
 * New concept: *strict atomic types*. See `assertions.R`.
-* New class `Atomic`, a class to hold blueprints of *strict atomic vectors*.
+* New class: `Atomic`, a class to hold blueprints of *strict atomic vectors*.
 This is a major building block of the package.
 * Significant changes to class `Blueprint` to ensure consistency with class
 `Atomic`.

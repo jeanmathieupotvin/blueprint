@@ -73,7 +73,6 @@ Create a new \link{Blueprint} object.
 
 \subsection{Returns}{
 A \link[R6:R6Class]{R6} object of class \link{Blueprint}.
-It is returned invisibly.
 }
 }
 \if{html}{\out{<hr>}}
@@ -136,7 +135,7 @@ the whole object is returned invisibly.}
 }
 \subsection{Returns}{
 The underlying value corresponding to the chosen field.
-If it does not exist, a \code{NULL} is returned.
+If it does not exist, \code{NULL} is returned.
 }
 }
 \if{html}{\out{<hr>}}

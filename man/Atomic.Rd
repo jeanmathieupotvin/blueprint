@@ -185,7 +185,6 @@ to \code{atomic}.}
 }
 \subsection{Returns}{
 A \link[R6:R6Class]{R6} object of class \link{Atomic}.
-It is returned invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
