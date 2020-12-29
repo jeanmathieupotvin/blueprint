@@ -57,6 +57,7 @@ test_that("set() works",
 {
     # $set() can only be tested partially in the context of
     # class Blueprint because it has no modifiable fields.
+    # It is thoroughly tested elsewhere.
 
     expect_error(Blueprint$new()$set("field"),        "cannot be missing")
     expect_error(Blueprint$new()$set(value = 1L),     "cannot be missing")
