@@ -83,7 +83,6 @@ Atomic <- R6::R6Class("Atomic",
         #' `NULL`, `$length` is ignored.
         #'
         #' @return A [R6][R6::R6] object of class [Atomic].
-        #' It is returned invisibly.
         #'
         #' @examples
         #' ## Create a blueprint and do not enforce a length.
