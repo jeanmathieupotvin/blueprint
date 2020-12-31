@@ -1,6 +1,6 @@
 Package: blueprint
 Title: Efficient data schemas generator for R
-Version: 0.0.0.9001
+Version: 0.0.0.9002
 Authors@R: 
     person(given = "Jean-Mathieu",
            family = "Potvin",
