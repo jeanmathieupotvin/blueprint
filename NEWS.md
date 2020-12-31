@@ -20,7 +20,7 @@ This is a major building block of the package.
 
 * Initial version of class `Blueprint` is released.
 * Progress on setting a suitable development environment.
-* Structure tests and doc. Use testthat and roxygen2.
+* Structure tests and doc. Use `testthat` and `roxygen2`.
 
 # blueprint 0.0.0.9000
 
