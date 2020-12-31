@@ -1,7 +1,0 @@
-source: R[v3.6.3]::blueprint[v0.0.0.9002]::Atomic$as_yaml()
-UTF-8 char: é
-Atomic:
-    name: test
-    type: raw
-    length: 5
-    prototype: AA==
