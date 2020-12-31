@@ -2,15 +2,11 @@
 NULL
 
 
-# Unexported internal utility functions. Use minimal argument checks and
-# make them as fast as possible. Favor stopifnot() for concise code, unless
-# the message is intended to be passed to users.
-
-
-# A safe wrapper to validate functions of R6 objects. It first checks if
-# the underlying object inherits the R6 class, then checks the existence
-# of a $validate() method. If so, the latter is called and a logical
-# TRUE/FALSE is returned indicating whether the instance is valid or not.
+# A safe wrapper to validate R6 objects. It checks if it inherits the R6
+# class, then checks the existence of a $validate() method. If so, the
+# latter is called and a logical is returned indicating whether the instance
+# is valid or not. It uses the fact that a $validate() method should return
+# the underlying object if it is valid.
 valid_r6_instance <- function(x)
 {
     if (!inherits(x, "R6") || !exists("validate", envir = x)) {
@@ -18,19 +14,17 @@ valid_r6_instance <- function(x)
              call. = FALSE)
     }
 
-    return(
-        tryCatch(
-            { x$validate() },
-            error   = function(e) { return(FALSE) },
-            warning = function(w) { return(FALSE) }
-        )
+    tryCatch(
+        { return(if (R6::is.R6(x$validate())) TRUE else FALSE) },
+        error   = function(e) { return(FALSE) },
+        warning = function(w) { return(FALSE) }
     )
 }
 
 
 # Standardize how Blueprint instances return errors stemming from their
 # $validate() method. It is not useful to the user, so we do not export it.
-validate_blueprint <- function(...)
+report_errors <- function(...)
 {
     errs <- c(...)
 

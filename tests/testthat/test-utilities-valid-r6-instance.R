@@ -1,13 +1,12 @@
 test_that("valid_r6_instance() works",
 {
     # Create a dummy validate() function.
-    validate <- function(out = c("true", "err", "warn"))
+    # It returns either an error or a warning.
+    validate <- function(out = c("err", "warn"))
     {
         out <- match.arg(out)
 
-        if (out == "true") {
-            return(TRUE)
-        } else if (out == "err") {
+        if (out == "err") {
             stop("this is an error.", call. = FALSE)
         } else {
             warning("this is a warning.", call. = FALSE)
@@ -17,7 +16,7 @@ test_that("valid_r6_instance() works",
 
     # Create dummy R6 object generators.
     TrueValidator <- R6::R6Class("TrueValidator",
-        public = list(validate = function() { return(validate(out = "true")) })
+        public = list(validate = function() { return(invisible(self)) })
     )
     ErrValidator <- R6::R6Class("ErrValidator",
         public = list(validate = function() { return(validate(out = "err")) })
@@ -34,5 +33,5 @@ test_that("valid_r6_instance() works",
 
     # Test argument checks.
     expect_error(valid_r6_instance(1L),                "not a R6 object")
-    expect_error(valid_r6_instance(NoValidator$new()), "\\$validate\\(\\) method")
+    expect_error(valid_r6_instance(NoValidator$new()), "validate")
 })

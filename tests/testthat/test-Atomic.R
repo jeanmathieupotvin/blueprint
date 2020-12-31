@@ -415,7 +415,7 @@ test_that("is_atomic()",
 
 test_that("valid_atomic()",
 {
-    expect_s3_class(valid_atomic(Atomic$new(raw(), "test")), "Atomic")
+    expect_true(valid_atomic(Atomic$new(raw(), "test")))
     expect_error(valid_atomic(1L), "not an 'Atomic'")
 })
 

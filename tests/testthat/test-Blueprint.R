@@ -85,6 +85,6 @@ test_that("is_blueprint()",
 
 test_that("valid_blueprint()",
 {
-    expect_s3_class(valid_blueprint(Blueprint$new()), "Blueprint")
+    expect_true(valid_blueprint(Blueprint$new()))
     expect_error(valid_blueprint(1L), "not a 'Blueprint'")
 })
