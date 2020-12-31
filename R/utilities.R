@@ -41,14 +41,11 @@ report_errors <- function(...)
 }
 
 
-# Wrapper to vapply() with a predetermined scalar logical return value.
+# Wrapper functions to vapply() with a predetermined values.
 vapply_1l <- function(x, fun, names = FALSE, ...)
 {
     return(vapply(x, fun, NA, ..., USE.NAMES = names))
 }
-
-
-# Wrapper to vapply() with a predetermined scalar character return value.
 vapply_1c <- function(x, fun, names = FALSE, ...)
 {
     return(vapply(x, fun, NA_character_, ..., USE.NAMES = names))
