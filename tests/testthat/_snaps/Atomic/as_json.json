@@ -1,0 +1,10 @@
+{
+  "source": "R[v3.6.3]::blueprint[v0.0.0.9001]::Atomic$as_json()",
+  "UTF-8 char": "é",
+  "Atomic": {
+    "name": "test",
+    "type": "raw",
+    "length": 5,
+    "prototype": 0
+  }
+}
