@@ -17,8 +17,8 @@ test_that("as_utf8() works on atomic structures",
     struct <- c(unknown = "eagjh", unknown = "1234", `UTF-8` = "éèë½¾")
 
     # Test normal usage. Ensure encoding is UTF-8.
-    expect_equal(as_utf8(struct), struct)
-    expect_equal(Encoding(as_utf8(struct)), names(struct))
+    expect_identical(as_utf8(struct), struct)
+    expect_identical(Encoding(as_utf8(struct)), names(struct))
 })
 
 
@@ -34,11 +34,18 @@ test_that("as_utf8() works on recursive structures",
             unknown = "+-"
         )
     )
+    encodings <- list(
+        unknown = "unknown",
+        unknown = "unknown",
+        `UTF-8` = "UTF-8",
+        recurse = list(
+            `UTF-8` = "UTF-8",
+            `UTF-8` = "UTF-8",
+            unknown = "unknown"
+        )
+    )
 
     # Test normal usage. Ensure encoding is UTF-8.
-    expect_equal(as_utf8(struct), struct)
-    expect_equivalent(
-        list("unknown", "unknown", "UTF-8", list("UTF-8", "UTF-8", "unknown")),
-        rapply(as_utf8(struct), Encoding, how = "replace")
-    )
+    expect_identical(as_utf8(struct), struct)
+    expect_identical(encodings, rapply(as_utf8(struct), Encoding, how = "replace"))
 })

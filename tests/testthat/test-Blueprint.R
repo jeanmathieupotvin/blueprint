@@ -1,7 +1,6 @@
-test_that("$new() works and instance has an appropriate structure",
+test_that("instance has an appropriate structure",
 {
     b <- Blueprint$new()
-    pkg_ver <- as.character(utils::packageVersion("blueprint"))
 
     # Test general structure.
     expect_type(b, "environment")
@@ -10,58 +9,64 @@ test_that("$new() works and instance has an appropriate structure",
     expect_s3_class(b, "Blueprint")
     expect_s3_class(b, "R6")
 
-    # Test methods.
-    expect_type(b$initialize, "closure")
-    expect_type(b$validate,   "closure")
-    expect_type(b$print,      "closure")
-    expect_type(b$format,     "closure")
-    expect_type(b$get,        "closure")
-    expect_type(b$set,        "closure")
-
     # Test active fields.
     # They should have constant values, so we check these.
     expect_true(b$is_blueprint)
-    expect_identical(b$version, pkg_ver)
+    expect_identical(b$version, as.character(utils::packageVersion("blueprint")))
 })
 
 
-test_that("$validate() works",
+test_that("$new()",
+{
+    # Test normal usage.
+    expect_s3_class(Blueprint$new(), "Blueprint")
+})
+
+
+test_that("$validate()",
 {
     b <- Blueprint$new()
 
+    # Test if output is returned invisibly.
     expect_invisible(b$validate())
     expect_identical(b$validate(), b)
 })
 
 
-test_that("$print() works",
+test_that("$print()",
 {
     b <- Blueprint$new()
 
     expect_output(b$print(), "Blueprint")
     expect_output(b$print(), "(\\[\\d.\\d.\\d(.\\d+)?\\])")
 
-    expect_invisible(quiet(b$print()))
+    # Test and record output.
+    expect_snapshot_output(b$print())
 })
 
 
-test_that("$format() works",
+test_that("$format()",
 {
     expect_identical(Blueprint$new()$format(), "<Blueprint>")
 })
 
 
-test_that("$get() works",
+test_that("$get()",
 {
+    # $get() can only be tested partially in the context of
+    # class Blueprint because it is always valid (it has no
+    # field). It is thoroughly tested elsewhere.
+
     b <- Blueprint$new()
 
+    # Test normal usage.
     expect_identical(b$get(), b)
     expect_true(b$get("is_blueprint"))
     expect_null(b$get("not_existent_field"))
 })
 
 
-test_that("set() works",
+test_that("set()",
 {
     # $set() can only be tested partially in the context of
     # class Blueprint because it has no modifiable fields.
@@ -71,14 +76,14 @@ test_that("set() works",
 })
 
 
-test_that("is_blueprint() works",
+test_that("is_blueprint()",
 {
     expect_true(is_blueprint(Blueprint$new()))
     expect_false(is_blueprint(1L))
 })
 
 
-test_that("valid_blueprint() works",
+test_that("valid_blueprint()",
 {
     expect_s3_class(valid_blueprint(Blueprint$new()), "Blueprint")
     expect_error(valid_blueprint(1L), "not a 'Blueprint'")

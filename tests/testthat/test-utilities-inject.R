@@ -7,6 +7,11 @@ test_that("inject() works on atomic structures",
     expect_identical(inject(v, b = "bb", c = "c"), c(a = "a", b = "bb", c = "c"))
     expect_identical(inject(v, a = "a", b = "b"),  c(a = "a", b = "b"))
 
+    # Test if the first element is used
+    # as if it was ... if it is a vector.
+    expect_identical(inject(v, c(b = "bb", c = "c")), c(a = "a", b = "bb", c = "c"))
+    expect_identical(inject(v, c(a = "a", b = "b")),  c(a = "a", b = "b"))
+
     # Test argument checks.
     expect_error(inject(v, 1L),                         "dotnames")
     expect_error(inject(v, b = "b", b = "bb"),          "dotnames")
@@ -23,6 +28,11 @@ test_that("inject() works on recursive structures",
     expect_identical(inject(l), l)
     expect_identical(inject(l, b = "bb", c = "c"), list(a = "a", b = "bb", c = "c"))
     expect_identical(inject(l, a = "a", b = "b"),  list(a = "a", b = "b"))
+
+    # Test if the first element is used
+    # as if it was ... if it is a list.
+    expect_identical(inject(l, list(b = "bb", c = "c")), list(a = "a", b = "bb", c = "c"))
+    expect_identical(inject(l, list(a = "a", b = "b")),  list(a = "a", b = "b"))
 
     # Test argument checks.
     expect_error(inject(l, 1L),                            "dotnames")
