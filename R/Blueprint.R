@@ -16,10 +16,11 @@ NULL
 #' **This class is definitely not useful for typical users**. You should
 #' consider it a virtual class.
 #'
-#' @param field A scalar character. The name of a field.
+#' @template param-field
 #'
-#' @param value Any \R value. The value to use when updating a field. Its
-#' type must match the field's underlying structure.
+#' @template param-value
+#'
+#' @template param-validate
 #'
 #' @usage NULL
 #'
@@ -75,6 +76,9 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @description Print a [Blueprint] object.
         #'
         #' @return The [Blueprint] object invisibly.
+        #'
+        #' @details
+        #' The object is automatically validated before being printed.
         print = function()
         {
             self$validate()
@@ -96,10 +100,25 @@ Blueprint <- R6::R6Class("Blueprint",
         #' @return The value corresponding to the chosen `field`. If it
         #' does not exist, `NULL` is returned. If `field` is missing,
         #' the underlying [Blueprint] object is returned invisibly.
-        get = function(field)
+        #'
+        #' @examples
+        #' ## Get a field, here 'version'.
+        #' Blueprint$new()$get("version")
+        #'
+        #' ## Extract a non-existent field, here 'nope'. NULL is returned.
+        #' Blueprint$new()$get("nope")
+        #'
+        #' ## Just return the whole object (is a functional style).
+        #' ## The output is invisible, we must print it to see it.
+        #' Blueprint$new()$get()$print()
+        get = function(field, .validate = TRUE)
         {
+            if (.validate) {
+                self$validate()
+            }
+
             if (missing(field)) {
-                return(self$validate())
+                return(invisible(self))
             } else {
                 return(self[[field]])
             }
@@ -112,8 +131,18 @@ Blueprint <- R6::R6Class("Blueprint",
         #'
         #' @details
         #' Beware! Class [Blueprint] has no modifiable fields.
-        set = function(field, value)
+        #'
+        #' @examples
+        #' ## Trying to update a non-public field throws an error!
+        #' \dontrun{
+        #' Blueprint$new()$set("version", "1.0.0")
+        #' }
+        set = function(field, value, .validate = TRUE)
         {
+            if (.validate) {
+                self$validate()
+            }
+
             # By design, classes in blueprint refers to
             # the underlying object generator and we can
             # get fields easily from these generators.
