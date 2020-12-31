@@ -155,7 +155,7 @@ Atomic <- R6::R6Class("Atomic",
             # Errors are accumulated before being returned.
             # Therefore, $type needs to be a scalar for match(),
             # so we check its first element only.
-            validate_blueprint(
+            report_errors(
                 if (!is_scalar_character(self$name))  {
                     "$name must be an scalar character."
                 },
