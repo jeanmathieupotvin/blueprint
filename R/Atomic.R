@@ -13,7 +13,7 @@ NULL
 #' @description
 #' [Atomic] is an important building block of \pkg{blueprint}: it creates
 #' blueprints for [strict atomic vectors][is_strict_atomic()] (vectors of
-#' any \R atomic type, including `NULL`, that has no attribute). Instances
+#' any \R atomic type, including [NULL], that has no attribute). Instances
 #' of the [Atomic] class hold useful (derived) metadata on strict vectors:
 #' their types, names, prototypes and optionally, their lengths.
 #'
@@ -23,9 +23,18 @@ NULL
 #' pairs to include in text representations of the object (either JSON or YAML).
 #' Ignore this argument if not needed.
 #'
+#' @template param-field
+#'
+#' @template param-value
+#'
 #' @template param-validate
 #'
 #' @template section-self-validation
+#'
+#' @section Updating fields of the Atomic class:
+#' Users should **never** manually change fields' values of an [Atomic] instance
+#' manually. Instead, use [`$set()`][Atomic] to do it safely. Refer to the
+#' documentation of this method (see below) for more information.
 #'
 #' @usage NULL
 #'
@@ -168,6 +177,9 @@ Atomic <- R6::R6Class("Atomic",
         #' @description Print an [Atomic] object.
         #'
         #' @return The [Atomic] object invisibly.
+        #'
+        #' @details
+        #' The object is automatically validated before being printed.
         print = function()
         {
             # $print() does not call $validate() because
@@ -229,8 +241,11 @@ Atomic <- R6::R6Class("Atomic",
             }
 
             # We compare lengths only if $length is not NULL.
-            is_same_length <- (!is.null(self$length) &&
-                                   length(object) == self$length) || TRUE
+            is_same_length <- if (is.null(self$length)) {
+                TRUE
+            } else {
+                length(object) == self$length
+            }
 
             if (self$type == "single") {
 
@@ -282,12 +297,7 @@ Atomic <- R6::R6Class("Atomic",
                 # If $type is single and $length is not NULL,
                 # the Csingle attribute must be kept and passed
                 # to generated vector.
-                return(
-                    structure(
-                        rep.int(private$prototype, self$length),
-                        Csingle = TRUE
-                    )
-                )
+                return(as.single(rep.int(private$prototype, self$length)))
             } else {
 
                 # If $type is single and $length is not NULL,
@@ -354,6 +364,14 @@ Atomic <- R6::R6Class("Atomic",
         #' @description Convert an [Atomic] object to a YAML text
         #' based format.
         #'
+        #' @param handlers A named list of custom functions passed
+        #' to [yaml::as.yaml()]. These handle how objects should be
+        #' converted into a YAML string. For more information, see
+        #' argument `handlers` of [yaml::as.yaml()]. If missing,
+        #' a default list of handlers is used. Users can overwrite
+        #' them, but be advised that this should be reserved to
+        #' expert users.
+        #'
         #' @param ... further arguments passed to [yaml::as.yaml()].
         #'
         #' @return A scalar character holding a YAML string derived from
@@ -371,6 +389,13 @@ Atomic <- R6::R6Class("Atomic",
         #' the YAML output. Additional headers passed to `headers` are
         #' also re-encoded, if applicable.
         #'
+        #' By default, [raw][base::raw()] values will be encoded into
+        #' a [base64][jsonlite::base64_enc()] string. This string can
+        #' be decoded again into [raw][base::raw()] values by using
+        #' function [jsonlite::base64_dec()]. Users can overwrite this
+        #' default behavior by passing a custom `raw` handler function
+        #' to argument `handlers`.
+        #'
         #' @examples
         #' ## Create an Atomic object.
         #' ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
@@ -379,7 +404,7 @@ Atomic <- R6::R6Class("Atomic",
         #' cat(ab$as_yaml())
         #'
         #' ## Add additional headers to output.
-        #' myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+        #' myheaders <- list(author = "JM Potvin", date = "January 1st 2021")
         #' cat(ab$as_yaml(headers = myheaders))
         #'
         #' ## Write output to a file.
@@ -390,23 +415,46 @@ Atomic <- R6::R6Class("Atomic",
         #'
         #' ## You can pass additional parameters to yaml::as.yaml().
         #' cat(ab$as_yaml(indent = 4L))
-        as_yaml = function(file, headers, ..., .validate = TRUE)
+        #'
+        #' ## Use custom handlers.
+        #' ## Here, we use another handler for raw values.
+        #' handlers <- list(
+        #'     raw = function(x) { return(as.character(x)) }
+        #' )
+        #' ab$as_yaml(handlers = handlers)
+        as_yaml = function(file, headers, handlers, ..., .validate = TRUE)
         {
             if (.validate) {
                 self$validate()
             }
 
-            out <- add_headers(self$as_list(), "Atomic", "as_yaml", headers)
+            list <- self$as_list(.validate)
+            out  <- as_utf8(add_headers(list, "Atomic", "as_yaml", headers))
+
+            # Because users could pass their own handlers, we
+            # must inject their handlers into our own internal
+            # list. Users can override our default handlers.
+            handlers <- if (missing(handlers)) {
+                opts_yaml_handlers()
+            } else {
+                opts_yaml_handlers(handlers)
+            }
 
             if (missing(file)) {
-                return(yaml::as.yaml(as_utf8(out), ...))
+                return(yaml::as.yaml(out, handlers = handlers, ...))
+            } else if (!is_scalar_character(file)) {
+                stop("'file' must be a scalar character.",
+                     call. = FALSE)
             } else {
-                if (!is_scalar_character(file)) {
-                    stop("'file' must be a scalar character.",
-                         call. = FALSE)
-                }
 
-                return(yaml::write_yaml(as_utf8(out), file, "UTF-8", ...))
+                # The following code chunk is well tested but for
+                # some reason it is not catched by covr, which is
+                # weird. Deactivate coverage of this chunk for now.
+                # TODO: verify coverage with futre versions of covr.
+
+                # nocov start
+                return(yaml::write_yaml(out, file, "UTF-8", handlers = handlers, ...))
+                # nocov end
             }
         },
 
@@ -433,6 +481,12 @@ Atomic <- R6::R6Class("Atomic",
         #' the JSON output. Additional headers passed to `headers` are
         #' also re-encoded, if applicable.
         #'
+        #' By default, [raw][base::raw()] values will be encoded into
+        #' a [base64][jsonlite::base64_enc()] string. This string can
+        #' be decoded again into [raw][base::raw()] values by using
+        #' function [jsonlite::base64_dec()]. Users can overwrite this
+        #' default behavior. See argument `raw` of [jsonlite::toJSON()].
+        #'
         #' @examples
         #' ## Create an Atomic object.
         #' ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
@@ -441,7 +495,7 @@ Atomic <- R6::R6Class("Atomic",
         #' cat(ab$as_json())
         #'
         #' ## Add additional headers to output.
-        #' myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+        #' myheaders <- list(author = "JM Potvin", date = "January 1st 2021")
         #' cat(ab$as_json(headers = myheaders))
         #'
         #' ## Write output to a file.
@@ -459,26 +513,81 @@ Atomic <- R6::R6Class("Atomic",
                 self$validate()
             }
 
-            out <- add_headers(self$as_list(), "Atomic", "as_json", headers)
+            list <- self$as_list(.validate)
+            out  <- as_utf8(add_headers(list, "Atomic", "as_json", headers))
 
             if (missing(file)) {
-                args <- inject(opts_jsonlite_atomic(), x = as_utf8(out), ...)
-                return(do.call(jsonlite::toJSON, args))
-            } else {
-                if (!is_scalar_character(file)) {
-                    stop("'file' must be a scalar character.",
-                         call. = FALSE)
-                }
 
+                # Because x is itself a list, we must encapsulate
+                # it into a list so that inject() works properly.
+                # This is because inject() will ignore arguments
+                # passed to ... if ..1 is a list. Its elements
+                # will be used instead.
                 args <- inject(
                     opts_jsonlite_atomic(),
-                    x    = as_utf8(out),
-                    path = file,
-                    ...
+                    list(x = out, ...)
+                )
+
+                return(do.call(jsonlite::toJSON, args))
+            } else if (!is_scalar_character(file)) {
+                stop("'file' must be a scalar character.",
+                      call. = FALSE)
+            } else {
+
+                # Because x is itself a list, we must encapsulate
+                # it into a list so that inject() works properly.
+                # This is because inject() will ignore arguments
+                # passed to ... if ..1 is a list. Its elements
+                # will be used instead.
+
+                # The following code chunk is well tested but for
+                # some reason it is not catched by covr, which is
+                # weird. Deactivate coverage of this chunk for now.
+                # TODO: verify coverage with futre versions of covr.
+
+                # nocov start
+                args <- inject(
+                    opts_jsonlite_atomic(),
+                    list(x = out, path = file, ...)
                 )
 
                 return(do.call(jsonlite::write_json, args))
+                # nocov end
             }
+        },
+
+        #' @description Update a field's value of an [Atomic] object.
+        #'
+        #' @return The [Atomic] object invisibly if the object is valid.
+        #' Else, an error explaining what is wrong with the object.
+        #'
+        #' @details
+        #' Changing the value of field `$type` is forbidden, because it could
+        #' break internal prototyping mechanisms. Attempting to do so will
+        #' result in an error. If `$type` must be changed, create a new [Atomic]
+        #' object instead.
+        #'
+        #' It is worthwhile to note that [`Atomic$set()`][Atomic] is a safe
+        #' wrapper that calls [`Blueprint$set()`][Blueprint].
+        #'
+        #' @examples
+        #' ## Update $name. You could also update $length.
+        #' b <- Atomic$new(double(10L), "wrong-name")
+        #' b$set("name", "good-name")$print()
+        #'
+        #' ## Trying to update $type will throw an error.
+        #' \dontrun{
+        #' b$set("type", "raw")
+        #' }
+        #' b_new <- Atomic$new(raw(10L), "good-name")
+        set = function(field, value, .validate = TRUE)
+        {
+            if (identical(field, "type")) {
+                stop("generate a new Atomic blueprint to change $type.",
+                     call. = FALSE)
+            }
+
+            return(super$set(field, value, .validate))
         }
     )
 )
