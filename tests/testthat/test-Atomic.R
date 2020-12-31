@@ -309,7 +309,7 @@ test_that("$as_yaml() output with default handlers",
     )
 
     expect_null(out)
-    expect_snapshot_file(path, "as_yaml-default-handlers.yaml")
+    expect_snapshot_file(path, "as-yaml-default-handlers.yaml")
 })
 
 
@@ -344,7 +344,7 @@ test_that("$as_yaml() output with custom handlers",
     )
 
     expect_null(out)
-    expect_snapshot_file(path, "as_yaml-custom-handlers.yaml")
+    expect_snapshot_file(path, "as-yaml-custom-handlers.yaml")
 })
 
 
@@ -389,7 +389,7 @@ test_that("$as_json() output",
     )
 
     expect_null(out)
-    expect_snapshot_file(path, "as_json.json")
+    expect_snapshot_file(path, "as-json.json")
 })
 
 
