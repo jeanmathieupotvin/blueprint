@@ -33,6 +33,31 @@ the object is valid. Else, an error explaining what is wrong is returned.
 \strong{This class is definitely not useful for typical users}. You should
 consider it a virtual class.
 }
+\examples{
+
+## ------------------------------------------------
+## Method `Blueprint$get`
+## ------------------------------------------------
+
+## Get a field, here 'version'.
+Blueprint$new()$get("version")
+
+## Extract a non-existent field, here 'nope'. NULL is returned.
+Blueprint$new()$get("nope")
+
+## Just return the whole object (is a functional style).
+## The output is invisible, we must print it to see it.
+Blueprint$new()$get()$print()
+
+## ------------------------------------------------
+## Method `Blueprint$set`
+## ------------------------------------------------
+
+## Trying to update a non-public field throws an error!
+\dontrun{
+Blueprint$new()$set("version", "1.0.0")
+}
+}
 \seealso{
 Other Blueprint classes: 
 \code{\link{Atomic}}
@@ -98,6 +123,10 @@ Print a \link{Blueprint} object.
 \if{html}{\out{<div class="r">}}\preformatted{Blueprint$print()}\if{html}{\out{</div>}}
 }
 
+\subsection{Details}{
+The object is automatically validated before being printed.
+}
+
 \subsection{Returns}{
 The \link{Blueprint} object invisibly.
 }
@@ -122,21 +151,42 @@ A character scalar representing the formatted
 \subsection{Method \code{get()}}{
 Extract a field's value from a \link{Blueprint} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Blueprint$get(field)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$get(field, .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{field}}{A scalar character. The name of a field. If missing,
-the whole object is returned invisibly.}
+\item{\code{field}}{A scalar character. The name of a field.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-The underlying value corresponding to the chosen field.
-If it does not exist, \code{NULL} is returned.
+The value corresponding to the chosen \code{field}. If it
+does not exist, \code{NULL} is returned. If \code{field} is missing,
+the underlying \link{Blueprint} object is returned invisibly.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Get a field, here 'version'.
+Blueprint$new()$get("version")
+
+## Extract a non-existent field, here 'nope'. NULL is returned.
+Blueprint$new()$get("nope")
+
+## Just return the whole object (is a functional style).
+## The output is invisible, we must print it to see it.
+Blueprint$new()$get()$print()
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-set"></a>}}
@@ -144,17 +194,21 @@ If it does not exist, \code{NULL} is returned.
 \subsection{Method \code{set()}}{
 Update a field's value of a \link{Blueprint} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Blueprint$set(field, value)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$set(field, value, .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{field}}{A scalar character. The name of a field. If missing,
-the whole object is returned invisibly.}
+\item{\code{field}}{A scalar character. The name of a field.}
 
 \item{\code{value}}{Any \R value. The value to use when updating a field. Its
 type must match the field's underlying structure.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -166,5 +220,16 @@ Beware! Class \link{Blueprint} has no modifiable fields.
 The \link{Blueprint} object invisibly if the object is valid.
 Else, an error explaining what is wrong with the object.
 }
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Trying to update a non-public field throws an error!
+\dontrun{
+Blueprint$new()$set("version", "1.0.0")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 }

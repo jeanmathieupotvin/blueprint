@@ -28,7 +28,7 @@ the object is valid. Else, an error explaining what is wrong is returned.
 \description{
 \link{Atomic} is an important building block of \pkg{blueprint}: it creates
 blueprints for \link[=is_strict_atomic]{strict atomic vectors} (vectors of
-any \R atomic type, including \code{NULL}, that has no attribute). Instances
+any \R atomic type, including \link{NULL}, that has no attribute). Instances
 of the \link{Atomic} class hold useful (derived) metadata on strict vectors:
 their types, names, prototypes and optionally, their lengths.
 }
@@ -36,6 +36,13 @@ their types, names, prototypes and optionally, their lengths.
 
 The contents of an instance is checked when it is initialized and each time
 a method is called afterward.
+}
+
+\section{Updating fields of the Atomic class}{
+
+Users should \strong{never} manually change fields' values of an \link{Atomic} instance
+manually. Instead, use \code{\link[=Atomic]{$set()}} to do it safely. Refer to the
+documentation of this method (see below) for more information.
 }
 
 \examples{
@@ -79,7 +86,7 @@ ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
 cat(ab$as_yaml())
 
 ## Add additional headers to output.
-myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+myheaders <- list(author = "JM Potvin", date = "January 1st 2021")
 cat(ab$as_yaml(headers = myheaders))
 
 ## Write output to a file.
@@ -90,6 +97,13 @@ Encoding(ab$as_yaml(headers = list(utf8char = "`"))) == "UTF-8"
 
 ## You can pass additional parameters to yaml::as.yaml().
 cat(ab$as_yaml(indent = 4L))
+
+## Use custom handlers.
+## Here, we use another handler for raw values.
+handlers <- list(
+    raw = function(x) { return(as.character(x)) }
+)
+ab$as_yaml(handlers = handlers)
 
 ## ------------------------------------------------
 ## Method `Atomic$as_json`
@@ -102,7 +116,7 @@ ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
 cat(ab$as_json())
 
 ## Add additional headers to output.
-myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+myheaders <- list(author = "JM Potvin", date = "January 1st 2021")
 cat(ab$as_json(headers = myheaders))
 
 ## Write output to a file.
@@ -114,6 +128,20 @@ Encoding(ab$as_json(headers = list(utf8char = "`"))) == "UTF-8"
 ## You can pass additional parameters to jsonlite::toJSON().
 cat(ab$as_json(headers = list(test = 1.23456789)))
 cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
+
+## ------------------------------------------------
+## Method `Atomic$set`
+## ------------------------------------------------
+
+## Update $name. You could also update $length.
+b <- Atomic$new(double(10L), "wrong-name")
+b$set("name", "good-name")$print()
+
+## Trying to update $type will throw an error.
+\dontrun{
+b$set("type", "raw")
+}
+b_new <- Atomic$new(raw(10L), "good-name")
 }
 \seealso{
 Other Blueprint classes: 
@@ -151,13 +179,13 @@ it is ignored by the class instance.}
 \item \href{#method-as_character}{\code{Atomic$as_character()}}
 \item \href{#method-as_yaml}{\code{Atomic$as_yaml()}}
 \item \href{#method-as_json}{\code{Atomic$as_json()}}
+\item \href{#method-set}{\code{Atomic$set()}}
 }
 }
 \if{html}{
 \out{<details open ><summary>Inherited methods</summary>}
 \itemize{
 \item \out{<span class="pkg-link" data-pkg="blueprint" data-topic="Blueprint" data-id="get">}\href{../../blueprint/html/Blueprint.html#method-get}{\code{blueprint::Blueprint$get()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="blueprint" data-topic="Blueprint" data-id="set">}\href{../../blueprint/html/Blueprint.html#method-set}{\code{blueprint::Blueprint$set()}}\out{</span>}
 }
 \out{</details>}
 }
@@ -220,6 +248,10 @@ Else, an error explaining what is wrong with the object.
 Print an \link{Atomic} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Atomic$print()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+The object is automatically validated before being printed.
 }
 
 \subsection{Returns}{
@@ -395,7 +427,7 @@ value of \verb{$length} (from integer to character). If
 Convert an \link{Atomic} object to a YAML text
 based format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_yaml(file, headers, ..., .validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_yaml(file, headers, handlers, ..., .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -406,6 +438,14 @@ based format.
 \item{\code{headers}}{A non-empty named list that holds additional key/value
 pairs to include in text representations of the object (either JSON or YAML).
 Ignore this argument if not needed.}
+
+\item{\code{handlers}}{A named list of custom functions passed
+to \code{\link[yaml:as.yaml]{yaml::as.yaml()}}. These handle how objects should be
+converted into a YAML string. For more information, see
+argument \code{handlers} of \code{\link[yaml:as.yaml]{yaml::as.yaml()}}. If missing,
+a default list of handlers is used. Users can overwrite
+them, but be advised that this should be reserved to
+expert users.}
 
 \item{\code{...}}{further arguments passed to \code{\link[yaml:as.yaml]{yaml::as.yaml()}}.}
 
@@ -427,6 +467,13 @@ Method \code{\link[=Atomic]{as_yaml()}} automatically re-encodes its
 fields to UTF-8 (if applicable) before returning or writing
 the YAML output. Additional headers passed to \code{headers} are
 also re-encoded, if applicable.
+
+By default, \link[base:raw]{raw} values will be encoded into
+a \link[jsonlite:base64]{base64} string. This string can
+be decoded again into \link[base:raw]{raw} values by using
+function \code{\link[jsonlite:base64]{jsonlite::base64_dec()}}. Users can overwrite this
+default behavior by passing a custom \code{raw} handler function
+to argument \code{handlers}.
 }
 
 \subsection{Returns}{
@@ -442,7 +489,7 @@ ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
 cat(ab$as_yaml())
 
 ## Add additional headers to output.
-myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+myheaders <- list(author = "JM Potvin", date = "January 1st 2021")
 cat(ab$as_yaml(headers = myheaders))
 
 ## Write output to a file.
@@ -453,6 +500,13 @@ Encoding(ab$as_yaml(headers = list(utf8char = "`"))) == "UTF-8"
 
 ## You can pass additional parameters to yaml::as.yaml().
 cat(ab$as_yaml(indent = 4L))
+
+## Use custom handlers.
+## Here, we use another handler for raw values.
+handlers <- list(
+    raw = function(x) { return(as.character(x)) }
+)
+ab$as_yaml(handlers = handlers)
 }
 \if{html}{\out{</div>}}
 
@@ -499,6 +553,12 @@ Method \code{\link[=Atomic]{as_json()}} automatically re-encodes its
 fields to UTF-8 (if applicable) before returning or writing
 the JSON output. Additional headers passed to \code{headers} are
 also re-encoded, if applicable.
+
+By default, \link[base:raw]{raw} values will be encoded into
+a \link[jsonlite:base64]{base64} string. This string can
+be decoded again into \link[base:raw]{raw} values by using
+function \code{\link[jsonlite:base64]{jsonlite::base64_dec()}}. Users can overwrite this
+default behavior. See argument \code{raw} of \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}}.
 }
 
 \subsection{Returns}{
@@ -516,7 +576,7 @@ ab <- Atomic$new(sample.int(10L), "randomValues", 10L)
 cat(ab$as_json())
 
 ## Add additional headers to output.
-myheaders <- list(author = "JM Potvin", hash = "0abYf12")
+myheaders <- list(author = "JM Potvin", date = "January 1st 2021")
 cat(ab$as_json(headers = myheaders))
 
 ## Write output to a file.
@@ -528,6 +588,61 @@ Encoding(ab$as_json(headers = list(utf8char = "`"))) == "UTF-8"
 ## You can pass additional parameters to jsonlite::toJSON().
 cat(ab$as_json(headers = list(test = 1.23456789)))
 cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set"></a>}}
+\if{latex}{\out{\hypertarget{method-set}{}}}
+\subsection{Method \code{set()}}{
+Update a field's value of an \link{Atomic} object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$set(field, value, .validate = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field}}{A scalar character. The name of a field.}
+
+\item{\code{value}}{Any \R value. The value to use when updating a field. Its
+type must match the field's underlying structure.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? This argument is \code{TRUE} by default. While it is available
+to the users, it should be ignored, unless you have an alternative way
+to make sure your underlying object is valid.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Changing the value of field \verb{$type} is forbidden, because it could
+break internal prototyping mechanisms. Attempting to do so will
+result in an error. If \verb{$type} must be changed, create a new \link{Atomic}
+object instead.
+
+It is worthwhile to note that \code{\link[=Atomic]{Atomic$set()}} is a safe
+wrapper that calls \code{\link[=Blueprint]{Blueprint$set()}}.
+}
+
+\subsection{Returns}{
+The \link{Atomic} object invisibly if the object is valid.
+Else, an error explaining what is wrong with the object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Update $name. You could also update $length.
+b <- Atomic$new(double(10L), "wrong-name")
+b$set("name", "good-name")$print()
+
+## Trying to update $type will throw an error.
+\dontrun{
+b$set("type", "raw")
+}
+b_new <- Atomic$new(raw(10L), "good-name")
 }
 \if{html}{\out{</div>}}
 
