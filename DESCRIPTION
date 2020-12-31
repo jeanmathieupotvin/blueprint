@@ -15,6 +15,7 @@ Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE, r6 = TRUE)
 RoxygenNote: 7.1.1
+Config/testthat/edition: 3
 Depends: 
     R (>= 3.5.0)
 Imports:
@@ -23,6 +24,7 @@ Imports:
     utils, 
     yaml 
 Suggests: 
+    covr, 
     testthat
 ByteCompile: true
 NeedsCompilation: no 
