@@ -109,11 +109,26 @@ as_utf8.default <- function(x)
 # Inject named arguments into an existing named atomic or recursive
 # structure. Injection works by first updating .Obj with values
 # stemming from matching names passed to ... and by appending the
-# other name/value pairs to .Obj.
+# other name/value pairs to .Obj. If ..1 is a list or a vector of
+# length greater than 1, then only its child elements will be used
+# (as if they were passed to ...).
 inject <- function(.Obj, ...)
 {
     if (...length()) {
-        dots     <- if (is.recursive(.Obj)) list(...) else c(...)
+        dots <- if (is.recursive(.Obj)) {
+
+            # If the first argument is a list, we consider that
+            # the elements of this list should be used as if they
+            # were passed to ...
+            if (is.recursive(..1)) ..1 else list(...)
+        } else {
+
+            # If the first argument is a vector, we consider that
+            # the elements of this list should be used as if they
+            # were passed to ...
+            if (is.vector(..1) && length(..1) > 1L) ..1 else c(...)
+        }
+
         dotnames <- names(dots)
         objnames <- names(.Obj)
 
