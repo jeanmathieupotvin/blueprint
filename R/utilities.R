@@ -152,7 +152,7 @@ inject <- function(.Obj, ...)
 add_headers <- function(body, type, caller, headers, embed = TRUE)
 {
     stopifnot(
-        is.list(body),
+        is_named_list(body),
         !is.null(names(body)) && all(nzchar(names(body))),
         is_scalar_character(type),
         is_scalar_character(caller),
@@ -167,14 +167,13 @@ add_headers <- function(body, type, caller, headers, embed = TRUE)
     )
 
     if (!missing(headers)) {
-        headernames <- names(headers)
-
-        if (!is.list(headers) ||
-            is.null(headernames) ||
-            any(!nzchar(headernames))) {
+        if (!is_named_list(headers)) {
             stop("'headers' must be a list only containing named elements.",
                  call. = FALSE)
         }
+
+        headernames <- names(headers)
+
         if (match("source", tolower(headernames), 0L)) {
             stop("'headers' cannot contain an additional header named 'source'.",
                  call. = FALSE)

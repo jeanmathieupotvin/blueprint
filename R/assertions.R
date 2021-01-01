@@ -7,16 +7,19 @@
 #' useful when implementing simple checks. These are used extensively in
 #' package \pkg{blueprint} and are all available to the users for convenience.
 #'
-#' @param x any \R object.
+#' @param x Any \R object.
+#'
+#' @param unique_names A scalar logical. Should names be unique?
 #'
 #' @return All functions return a scalar logical. A `TRUE` implies that the
 #' underlying tested object *is* something (that *something* is given by
 #' the function's name).
 #'
 #' @section Numeric versus double values:
-#' [Numeric][base::numeric()] is a synonym of [double][base::double()]. The
-#' distinction stems from historical choices that are described
-#' [here][base::double()].
+#' [Numeric][base::numeric()] is either an [integer][base::integer()] or a
+#' [double][base::double()]. Is it **NOT** an atomic type, it is a
+#' [mode][base::mode()]. In \pkg{blueprint}, modes are purposely avoided. The
+#' focus is always on [types][base::typeof()] for consistency.
 #'
 #' @section Strict atomic values:
 #' In package \pkg{blueprint}, a *strict atomic value* is any \R value
@@ -131,4 +134,40 @@ is_strict_atomic <- function(x)
         # Safety net.
         return(FALSE)
     }
+}
+
+
+#' @rdname assertions
+#' @export
+is_named_list <- function(x, unique_names = TRUE)
+{
+    if (!is_scalar_logical(unique_names)) {
+        stop("'unique_names' must be a scalar logical.", call. = FALSE)
+    }
+
+    xnames <- names(x)
+
+    # If FALSE, we don't need to check names.
+    # This is equivalent to setting are_unique to TRUE.
+    are_unique <- if (unique_names) !anyDuplicated(xnames) else TRUE
+
+    return(is.list(x) && !is.null(xnames) && all(nzchar(xnames)) && are_unique)
+}
+
+
+#' @rdname assertions
+#' @export
+is_named_vctr <- function(x, unique_names = TRUE)
+{
+    if (!is_scalar_logical(unique_names)) {
+        stop("'unique_names' must be a scalar logical.", call. = FALSE)
+    }
+
+    xnames <- names(x)
+
+    # If FALSE, we don't need to check names.
+    # This is equivalent to setting are_unique to TRUE.
+    are_unique <- if (unique_names) !anyDuplicated(xnames) else TRUE
+
+    return(is.atomic(x) && !is.null(xnames) && all(nzchar(xnames)) && are_unique)
 }

@@ -30,13 +30,8 @@ opts_yaml_handlers <- function(handlers)
     if (missing(handlers)) {
         return(defaults)
     } else {
-        handlernames  <- names(handlers)
-        is_named_list <- is.list(handlers) &&
-            !is.null(handlernames) &&
-            all(nzchar(handlernames)) &&
-            !anyDuplicated(handlernames)
-
-        if (!is_named_list || !all(vapply_1l(handlers, is.function))) {
+        if (!is_named_list(handlers) ||
+            !all(vapply_1l(handlers, is.function))) {
             stop("'handlers' must be a named list of functions.",
                  " Names must be unique.",
                  call. = FALSE)

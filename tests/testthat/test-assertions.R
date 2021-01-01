@@ -160,3 +160,35 @@ test_that("is_strict_atomic() works",
         expect_false(is_strict_atomic(methods::new("mle")))
         expect_false(is_strict_atomic(methods::new("externalptr")))
 })
+
+
+
+test_that("is_named_list()",
+{
+    # Test normal usage.
+    expect_false(is_named_list(list()))
+    expect_false(is_named_list(list(1L, 2L)))
+    expect_false(is_named_list(list(a = 1L, 2L)))
+    expect_false(is_named_list(list(a = 1L, a = 2L)))
+    expect_true(is_named_list(list(a = 1L, b = 2L)))
+    expect_true(is_named_list(list(a = 1L, a = 2L), FALSE))
+
+    # Test arguments checks.
+    expect_error(is_named_list(list(), "TRUE"),         "logical")
+    expect_error(is_named_list(list(), c(TRUE, FALSE)), "scalar")
+})
+
+
+test_that("is_named_vctr()",
+{
+    # Test normal usage.
+    expect_false(is_named_vctr(vector()))
+    expect_false(is_named_vctr(c(1L, 2L)))
+    expect_false(is_named_vctr(c(a = 1L, 2L)))
+    expect_false(is_named_vctr(c(a = 1L, a = 2L)))
+    expect_true(is_named_vctr(c(a = 1L, b = 2L)))
+    expect_true(is_named_vctr(c(a = 1L, a = 2L), FALSE))
+
+    # Test arguments checks.
+    expect_error(is_named_vctr(vector(), "TRUE"),         "logical")
+    expect_error(is_named_vctr(vector(), c(TRUE, FALSE)), "scalar")
