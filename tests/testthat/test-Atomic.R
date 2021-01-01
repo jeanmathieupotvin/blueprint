@@ -1,4 +1,4 @@
-test_that("instances has an appropriate structure",
+test_that("instance has an appropriate structure",
 {
     b <- Atomic$new(sample.int(10L), "test", 10L)
 

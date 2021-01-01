@@ -3,7 +3,7 @@ test_that("is_single() works",
     # A single value is a double with a Csingle attribute set equal to TRUE.
 
     expect_true(is_single(single()))
-    expect_true(is_single(structure(double(), Csingle = TRUE)))
+    expect_true(is_single(as.single(double())))
 
     expect_false(is_single())
     expect_false(is_single(double()))
@@ -52,7 +52,7 @@ test_that("is_scalar_integer() works",
 test_that("is_scalar_numeric() works",
 {
     expect_true(is_scalar_numeric(1L))
-    expect_true(is_scalar_numeric(1))
+    expect_true(is_scalar_numeric(1.0))
 
     expect_false(is_scalar_numeric())
     expect_false(is_scalar_numeric(NULL))
@@ -192,3 +192,4 @@ test_that("is_named_vctr()",
     # Test arguments checks.
     expect_error(is_named_vctr(vector(), "TRUE"),         "logical")
     expect_error(is_named_vctr(vector(), c(TRUE, FALSE)), "scalar")
+})

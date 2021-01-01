@@ -14,7 +14,7 @@ test_that("add_headers() works",
 
     # Test arguments checks.
     expect_error(add_headers(c(a = 1L),    "test", "caller"), "body")
-    expect_error(add_headers(list(1L),     "test", "caller"), "names")
+    expect_error(add_headers(list(1L),     "test", "caller"), "body")
     expect_error(add_headers(list(a = 1L), 1L,     "caller"), "type")
     expect_error(add_headers(list(a = 1L), "test",  1L),      "caller")
 
