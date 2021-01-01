@@ -1,42 +1,38 @@
-test_that("inject() works on atomic structures",
+test_that("inject.default()",
 {
-    v <- c(a = "a", b = "b")
+    # This method focuses on named vectors.
+
+    x <- c(a = "a", b = "b")
 
     # Test normal usage.
-    expect_identical(inject(v), v)
-    expect_identical(inject(v, b = "bb", c = "c"), c(a = "a", b = "bb", c = "c"))
-    expect_identical(inject(v, a = "a", b = "b"),  c(a = "a", b = "b"))
-
-    # Test if the first element is used
-    # as if it was ... if it is a vector.
-    expect_identical(inject(v, c(b = "bb", c = "c")), c(a = "a", b = "bb", c = "c"))
-    expect_identical(inject(v, c(a = "a", b = "b")),  c(a = "a", b = "b"))
+    expect_identical(inject(x), x)
+    expect_identical(inject(x, x), x)
+    expect_identical(inject(x, c(c = "c")),           c(a = "a",  b = "b", c = "c"))
+    expect_identical(inject(x, c(a = "aa", b = "b")), c(a = "aa", b = "b"))
+    expect_identical(inject(x, c(c = "c",  d = "d")), c(a = "a",  b = "b", c = "c", d = "d"))
 
     # Test argument checks.
-    expect_error(inject(v, 1L),                         "dotnames")
-    expect_error(inject(v, b = "b", b = "bb"),          "dotnames")
-    expect_error(inject(c(a = "a", a = "aa"), b = "b"), "objnames")
-    expect_error(inject(c(1L, b = "b"), c = "c"),       "objnames")
+    expect_error(inject(x, 1L),                      "is_named_vctr\\(values\\)")
+    expect_error(inject(x, c(b = "b", b = "bb")),    "is_named_vctr\\(values\\)")
+    expect_error(inject(c(a = "a", a = "aa")),       "is_named_vctr\\(x\\)")
+    expect_error(inject(c(1L, b = "b"), c(c = "c")), "is_named_vctr\\(x\\)")
 })
 
 
-test_that("inject() works on recursive structures",
+test_that("inject.list()",
 {
-    l <- list(a = "a", b = "b")
+    x <- list(a = "a", b = "b")
 
     # Test normal usage.
-    expect_identical(inject(l), l)
-    expect_identical(inject(l, b = "bb", c = "c"), list(a = "a", b = "bb", c = "c"))
-    expect_identical(inject(l, a = "a", b = "b"),  list(a = "a", b = "b"))
-
-    # Test if the first element is used
-    # as if it was ... if it is a list.
-    expect_identical(inject(l, list(b = "bb", c = "c")), list(a = "a", b = "bb", c = "c"))
-    expect_identical(inject(l, list(a = "a", b = "b")),  list(a = "a", b = "b"))
+    expect_identical(inject(x), x)
+    expect_identical(inject(x, x), x)
+    expect_identical(inject(x, list(c = "c")),           list(a = "a",  b = "b", c = "c"))
+    expect_identical(inject(x, list(a = "aa", b = "b")), list(a = "aa", b = "b"))
+    expect_identical(inject(x, list(c = "c",  d = "d")), list(a = "a",  b = "b", c = "c", d = "d"))
 
     # Test argument checks.
-    expect_error(inject(l, 1L),                            "dotnames")
-    expect_error(inject(l, b = "b", b = "bb"),             "dotnames")
-    expect_error(inject(list(a = "a", a = "aa"), b = "b"), "objnames")
-    expect_error(inject(list(1L, b = "b"), c = "c"),       "objnames")
+    expect_error(inject(x, 1L),                      "is_named_list\\(values\\)")
+    expect_error(inject(x, list(b = "b", b = "bb")), "is_named_list\\(values\\)")
+    expect_error(inject(list(1L, b = "b")),          "is_named_list\\(x\\)")
+    expect_error(inject(list(a = "a", a = "aa")),    "is_named_list\\(x\\)")
 })

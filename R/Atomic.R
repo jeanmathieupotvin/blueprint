@@ -431,14 +431,8 @@ Atomic <- R6::R6Class("Atomic",
             list <- self$as_list(.validate)
             out  <- as_utf8(add_headers(list, "Atomic", "as_yaml", headers))
 
-            # Because users could pass their own handlers, we
-            # must inject their handlers into our own internal
-            # list. Users can override our default handlers.
-            handlers <- if (missing(handlers)) {
-                opts_yaml_handlers()
-            } else {
-                opts_yaml_handlers(handlers)
-            }
+            # override our default handlers with users custom handlers.
+            handlers <- opts_yaml_handlers(handlers)
 
             if (missing(file)) {
                 return(yaml::as.yaml(out, handlers = handlers, ...))
@@ -518,27 +512,12 @@ Atomic <- R6::R6Class("Atomic",
 
             if (missing(file)) {
 
-                # Because x is itself a list, we must encapsulate
-                # it into a list so that inject() works properly.
-                # This is because inject() will ignore arguments
-                # passed to ... if ..1 is a list. Its elements
-                # will be used instead.
-                args <- inject(
-                    opts_jsonlite_atomic(),
-                    list(x = out, ...)
-                )
-
+                args <- inject(opts_jsonlite_atomic(), list(x = out, ...))
                 return(do.call(jsonlite::toJSON, args))
             } else if (!is_scalar_character(file)) {
                 stop("'file' must be a scalar character.",
                       call. = FALSE)
             } else {
-
-                # Because x is itself a list, we must encapsulate
-                # it into a list so that inject() works properly.
-                # This is because inject() will ignore arguments
-                # passed to ... if ..1 is a list. Its elements
-                # will be used instead.
 
                 # The following code chunk is well tested but for
                 # some reason it is not catched by covr, which is

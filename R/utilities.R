@@ -97,45 +97,55 @@ as_utf8.default <- function(x)
 }
 
 
-# Inject named arguments into an existing named atomic or recursive
-# structure. Injection works by first updating .Obj with values
-# stemming from matching names passed to ... and by appending the
-# other name/value pairs to .Obj. If ..1 is a list or a vector of
-# length greater than 1, then only its child elements will be used
-# (as if they were passed to ...).
-inject <- function(.Obj, ...)
+# Inject named values into an existing named vector or list.
+# Injection works by first updating x with values based on matching
+# names and then by appending the other names from values to x.
+inject <- function(x, ...)
 {
-    if (...length()) {
-        dots <- if (is.recursive(.Obj)) {
+    UseMethod("inject")
+}
 
-            # If the first argument is a list, we consider that
-            # the elements of this list should be used as if they
-            # were passed to ...
-            if (is.recursive(..1)) ..1 else list(...)
-        } else {
 
-            # If the first argument is a vector, we consider that
-            # the elements of this list should be used as if they
-            # were passed to ...
-            if (is.vector(..1) && length(..1) > 1L) ..1 else c(...)
-        }
+# Inject method for named lists.
+inject.list <- function(x, values = list(), ...)
+{
+    stopifnot(is_named_list(x))
 
-        dotnames <- names(dots)
-        objnames <- names(.Obj)
+    if (length(values)) {
+        stopifnot(is_named_list(values))
+        xnames   <- names(x)
+        valnames <- names(values)
 
-        stopifnot(
-            !is.null(objnames), all(nzchar(objnames)), !anyDuplicated(objnames),
-            !is.null(dotnames), all(nzchar(dotnames)), !anyDuplicated(dotnames)
-        )
+        matches <- match(valnames, xnames, 0L)
+        updates <- xnames[matches]
+        injects <- valnames[matches == 0L]
+        x[updates] <- values[updates]
 
-        matches <- match(dotnames, objnames, 0L)
-        updates <- objnames[matches]
-        injects <- dotnames[matches == 0L]
-        .Obj[updates] <- dots[updates]
-
-        return(c(.Obj, dots[injects]))
+        return(c(x, values[injects]))
     } else {
-        return(.Obj)
+        return(x)
+    }
+}
+
+
+# Inject method for named vectors.
+inject.default <- function(x, values = vector(), ...)
+{
+    stopifnot(is_named_vctr(x))
+
+    if (length(values)) {
+        stopifnot(is_named_vctr(values))
+        xnames   <- names(x)
+        valnames <- names(values)
+
+        matches <- match(valnames, xnames, 0L)
+        updates <- xnames[matches]
+        injects <- valnames[matches == 0L]
+        x[updates] <- values[updates]
+
+        return(c(x, values[injects]))
+    } else {
+        return(x)
     }
 }
 
