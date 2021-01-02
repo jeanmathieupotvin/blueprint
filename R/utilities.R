@@ -150,33 +150,51 @@ inject.default <- function(x, values = vector(), ...)
 }
 
 
-# Create a suitable list of elements to be passed to I/O functions
-# such as $as_yaml() and $as_json(). The function mimics HTTP
-# messages: it takes a body (a named list), some additional
-# headers (another named list) and constructs a new message (a bigger
-# list) from them. Other arguments type and caller are included in
-# the header automatically. We enforce certain standardized headers
-# that are derived from the underlying class/method that calls this
-# function. Finally, the embed flag controls whether the body should
-# be embedded into another list of length 1 under a name given by type.
-add_headers <- function(body, type, caller, headers, embed = TRUE)
+# Generate a source header to be included in a YAML or JSON string.
+# our current format is R[vX.Y.Z]::blueprint[vX.Y.Z]::type$caller().
+# Tests lives in tests/testthat/test-utilities-add-headers.R.
+create_source_header <- function(type, caller)
+{
+    stopifnot(is_scalar_character(type), is_scalar_character(caller))
+
+    return(
+        sprintf(
+            "R[v%s]::blueprint[v%s]::%s$%s()",
+            as.character(getRversion()),
+            as.character(utils::packageVersion("blueprint")),
+            type, caller
+        )
+    )
+}
+
+
+# Create a list of elements to be transformed into a YAML or JSON
+# formats (or other I/O functions). We mimic HTTP messages: it takes
+# a body (a named list), some additional headers (another named list)
+# and constructs a new message (a bigger named list). Arguments type
+# and caller are passed to create_source_header().
+add_headers <- function(body, type, caller, headers,
+                        embed = TRUE, source_header = TRUE)
 {
     stopifnot(
         is_named_list(body),
-        !is.null(names(body)) && all(nzchar(names(body))),
         is_scalar_character(type),
         is_scalar_character(caller),
-        is_scalar_logical(embed)
+        is_scalar_logical(embed),
+        is_scalar_logical(source_header)
     )
 
-    head <- list(
-        source = sprintf("R[v%s]::blueprint[v%s]::%s$%s()",
-                         as.character(getRversion()),
-                         as.character(utils::packageVersion("blueprint")),
-                         type, caller)
-    )
+    head <- if (source_header) {
+        list(source = create_source_header(type, caller))
+    } else {
+        list()
+    }
 
     if (!missing(headers)) {
+
+        # Messages below are conveyed to the user.
+        # Thus, we don't use stopifnot().
+
         if (!is_named_list(headers)) {
             stop("'headers' must be a list only containing named elements.",
                  call. = FALSE)
@@ -185,11 +203,11 @@ add_headers <- function(body, type, caller, headers, embed = TRUE)
         headernames <- names(headers)
 
         if (match("source", tolower(headernames), 0L)) {
-            stop("'headers' cannot contain an additional header named 'source'.",
+            stop("'headers' cannot contain a header named 'source'.",
                  call. = FALSE)
         }
         if (match(tolower(type), tolower(headernames), 0L)) {
-            stop("'headers' cannot contain an additional header",
+            stop("'headers' cannot contain a header",
                  sprintf(" named after a parent class (here, '%s').", type),
                  call. = FALSE)
         }
