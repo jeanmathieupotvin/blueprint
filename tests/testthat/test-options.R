@@ -1,10 +1,37 @@
-test_that("jsonlite_atomic_opts()",
+test_that("opts_json_atomic()",
 {
-    opts <- opts_jsonlite_atomic()
+    opts <- opts_json_atomic()
 
     # Test general structure (not values, we could change them).
     expect_type(opts, "list")
     expect_length(opts, 7L)
+
+    # Test if custom arguments are
+    # properly passed to the list.
+    opts <- opts_json_atomic(digits = 0L, factor = "integer")
+    ref  <- c(opts_json_atomic(), list(digits = 0L, factor = "integer"))
+
+    expect_identical(opts, ref)
+
+    # Test if custom arguments can
+    # overwrite values of the list.
+    opts <- opts_json_atomic(auto_unbox = FALSE, pretty = FALSE)
+    ref  <- list(
+        auto_unbox = FALSE,
+        pretty     = FALSE,
+        force      = FALSE,
+        complex    = "string",
+        raw        = "base64",
+        null       = "null",
+        na         = "string"
+    )
+
+    expect_identical(opts, ref)
+
+    # Test that nothing else other named arguments
+    # can be passed to ... Names must be unique.
+    expect_error(opts_json_atomic(1L))
+    expect_error(opts_json_atomic(a = 1L, a = 2L))
 })
 
 
