@@ -36,10 +36,8 @@ test_that("opts_yaml_handlers()",
     expect_identical(opts_yaml_handlers(handlers)$raw("success"), "success")
 
     # Test that nothing else other than named list
-    # of functions can be passed to handlers. Names
-    # must be unique.
+    # of functions can be passed to handlers. Names must be unique.
     expect_error(opts_yaml_handlers(1L))
-    expect_error(opts_yaml_handlers(list()))
     expect_error(opts_yaml_handlers(list(fun = 1L)))
     expect_error(opts_yaml_handlers(list(fun = function(){}, function(){})))
     expect_error(opts_yaml_handlers(list(f1 = function(){}, f1 = function(){})))

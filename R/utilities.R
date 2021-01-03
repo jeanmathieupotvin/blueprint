@@ -153,9 +153,12 @@ inject.default <- function(x, values = vector(), ...)
 # Generate a source header to be included in a YAML or JSON string.
 # our current format is R[vX.Y.Z]::blueprint[vX.Y.Z]::type$caller().
 # Tests lives in tests/testthat/test-utilities-add-headers.R.
-create_source_header <- function(type, caller)
+create_source_header <- function(type = NA_character_, caller = NA_character_)
 {
-    stopifnot(is_scalar_character(type), is_scalar_character(caller))
+    stopifnot(
+        is_scalar_character(type, FALSE),
+        is_scalar_character(caller, FALSE)
+    )
 
     return(
         sprintf(
@@ -173,15 +176,20 @@ create_source_header <- function(type, caller)
 # a body (a named list), some additional headers (another named list)
 # and constructs a new message (a bigger named list). Arguments type
 # and caller are passed to create_source_header().
-add_headers <- function(body, type, caller, headers,
-                        embed = TRUE, source_header = TRUE)
+add_headers <- function(
+    body    = list(),
+    headers = list(),
+    type    = NA_character_,
+    caller  = NA_character_,
+    embed   = TRUE,
+    source_header = TRUE)
 {
     stopifnot(
         is_named_list(body),
         is_scalar_character(type),
         is_scalar_character(caller),
-        is_scalar_logical(embed),
-        is_scalar_logical(source_header)
+        is_scalar_logical(embed, FALSE),
+        is_scalar_logical(source_header, FALSE)
     )
 
     head <- if (source_header) {
@@ -190,7 +198,7 @@ add_headers <- function(body, type, caller, headers,
         list()
     }
 
-    if (!missing(headers)) {
+    if (length(headers)) {
 
         # Messages below are conveyed to the user.
         # Thus, we don't use stopifnot().
@@ -207,9 +215,12 @@ add_headers <- function(body, type, caller, headers,
                  call. = FALSE)
         }
         if (match(tolower(type), tolower(headernames), 0L)) {
-            stop("'headers' cannot contain a header",
-                 sprintf(" named after a parent class (here, '%s').", type),
-                 call. = FALSE)
+            stop(
+                sprintf(
+                    "'headers' cannot contain a header named after a parent class (here, '%s').",
+                    type),
+                call. = FALSE
+            )
         }
 
         head <- c(head, headers)
