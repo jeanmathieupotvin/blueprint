@@ -111,16 +111,19 @@ Blueprint <- R6::R6Class("Blueprint",
         #' ## Just return the whole object (is a functional style).
         #' ## The output is invisible, we must print it to see it.
         #' Blueprint$new()$get()$print()
-        get = function(field, .validate = TRUE)
+        get = function(field = character(), .validate = TRUE)
         {
             if (.validate) {
                 self$validate()
             }
 
-            if (missing(field)) {
-                return(invisible(self))
-            } else {
+            if (length(field)) {
+                if (!is_scalar_character(field, FALSE)) {
+                    stop("'field' must be a scalar character.", call. = FALSE)
+                }
                 return(self[[field]])
+            } else {
+                return(invisible(self))
             }
         },
 
@@ -137,10 +140,13 @@ Blueprint <- R6::R6Class("Blueprint",
         #' \dontrun{
         #' Blueprint$new()$set("version", "1.0.0")
         #' }
-        set = function(field, value, .validate = TRUE)
+        set = function(field = character(), value, .validate = TRUE)
         {
             if (.validate) {
                 self$validate()
+            }
+            if (!is_scalar_character(field, FALSE)) {
+                stop("'field' must be a scalar character.", call. = FALSE)
             }
 
             # By design, classes in blueprint refers to
