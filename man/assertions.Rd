@@ -7,22 +7,33 @@
 \alias{is_scalar_integer}
 \alias{is_scalar_numeric}
 \alias{is_strict_atomic}
+\alias{is_named_list}
+\alias{is_named_vctr}
 \title{Simple assertions}
 \usage{
 is_single(x)
 
-is_scalar_character(x)
+is_scalar_character(x, accept_na = TRUE)
 
-is_scalar_logical(x)
+is_scalar_logical(x, accept_na = TRUE)
 
-is_scalar_integer(x)
+is_scalar_integer(x, accept_na = TRUE)
 
-is_scalar_numeric(x)
+is_scalar_numeric(x, accept_na = TRUE)
 
-is_strict_atomic(x)
+is_strict_atomic(x, accept_na = TRUE)
+
+is_named_list(x, unique_names = TRUE)
+
+is_named_vctr(x, unique_names = TRUE)
 }
 \arguments{
-\item{x}{any \R object.}
+\item{x}{Any \R object.}
+
+\item{accept_na}{A scalar logical. Should \code{NA} values be considered as valid
+scalar and/or atomic values?}
+
+\item{unique_names}{A scalar logical. Should names be unique?}
 }
 \value{
 All functions return a scalar logical. A \code{TRUE} implies that the
@@ -30,15 +41,16 @@ underlying tested object \emph{is} something (that \emph{something} is given by
 the function's name).
 }
 \description{
-Check if an object is of a proper type, class and/or length. This is
+Check if an object is a proper type, mode, length, etc. This is
 useful when implementing simple checks. These are used extensively in
 package \pkg{blueprint} and are all available to the users for convenience.
 }
 \section{Numeric versus double values}{
 
-\link[base:numeric]{Numeric} is a synonym of \link[base:double]{double}. The
-distinction stems from historical choices that are described
-\link[base:double]{here}.
+\link[base:numeric]{Numeric} is either an \link[base:integer]{integer} or a
+\link[base:double]{double}. Is it \strong{NOT} an atomic type, it is a
+\link[base:mode]{mode}. In \pkg{blueprint}, modes are purposely avoided. The
+focus is always on \link[base:typeof]{types} for consistency.
 }
 
 \section{Strict atomic values}{
@@ -79,6 +91,11 @@ Therefore, function \code{\link[=is_single]{is_single()}} checks that the argume
 \link[base:double]{double} with an attribute \code{"Csingle"} set equal to \code{TRUE}.
 }
 
+\examples{
+# You control whether NAs are valid.
+is_scalar_character(NA_character_, accept_na = TRUE)  # TRUE
+is_scalar_character(NA_character_, accept_na = FALSE) # FALSE
+}
 \author{
 Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 }

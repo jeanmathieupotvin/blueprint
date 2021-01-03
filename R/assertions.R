@@ -3,11 +3,14 @@
 #' @title Simple assertions
 #'
 #' @description
-#' Check if an object is of a proper type, class and/or length. This is
+#' Check if an object is a proper type, mode, length, etc. This is
 #' useful when implementing simple checks. These are used extensively in
 #' package \pkg{blueprint} and are all available to the users for convenience.
 #'
 #' @param x Any \R object.
+#'
+#' @param accept_na A scalar logical. Should `NA` values be considered as valid
+#' scalar and/or atomic values?
 #'
 #' @param unique_names A scalar logical. Should names be unique?
 #'
@@ -57,14 +60,17 @@
 #' @author Jean-Mathieu Potvin (<jm@@potvin.xyz>)
 #'
 #' @family assertions
+#'
+#' @examples
+#' # You control whether NAs are valid.
+#' is_scalar_character(NA_character_, accept_na = TRUE)  # TRUE
+#' is_scalar_character(NA_character_, accept_na = FALSE) # FALSE
 
 
 #' @export
 is_single <- function(x)
 {
-    if (missing(x)) {
-        return(FALSE)
-    } else if (is.double(x) && isTRUE(attr(x, "Csingle", TRUE))) {
+    if (is.double(x) && isTRUE(attr(x, "Csingle", TRUE))) {
 
         # There is no single values in R. A single is a double that
         # has a unique attribute called "Csingle" set equal to TRUE.
@@ -77,40 +83,63 @@ is_single <- function(x)
 
 #' @rdname assertions
 #' @export
-is_scalar_character <- function(x)
+is_scalar_character <- function(x, accept_na = TRUE)
 {
-    return(if (missing(x)) FALSE else is.character(x) && length(x) == 1L)
+    stopifnot(is_scalar_logical(accept_na))
+    if (accept_na) {
+        return(is.character(x) && length(x) == 1L)
+    } else {
+        return(is.character(x) && length(x) == 1L && !is.na(x))
+    }
 }
 
 
 #' @rdname assertions
 #' @export
-is_scalar_logical <- function(x)
+is_scalar_logical <- function(x, accept_na = TRUE)
 {
-    return(if (missing(x)) FALSE else is.logical(x) && length(x) == 1L)
+    # We cannot check accept_na with is_scalar_logical() here.
+    # This creates an infinite stack. Instead, we use isTRUE().
+    if (isTRUE(accept_na)) {
+        return(is.logical(x) && length(x) == 1L)
+    } else {
+        return(is.logical(x) && length(x) == 1L && !is.na(x))
+    }
 }
 
 
 #' @rdname assertions
 #' @export
-is_scalar_integer <- function(x)
+is_scalar_integer <- function(x, accept_na = TRUE)
 {
-    return(if (missing(x)) FALSE else is.integer(x) && length(x) == 1L)
+    stopifnot(is_scalar_logical(accept_na))
+    if (accept_na) {
+        return(is.integer(x) && length(x) == 1L)
+    } else {
+        return(is.integer(x) && length(x) == 1L && !is.na(x))
+    }
 }
 
 
 #' @rdname assertions
 #' @export
-is_scalar_numeric <- function(x)
+is_scalar_numeric <- function(x, accept_na = TRUE)
 {
-    return(if (missing(x)) FALSE else is.numeric(x) && length(x) == 1L)
+    stopifnot(is_scalar_logical(accept_na))
+    if (accept_na) {
+        return(is.numeric(x) && length(x) == 1L)
+    } else {
+        return(is.numeric(x) && length(x) == 1L && !is.na(x))
+    }
 }
 
 
 #' @rdname assertions
 #' @export
-is_strict_atomic <- function(x)
+is_strict_atomic <- function(x, accept_na = TRUE)
 {
+    stopifnot(is_scalar_logical(accept_na))
+
     if (missing(x)) {
 
         # By design, we return FALSE when x is missing.
@@ -128,7 +157,11 @@ is_strict_atomic <- function(x)
     } else if (is.atomic(x)) {
 
         # Fast catch of atomic types, including NULL.
-        return(TRUE)
+        if (accept_na) {
+            return(TRUE)
+        } else {
+            return(if (anyNA(x)) FALSE else TRUE)
+        }
     } else {
 
         # Safety net.
@@ -141,10 +174,7 @@ is_strict_atomic <- function(x)
 #' @export
 is_named_list <- function(x, unique_names = TRUE)
 {
-    if (!is_scalar_logical(unique_names)) {
-        stop("'unique_names' must be a scalar logical.", call. = FALSE)
-    }
-
+    stopifnot(is_scalar_logical(unique_names))
     xnames <- names(x)
 
     # If FALSE, we don't need to check names.
@@ -159,10 +189,7 @@ is_named_list <- function(x, unique_names = TRUE)
 #' @export
 is_named_vctr <- function(x, unique_names = TRUE)
 {
-    if (!is_scalar_logical(unique_names)) {
-        stop("'unique_names' must be a scalar logical.", call. = FALSE)
-    }
-
+    stopifnot(is_scalar_logical(unique_names))
     xnames <- names(x)
 
     # If FALSE, we don't need to check names.

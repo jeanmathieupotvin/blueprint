@@ -1,11 +1,11 @@
 test_that("is_single() works",
 {
-    # A single value is a double with a Csingle attribute set equal to TRUE.
+    # A single value is a double with a
+    # Csingle attribute set equal to TRUE.
 
+    # Test normal usage.
     expect_true(is_single(single()))
     expect_true(is_single(as.single(double())))
-
-    expect_false(is_single())
     expect_false(is_single(double()))
     expect_false(is_single(numeric()))
     expect_false(is_single(structure(double(), Csingle = FALSE)))
@@ -14,38 +14,60 @@ test_that("is_single() works",
 
 test_that("is_scalar_character() works",
 {
-    expect_true(is_scalar_character("string"))
-
-    expect_false(is_scalar_character())
+    # Test normal usage.
+    expect_true(is_scalar_character("chr"))
     expect_false(is_scalar_character(NULL))
     expect_false(is_scalar_character(1L))
-    expect_false(is_scalar_character(c("vector", "string")))
-    expect_false(is_scalar_character(list("string")))
+    expect_false(is_scalar_character(c("vector", "chr")))
+    expect_false(is_scalar_character(list("chr")))
+
+    # Test if NAs are properly handled.
+    expect_true(is_scalar_character(NA_character_,  TRUE))
+    expect_false(is_scalar_character(NA_character_, FALSE))
+
+    # Test arguments checks.
+    expect_error(is_scalar_character("chr", 1L),          "accept_na")
+    expect_error(is_scalar_character("chr", c("t", "f")), "accept_na")
 })
 
 
 test_that("is_scalar_logical() works",
 {
+    # Test normal usage.
     expect_true(is_scalar_logical(TRUE))
-
-    expect_false(is_scalar_logical())
     expect_false(is_scalar_logical(NULL))
     expect_false(is_scalar_logical(1L))
     expect_false(is_scalar_logical(c(TRUE, FALSE)))
     expect_false(is_scalar_logical(list(TRUE)))
+
+    # Test if NAs are properly handled.
+    expect_true(is_scalar_logical(NA,  TRUE))
+    expect_false(is_scalar_logical(NA, FALSE))
+
+    # Test arguments checks.
+    # Argument accept_na is handled differently by is_scalar_logical().
+    expect_false(is_scalar_logical(1L, 1L))
+    expect_false(is_scalar_logical(1L, c("t", "f")))
 })
 
 
 test_that("is_scalar_integer() works",
 {
+    # Test normal usage.
     expect_true(is_scalar_integer(1L))
-
-    expect_false(is_scalar_integer())
     expect_false(is_scalar_integer(NULL))
     expect_false(is_scalar_integer(1))
     expect_false(is_scalar_integer(TRUE))
     expect_false(is_scalar_integer(c(1L, 2L)))
     expect_false(is_scalar_integer(list(1L)))
+
+    # Test if NAs are properly handled.
+    expect_true(is_scalar_integer(NA_integer_,  TRUE))
+    expect_false(is_scalar_integer(NA_integer_, FALSE))
+
+    # Test arguments checks.
+    expect_error(is_scalar_integer(1L, 1L),          "accept_na")
+    expect_error(is_scalar_integer(1L, c("t", "f")), "accept_na")
 })
 
 
@@ -53,11 +75,27 @@ test_that("is_scalar_numeric() works",
 {
     expect_true(is_scalar_numeric(1L))
     expect_true(is_scalar_numeric(1.0))
-
-    expect_false(is_scalar_numeric())
     expect_false(is_scalar_numeric(NULL))
     expect_false(is_scalar_numeric(c(1, 2)))
     expect_false(is_scalar_numeric(list(1)))
+
+    # Test normal usage.
+    expect_true(is_scalar_numeric(1L))
+    expect_true(is_scalar_numeric(1.0))
+    expect_false(is_scalar_numeric(NULL))
+    expect_false(is_scalar_numeric(c(1, 2)))
+    expect_false(is_scalar_numeric(c(1L, 2L)))
+    expect_false(is_scalar_numeric(list(1)))
+
+    # Test if NAs are properly handled.
+    expect_true(is_scalar_numeric(NA_integer_,  TRUE))
+    expect_true(is_scalar_numeric(NA_real_,     TRUE))
+    expect_false(is_scalar_numeric(NA_integer_, FALSE))
+    expect_false(is_scalar_numeric(NA_real_,    FALSE))
+
+    # Test arguments checks.
+    expect_error(is_scalar_numeric(1L, 1L),          "accept_na")
+    expect_error(is_scalar_numeric(1L, c("t", "f")), "accept_na")
 })
 
 
@@ -132,6 +170,25 @@ test_that("is_strict_atomic() works",
     expect_false(is_strict_atomic(vctr_with_names))
     expect_false(is_strict_atomic(vctr_with_attrs))
 
+    # Test if NAs are properly handled.
+    expect_true(is_strict_atomic(NA,             TRUE))
+    expect_true(is_strict_atomic(NA_integer_,    TRUE))
+    expect_true(is_strict_atomic(NA_real_,       TRUE))
+    expect_true(is_strict_atomic(NA_complex_,    TRUE))
+    expect_true(is_strict_atomic(NA_character_,  TRUE))
+    expect_false(is_strict_atomic(NA,            FALSE))
+    expect_false(is_strict_atomic(NA_integer_,   FALSE))
+    expect_false(is_strict_atomic(NA_real_,      FALSE))
+    expect_false(is_strict_atomic(NA_complex_,   FALSE))
+    expect_false(is_strict_atomic(NA_character_, FALSE))
+
+    expect_true(is_strict_atomic(c(TRUE,   NA),  TRUE))
+    expect_false(is_strict_atomic(c(TRUE,  NA),  FALSE))
+
+    # Test arguments checks.
+    expect_error(is_scalar_numeric(1L, 1L),          "accept_na")
+    expect_error(is_scalar_numeric(1L, c("t", "f")), "accept_na")
+
     # Test normal usage on various R classes.
     expect_false(is_strict_atomic())
     expect_false(is_strict_atomic(data.frame()))
@@ -160,7 +217,6 @@ test_that("is_strict_atomic() works",
         expect_false(is_strict_atomic(methods::new("mle")))
         expect_false(is_strict_atomic(methods::new("externalptr")))
 })
-
 
 
 test_that("is_named_list()",
