@@ -195,7 +195,7 @@ it is ignored by the class instance.}
 \subsection{Method \code{new()}}{
 Create an \link{Atomic} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$new(atomic, name, length = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$new(atomic, name = character(), length = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -271,9 +271,9 @@ Format an \link{Atomic} object.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -297,9 +297,9 @@ Compare an object against an \link{Atomic}.
 \item{\code{object}}{Any \R object.}
 
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -345,9 +345,9 @@ Create (\emph{spawn}) a strict atomic vector from an \link{Atomic} object.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -372,9 +372,9 @@ Coerce an \link{Atomic} object to a list.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -403,9 +403,9 @@ Coerce an \link{Atomic} object to a character.
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -427,7 +427,14 @@ value of \verb{$length} (from integer to character). If
 Convert an \link{Atomic} object to a YAML text
 based format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_yaml(file, headers, handlers, ..., .validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_yaml(
+  file,
+  headers = list(),
+  handlers = list(),
+  ...,
+  .validate = TRUE,
+  .source_header = TRUE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -447,12 +454,16 @@ a default list of handlers is used. Users can overwrite
 them, but be advised that this should be reserved to
 expert users.}
 
-\item{\code{...}}{further arguments passed to \code{\link[yaml:as.yaml]{yaml::as.yaml()}}.}
+\item{\code{...}}{further arguments passed to \code{\link[yaml:as.yaml]{yaml::as.yaml()}}. You
+cannot pass argument \code{handlers}.}
 
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
+
+\item{\code{.source_header}}{A scalar logical. Should a 'source' header be added?
+This header gives information on how the text representation was generated.}
 }
 \if{html}{\out{</div>}}
 }
@@ -520,7 +531,13 @@ ab$as_yaml(handlers = handlers)
 Convert an \link{Atomic} object to a JSON text
 based format.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_json(file, headers, ..., .validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$as_json(
+  file,
+  headers = list(),
+  ...,
+  .validate = TRUE,
+  .source_header = TRUE
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -532,12 +549,16 @@ based format.
 pairs to include in text representations of the object (either JSON or YAML).
 Ignore this argument if not needed.}
 
-\item{\code{...}}{further arguments passed to \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}}.}
+\item{\code{...}}{further arguments passed to \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}}. You
+cannot passe arguments \code{x} and \code{path}.}
 
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
+
+\item{\code{.source_header}}{A scalar logical. Should a 'source' header be added?
+This header gives information on how the text representation was generated.}
 }
 \if{html}{\out{</div>}}
 }
@@ -600,7 +621,7 @@ cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
 \subsection{Method \code{set()}}{
 Update a field's value of an \link{Atomic} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Atomic$set(field, value, .validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$set(field = character(), value, .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -612,9 +633,9 @@ Update a field's value of an \link{Atomic} object.
 type must match the field's underlying structure.}
 
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }

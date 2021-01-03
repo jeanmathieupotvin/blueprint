@@ -151,7 +151,7 @@ A character scalar representing the formatted
 \subsection{Method \code{get()}}{
 Extract a field's value from a \link{Blueprint} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Blueprint$get(field, .validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$get(field = character(), .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -160,9 +160,9 @@ Extract a field's value from a \link{Blueprint} object.
 \item{\code{field}}{A scalar character. The name of a field.}
 
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
@@ -194,7 +194,7 @@ Blueprint$new()$get()$print()
 \subsection{Method \code{set()}}{
 Update a field's value of a \link{Blueprint} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Blueprint$set(field, value, .validate = TRUE)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$set(field = character(), value, .validate = TRUE)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -206,9 +206,9 @@ Update a field's value of a \link{Blueprint} object.
 type must match the field's underlying structure.}
 
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
-the method? This argument is \code{TRUE} by default. While it is available
-to the users, it should be ignored, unless you have an alternative way
-to make sure your underlying object is valid.}
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid.}
 }
 \if{html}{\out{</div>}}
 }
