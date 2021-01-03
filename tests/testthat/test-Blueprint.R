@@ -63,6 +63,10 @@ test_that("$get()",
     expect_identical(b$get(), b)
     expect_true(b$get("is_blueprint"))
     expect_null(b$get("not_existent_field"))
+
+    # Test arguments checks.
+    expect_error(b$get(1L),          "scalar character")
+    expect_error(b$get(c("1", "2")), "scalar character")
 })
 
 
@@ -72,7 +76,13 @@ test_that("set()",
     # class Blueprint because it has no modifiable fields.
     # It is thoroughly tested elsewhere.
 
-    expect_error(Blueprint$new()$set("version", "1"), "no modifiable")
+    b <- Blueprint$new()
+
+    expect_error(b$set("version", "1"), "no modifiable")
+
+    # Test arguments checks.
+    expect_error(b$set(1L),          "scalar character")
+    expect_error(b$set(c("1", "2")), "scalar character")
 })
 
 

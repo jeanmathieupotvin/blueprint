@@ -420,6 +420,10 @@ test_that("$set()",
 
     # Test that $type cannot be changed.
     expect_error(b$set("type", "character"), "generate a new")
+
+    # Test arguments checks.
+    expect_error(b$set(1L),          "scalar character")
+    expect_error(b$set(c("1", "2")), "scalar character")
 })
 
 
