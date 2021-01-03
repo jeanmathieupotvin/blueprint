@@ -29,6 +29,8 @@ NULL
 #'
 #' @template param-validate
 #'
+#' @template param-source-header
+#'
 #' @template section-self-validation
 #'
 #' @section Updating fields of the Atomic class:
@@ -99,7 +101,7 @@ Atomic <- R6::R6Class("Atomic",
         #'
         #' ## Create a blueprint that enforces a specific length; here, 10.
         #' Atomic$new(1L, "myVectorName", 10L)
-        initialize = function(atomic, name, length = NULL)
+        initialize = function(atomic, name = character(), length = NULL)
         {
             if (!is_strict_atomic(atomic)) {
                 stop("'atomic' must be a strict atomic vector.",
@@ -156,17 +158,17 @@ Atomic <- R6::R6Class("Atomic",
             # Therefore, $type needs to be a scalar for match(),
             # so we check its first element only.
             report_errors(
-                if (!is_scalar_character(self$name))  {
+                if (!is_scalar_character(self$name, FALSE))  {
                     "$name must be an scalar character."
                 },
-                if (!is_scalar_character(self$type)) {
+                if (!is_scalar_character(self$type, FALSE)) {
                     "$type must be a scalar character."
                 },
                 if (!match(self$type[[1L]], private$valid_types, 0L)) {
                     "$type should be a strict atomic type."
                 },
                 if (!is.null(self$length) &&
-                    (!is_scalar_integer(self$length) || self$length < 0L)) {
+                    (!is_scalar_integer(self$length, FALSE) || self$length < 0L)) {
                     "$length must be a positive scalar integer or NULL."
                 }
             )
@@ -372,7 +374,8 @@ Atomic <- R6::R6Class("Atomic",
         #' them, but be advised that this should be reserved to
         #' expert users.
         #'
-        #' @param ... further arguments passed to [yaml::as.yaml()].
+        #' @param ... further arguments passed to [yaml::as.yaml()]. You
+        #' cannot pass argument `handlers`.
         #'
         #' @return A scalar character holding a YAML string derived from
         #' method [`as_list()`][Atomic].
@@ -422,16 +425,25 @@ Atomic <- R6::R6Class("Atomic",
         #'     raw = function(x) { return(as.character(x)) }
         #' )
         #' ab$as_yaml(handlers = handlers)
-        as_yaml = function(file, headers, handlers, ..., .validate = TRUE)
+        as_yaml = function(file, headers = list(), handlers = list(), ...,
+                           .validate = TRUE, .source_header = TRUE)
         {
             if (.validate) {
                 self$validate()
             }
 
-            list <- self$as_list(.validate)
-            out  <- as_utf8(add_headers(list, "Atomic", "as_yaml", headers))
+            out <- as_utf8(
+                add_headers(
+                    self$as_list(.validate),
+                    headers,
+                    "Atomic",
+                    "as_yaml",
+                    TRUE,
+                    .source_header
+                )
+            )
 
-            # override our default handlers with users custom handlers.
+            # Override our default handlers with users custom handlers.
             handlers <- opts_yaml_handlers(handlers)
 
             if (missing(file)) {
@@ -444,7 +456,7 @@ Atomic <- R6::R6Class("Atomic",
                 # The following code chunk is well tested but for
                 # some reason it is not catched by covr, which is
                 # weird. Deactivate coverage of this chunk for now.
-                # TODO: verify coverage with futre versions of covr.
+                # TODO: verify coverage with future versions of covr.
 
                 # nocov start
                 return(yaml::write_yaml(out, file, "UTF-8", handlers = handlers, ...))
@@ -455,7 +467,8 @@ Atomic <- R6::R6Class("Atomic",
         #' @description Convert an [Atomic] object to a JSON text
         #' based format.
         #'
-        #' @param ... further arguments passed to [jsonlite::toJSON()].
+        #' @param ... further arguments passed to [jsonlite::toJSON()]. You
+        #' cannot passe arguments `x` and `path`.
         #'
         #' @return A scalar character holding a JSON string derived from
         #' method [`as_list()`][Atomic]. This string is encapsulated into
@@ -501,36 +514,47 @@ Atomic <- R6::R6Class("Atomic",
         #' ## You can pass additional parameters to jsonlite::toJSON().
         #' cat(ab$as_json(headers = list(test = 1.23456789)))
         #' cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
-        as_json = function(file, headers, ..., .validate = TRUE)
+        as_json = function(file, headers = list(), ...,
+                           .validate = TRUE, .source_header = TRUE)
         {
             if (.validate) {
                 self$validate()
             }
 
-            list <- self$as_list(.validate)
-            out  <- as_utf8(add_headers(list, "Atomic", "as_json", headers))
+            out <- as_utf8(
+                add_headers(
+                    self$as_list(.validate),
+                    headers,
+                    "Atomic",
+                    "as_json",
+                    TRUE,
+                    .source_header
+                )
+            )
 
             if (missing(file)) {
-
-                args <- inject(opts_jsonlite_atomic(), list(x = out, ...))
-                return(do.call(jsonlite::toJSON, args))
+                return(
+                    do.call(
+                        jsonlite::toJSON,
+                        opts_json_atomic(x = out, ...)
+                    )
+                )
             } else if (!is_scalar_character(file)) {
-                stop("'file' must be a scalar character.",
-                      call. = FALSE)
+                stop("'file' must be a scalar character.", call. = FALSE)
             } else {
 
                 # The following code chunk is well tested but for
                 # some reason it is not catched by covr, which is
                 # weird. Deactivate coverage of this chunk for now.
-                # TODO: verify coverage with futre versions of covr.
+                # TODO: verify coverage with future versions of covr.
 
                 # nocov start
-                args <- inject(
-                    opts_jsonlite_atomic(),
-                    list(x = out, path = file, ...)
+                return(
+                    do.call(
+                        jsonlite::write_json,
+                        opts_json_atomic(x = out, path = file, ...)
+                    )
                 )
-
-                return(do.call(jsonlite::write_json, args))
                 # nocov end
             }
         },
@@ -559,7 +583,7 @@ Atomic <- R6::R6Class("Atomic",
         #' b$set("type", "raw")
         #' }
         #' b_new <- Atomic$new(raw(10L), "good-name")
-        set = function(field, value, .validate = TRUE)
+        set = function(field = character(), value, .validate = TRUE)
         {
             if (identical(field, "type")) {
                 stop("generate a new Atomic blueprint to change $type.",
