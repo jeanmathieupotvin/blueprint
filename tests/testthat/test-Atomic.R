@@ -126,13 +126,30 @@ test_that("$validate()",
 })
 
 
-test_that("$print()",
+test_that("$print() output when length > 0L",
 {
     # $print() is partially tested, because part of the string
     # is tested through $format(). We only test if the output
     # of $format() is included by looking for a keyword.
 
     b <- Atomic$new(sample.int(10L), "test", 10L)
+
+    # Test outputs not stemming from $format().
+    expect_output(b$print(), "Atomic blueprint")
+    expect_output(b$print(), "(\\[\\d.\\d.\\d(.\\d+)?\\])")
+
+    # Test and record output.
+    expect_snapshot_output(b$print())
+})
+
+
+test_that("$print() output when length is NULL",
+{
+    # $print() is partially tested, because part of the string
+    # is tested through $format(). We only test if the output
+    # of $format() is included by looking for a keyword.
+
+    b <- Atomic$new(sample.int(10L), "test", NULL)
 
     # Test outputs not stemming from $format().
     expect_output(b$print(), "Atomic blueprint")
