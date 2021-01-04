@@ -425,9 +425,17 @@ Atomic <- R6::R6Class("Atomic",
         #'     raw = function(x) { return(as.character(x)) }
         #' )
         #' ab$as_yaml(handlers = handlers)
-        as_yaml = function(file, headers = list(), handlers = list(), ...,
-                           .validate = TRUE, .source_header = TRUE)
+        as_yaml = function(
+            file     = character(),
+            headers  = list(),
+            handlers = list(),
+            source_header  = TRUE,
+            ..., .validate = TRUE)
         {
+            if (!is_scalar_logical(source_header, FALSE)) {
+                stop("'source_header' must be a scalar logical.",
+                     call. = FALSE)
+            }
             if (.validate) {
                 self$validate()
             }
@@ -439,7 +447,7 @@ Atomic <- R6::R6Class("Atomic",
                     "Atomic",
                     "as_yaml",
                     TRUE,
-                    .source_header
+                    source_header
                 )
             )
 
@@ -448,19 +456,18 @@ Atomic <- R6::R6Class("Atomic",
 
             if (missing(file)) {
                 return(yaml::as.yaml(out, handlers = handlers, ...))
-            } else if (!is_scalar_character(file)) {
-                stop("'file' must be a scalar character.",
-                     call. = FALSE)
-            } else {
+            } else if (is_scalar_character(file, FALSE) && nzchar(file)) {
 
                 # The following code chunk is well tested but for
                 # some reason it is not catched by covr, which is
                 # weird. Deactivate coverage of this chunk for now.
                 # TODO: verify coverage with future versions of covr.
+                yaml::write_yaml(out, file, "UTF-8", handlers = handlers, ...) # nocov
 
-                # nocov start
-                return(yaml::write_yaml(out, file, "UTF-8", handlers = handlers, ...))
-                # nocov end
+                return(if (.validate) self$validate() else invisible(self))
+            } else {
+                stop("'file' must be a non-empty scalar character.",
+                     call. = FALSE)
             }
         },
 
@@ -514,9 +521,16 @@ Atomic <- R6::R6Class("Atomic",
         #' ## You can pass additional parameters to jsonlite::toJSON().
         #' cat(ab$as_json(headers = list(test = 1.23456789)))
         #' cat(ab$as_json(headers = list(test = 1.23456789), digits = 8L))
-        as_json = function(file, headers = list(), ...,
-                           .validate = TRUE, .source_header = TRUE)
+        as_json = function(
+            file    = character(),
+            headers = list(),
+            source_header  = TRUE,
+            ..., .validate = TRUE)
         {
+            if (!is_scalar_logical(source_header, FALSE)) {
+                stop("'source_header' must be a scalar logical.",
+                     call. = FALSE)
+            }
             if (.validate) {
                 self$validate()
             }
@@ -528,34 +542,27 @@ Atomic <- R6::R6Class("Atomic",
                     "Atomic",
                     "as_json",
                     TRUE,
-                    .source_header
+                    source_header
                 )
             )
 
             if (missing(file)) {
-                return(
-                    do.call(
-                        jsonlite::toJSON,
-                        opts_json_atomic(x = out, ...)
-                    )
-                )
-            } else if (!is_scalar_character(file)) {
-                stop("'file' must be a scalar character.", call. = FALSE)
-            } else {
+                return(do.call(jsonlite::toJSON, opts_json_atomic(x = out, ...)))
+            } else if (is_scalar_character(file, FALSE) && nzchar(file)) {
 
                 # The following code chunk is well tested but for
                 # some reason it is not catched by covr, which is
                 # weird. Deactivate coverage of this chunk for now.
                 # TODO: verify coverage with future versions of covr.
+                do.call(
+                    jsonlite::write_json,
+                    opts_json_atomic(x = out, path = file, ...)
+                ) # nocov
 
-                # nocov start
-                return(
-                    do.call(
-                        jsonlite::write_json,
-                        opts_json_atomic(x = out, path = file, ...)
-                    )
-                )
-                # nocov end
+                return(if (.validate) self$validate() else invisible(self))
+            } else {
+                stop("'file' must be a non-empty scalar character.",
+                     call. = FALSE)
             }
         },
 

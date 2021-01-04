@@ -428,12 +428,12 @@ Convert an \link{Atomic} object to a YAML text
 based format.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Atomic$as_yaml(
-  file,
+  file = character(),
   headers = list(),
   handlers = list(),
+  source_header = TRUE,
   ...,
-  .validate = TRUE,
-  .source_header = TRUE
+  .validate = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -454,6 +454,9 @@ a default list of handlers is used. Users can overwrite
 them, but be advised that this should be reserved to
 expert users.}
 
+\item{\code{source_header}}{A scalar logical. Should a 'source' header be added?
+This header gives information on how the text representation was generated.}
+
 \item{\code{...}}{further arguments passed to \code{\link[yaml:as.yaml]{yaml::as.yaml()}}. You
 cannot pass argument \code{handlers}.}
 
@@ -461,9 +464,6 @@ cannot pass argument \code{handlers}.}
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
 underlying object is valid.}
-
-\item{\code{.source_header}}{A scalar logical. Should a 'source' header be added?
-This header gives information on how the text representation was generated.}
 }
 \if{html}{\out{</div>}}
 }
@@ -532,11 +532,11 @@ Convert an \link{Atomic} object to a JSON text
 based format.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Atomic$as_json(
-  file,
+  file = character(),
   headers = list(),
+  source_header = TRUE,
   ...,
-  .validate = TRUE,
-  .source_header = TRUE
+  .validate = TRUE
 )}\if{html}{\out{</div>}}
 }
 
@@ -549,6 +549,9 @@ based format.
 pairs to include in text representations of the object (either JSON or YAML).
 Ignore this argument if not needed.}
 
+\item{\code{source_header}}{A scalar logical. Should a 'source' header be added?
+This header gives information on how the text representation was generated.}
+
 \item{\code{...}}{further arguments passed to \code{\link[jsonlite:fromJSON]{jsonlite::toJSON()}}. You
 cannot passe arguments \code{x} and \code{path}.}
 
@@ -556,9 +559,6 @@ cannot passe arguments \code{x} and \code{path}.}
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
 underlying object is valid.}
-
-\item{\code{.source_header}}{A scalar logical. Should a 'source' header be added?
-This header gives information on how the text representation was generated.}
 }
 \if{html}{\out{</div>}}
 }
