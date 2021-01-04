@@ -241,6 +241,23 @@ test_that("$generate()",
 })
 
 
+test_that("$set()",
+{
+    b <- Atomic$new(double(), "test")
+
+    # Test normal usage.
+    expect_identical(b$set("length", 1L)$get("length"), 1L)
+    expect_identical(b$set("name", "new-name")$get("name"), "new-name")
+
+    # Test that $type cannot be changed.
+    expect_error(b$set("type", "character"), "generate a new")
+
+    # Test arguments checks.
+    expect_error(b$set(1L),          "scalar character")
+    expect_error(b$set(c("1", "2")), "scalar character")
+})
+
+
 test_that("$as_list()",
 {
     b   <- Atomic$new(c(10L, 8L, 9L, 5L, 1L), "test", 5L)
@@ -407,23 +424,6 @@ test_that("$as_json() output",
 
     expect_null(out)
     expect_snapshot_file(path, "as-json.json")
-})
-
-
-test_that("$set()",
-{
-    b <- Atomic$new(double(), "test")
-
-    # Test normal usage.
-    expect_identical(b$set("length", 1L)$get("length"), 1L)
-    expect_identical(b$set("name", "new-name")$get("name"), "new-name")
-
-    # Test that $type cannot be changed.
-    expect_error(b$set("type", "character"), "generate a new")
-
-    # Test arguments checks.
-    expect_error(b$set(1L),          "scalar character")
-    expect_error(b$set(c("1", "2")), "scalar character")
 })
 
 
