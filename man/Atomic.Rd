@@ -273,7 +273,8 @@ Format an \link{Atomic} object.
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -299,7 +300,8 @@ Compare an object against an \link{Atomic}.
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -347,7 +349,8 @@ Create (\emph{spawn}) a strict atomic vector from an \link{Atomic} object.
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -374,7 +377,8 @@ Coerce an \link{Atomic} object to a list.
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -405,7 +409,8 @@ Coerce an \link{Atomic} object to a character.
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -440,7 +445,8 @@ based format.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{file}}{A scalar character. The name of a file to be created.}
+\item{\code{file}}{A scalar character. The name of a file to be created. If missing,
+a string will be returned to the console.}
 
 \item{\code{headers}}{A non-empty named list that holds additional key/value
 pairs to include in text representations of the object (either JSON or YAML).
@@ -463,7 +469,8 @@ cannot pass argument \code{handlers}.}
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -488,8 +495,9 @@ to argument \code{handlers}.
 }
 
 \subsection{Returns}{
-A scalar character holding a YAML string derived from
-method \code{\link[=Atomic]{as_list()}}.
+If \code{file} is missing, a scalar character holding a YAML
+string derived from method \code{\link[=Atomic]{as_list()}}. Else, the output
+is written to \code{file} and the \link{Atomic} object is returned invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -543,7 +551,8 @@ based format.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{file}}{A scalar character. The name of a file to be created.}
+\item{\code{file}}{A scalar character. The name of a file to be created. If missing,
+a string will be returned to the console.}
 
 \item{\code{headers}}{A non-empty named list that holds additional key/value
 pairs to include in text representations of the object (either JSON or YAML).
@@ -558,7 +567,8 @@ cannot passe arguments \code{x} and \code{path}.}
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -583,10 +593,12 @@ default behavior. See argument \code{raw} of \code{\link[jsonlite:fromJSON]{json
 }
 
 \subsection{Returns}{
-A scalar character holding a JSON string derived from
-method \code{\link[=Atomic]{as_list()}}. This string is encapsulated into
-an object of class \code{json}, which is internally defined in package
-\pkg{jsonlite} and behaves like a normal character.
+If \code{file} is missing, a scalar character holding a JSON
+string derived from method \code{\link[=Atomic]{as_list()}}. This string is
+encapsulated into an object of class \code{json}, which is internally
+defined in package \pkg{jsonlite} and behaves like a normal character.
+Else, the output is written to \code{file} and the \link{Atomic} object is
+returned invisibly.
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
@@ -635,7 +647,8 @@ type must match the field's underlying structure.}
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }

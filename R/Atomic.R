@@ -17,7 +17,8 @@ NULL
 #' of the [Atomic] class hold useful (derived) metadata on strict vectors:
 #' their types, names, prototypes and optionally, their lengths.
 #'
-#' @param file A scalar character. The name of a file to be created.
+#' @param file A scalar character. The name of a file to be created. If missing,
+#' a string will be returned to the console.
 #'
 #' @param headers A non-empty named list that holds additional key/value
 #' pairs to include in text representations of the object (either JSON or YAML).
@@ -377,8 +378,9 @@ Atomic <- R6::R6Class("Atomic",
         #' @param ... further arguments passed to [yaml::as.yaml()]. You
         #' cannot pass argument `handlers`.
         #'
-        #' @return A scalar character holding a YAML string derived from
-        #' method [`as_list()`][Atomic].
+        #' @return If `file` is missing, a scalar character holding a YAML
+        #' string derived from method [`as_list()`][Atomic]. Else, the output
+        #' is written to `file` and the [Atomic] object is returned invisibly.
         #'
         #' @details
         #' YAML (*YAML Ain't Markup Language*, a recursive name) is a
@@ -477,10 +479,12 @@ Atomic <- R6::R6Class("Atomic",
         #' @param ... further arguments passed to [jsonlite::toJSON()]. You
         #' cannot passe arguments `x` and `path`.
         #'
-        #' @return A scalar character holding a JSON string derived from
-        #' method [`as_list()`][Atomic]. This string is encapsulated into
-        #' an object of class `json`, which is internally defined in package
-        #' \pkg{jsonlite} and behaves like a normal character.
+        #' @return If `file` is missing, a scalar character holding a JSON
+        #' string derived from method [`as_list()`][Atomic]. This string is
+        #' encapsulated into an object of class `json`, which is internally
+        #' defined in package \pkg{jsonlite} and behaves like a normal character.
+        #' Else, the output is written to `file` and the [Atomic] object is
+        #' returned invisibly.
         #'
         #' @details
         #' JSON (*JavaScript Object Notation*) is a lightweight and

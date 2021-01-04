@@ -162,7 +162,8 @@ Extract a field's value from a \link{Blueprint} object.
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
@@ -208,7 +209,8 @@ type must match the field's underlying structure.}
 \item{\code{.validate}}{A scalar logical. Validate the object before calling
 the method? While this argument is available to the users, it should
 be ignored, unless you have an alternative way to make sure your
-underlying object is valid.}
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
 }
 \if{html}{\out{</div>}}
 }
