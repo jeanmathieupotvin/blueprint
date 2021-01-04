@@ -142,11 +142,11 @@ Blueprint <- R6::R6Class("Blueprint",
         #' }
         set = function(field = character(), value, .validate = TRUE)
         {
-            if (.validate) {
-                self$validate()
-            }
             if (!is_scalar_character(field, FALSE)) {
                 stop("'field' must be a scalar character.", call. = FALSE)
+            }
+            if (.validate) {
+                self$validate()
             }
 
             # By design, classes in blueprint refers to
@@ -160,8 +160,7 @@ Blueprint <- R6::R6Class("Blueprint",
                 self[[field]] <- value
                 return(self$validate())
             } else {
-                stop("the object has no modifiable (public) fields.",
-                     call. = FALSE)
+                stop("the object has no modifiable fields.", call. = FALSE)
             }
         }
     )
