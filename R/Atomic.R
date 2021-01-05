@@ -309,6 +309,79 @@ Atomic <- R6::R6Class("Atomic",
             }
         },
 
+        #' @description Create a strict atomic vector from an [Atomic] object
+        #' and bind it to `$name` in a given environment or list-like object.
+        #'
+        #' **This is an experimental feature.**
+        #'
+        #' @param where An environment or a list-like object.
+        #'
+        #' @param lock A scalar logical. If `where` is an environment, should
+        #' the binding be locked? If so, it cannot be changed until it is
+        #' [unlocked][base::unlockBinding()].
+        #'
+        #' @return The [Atomic] object invisibly if the object is valid.
+        #' Else, an error explaining what is wrong with the object.
+        #'
+        #' @examples
+        #' ## Create an environment.
+        #' env <- new.env()
+        #'
+        #' ## Spawn a vector from a blueprint and bind the result to $name
+        #' ## in env. We also lock the binding.
+        #' b <- Atomic$new(12.0, "vector", 1000L)$bind(env, TRUE)
+        #'
+        #' ## Trying to change value of a locked binding results in an error.
+        #' \dontrun{env$vector <- 1.0}
+        #'
+        #' ## You can later unlock the binding.
+        #' unlockBinding("vector", env)
+        #' env$vector <- "new value"
+        #'
+        #' ## Bind a prototype to $name within a list.
+        #' lst <- list(value = 1L)
+        #' b$bind(lst)
+        #' lst$vector
+        bind = function(where = parent.frame(), lock = FALSE, .validate = TRUE)
+        {
+            if (!is_scalar_logical(lock, FALSE)) {
+                stop("'lock' must be a scalar logical.", call. = FALSE)
+            }
+            if (.validate) {
+                self$validate()
+            }
+
+            if (is.environment(where)) {
+
+                # Assign the generated prototype in the given
+                # environment and lock the binding if required.
+                assign(
+                    self$name,
+                    self$generate(.validate = FALSE),
+                    envir = where
+                )
+                if (lock) lockBinding(self$name, where)
+            } else if (is.recursive(where)) {
+
+                # Generate a prototype and bind it to a key
+                # named after $name in the 'where' list. Bind
+                # the updated list to the underlying name of
+                # 'where' in the parent environment. This is
+                # a rather hacky way to achieve this. It could
+                # also be unsafe and requires further testing.
+                # Because of that, we consider this feature to
+                # be experimental.
+                wname <- deparse(substitute(where))
+                where[[self$name]] <- self$generate(.validate = FALSE)
+                assign(wname, where, envir = parent.frame())
+            } else {
+                stop("'where' must be an environment or an object that has a recursive structure, like a list, a data.frame, etc.",
+                     call. = FALSE)
+            }
+
+            return(if (.validate) self$validate() else invisible(self))
+        },
+
         #' @description Coerce an [Atomic] object to a list.
         #'
         #' @return A named list of four elements:

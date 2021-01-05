@@ -197,6 +197,42 @@ test_that("$generate()",
 })
 
 
+test_that("$bind()",
+{
+    # This feature is experimental.
+
+    b <- Atomic$new(double(), "test", 100L)
+
+    # Test assignment in environment.
+    env <- new.env()
+    out <- b$bind(env)
+    expect_identical(out, b)
+    expect_identical(env$test, b$generate())
+
+    # Test if binding can be locked.
+    b$bind(env, lock = TRUE)
+    expect_error(assign("test", 1L, envir = env), "locked binding")
+
+    # Test assignment in an existing list.
+    lst <- list(a = 1)
+    out <- b$bind(lst)
+    expect_named(lst, c("a", "test"))
+    expect_identical(out, b)
+    expect_identical(lst$test, b$generate())
+
+    # Test arguments checks.
+    expect_error(b$bind(1L),                     "recursive structure")
+    expect_error(b$bind(lock = NA),              "scalar logical")
+    expect_error(b$bind(lock = 1L),              "scalar logical")
+    expect_error(b$bind(lock = c(TRUE, FALSE)),  "scalar logical")
+
+    # Test deactivation of $validate().
+    # We inject an error into object to do so.
+    b$type   <- "test"
+    expect_identical(b$bind(.validate = FALSE), b)
+})
+
+
 test_that("$set()",
 {
     b <- Atomic$new(double(), "test")

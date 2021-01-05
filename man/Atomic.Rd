@@ -76,6 +76,29 @@ bp_length$compare("bye")          # TRUE
 bp_length$compare(1)              # FALSE
 
 ## ------------------------------------------------
+## Method `Atomic$bind`
+## ------------------------------------------------
+
+## Create an environment.
+env <- new.env()
+
+## Spawn a vector from a blueprint and bind the result to $name
+## in env. We also lock the binding.
+b <- Atomic$new(12.0, "vector", 1000L)$bind(env, TRUE)
+
+## Trying to change value of a locked binding results in an error.
+\dontrun{env$vector <- 1.0}
+
+## You can later unlock the binding.
+unlockBinding("vector", env)
+env$vector <- "new value"
+
+## Bind a prototype to $name within a list.
+lst <- list(value = 1L)
+b$bind(lst)
+lst$vector
+
+## ------------------------------------------------
 ## Method `Atomic$as_yaml`
 ## ------------------------------------------------
 
@@ -175,6 +198,7 @@ it is ignored by the class instance.}
 \item \href{#method-format}{\code{Atomic$format()}}
 \item \href{#method-compare}{\code{Atomic$compare()}}
 \item \href{#method-generate}{\code{Atomic$generate()}}
+\item \href{#method-bind}{\code{Atomic$bind()}}
 \item \href{#method-as_list}{\code{Atomic$as_list()}}
 \item \href{#method-as_character}{\code{Atomic$as_character()}}
 \item \href{#method-as_yaml}{\code{Atomic$as_yaml()}}
@@ -361,6 +385,65 @@ A \link[=is_strict_atomic]{strict atomic vector}. Its underlying
 argument \code{atomic} (see \code{\link[=Atomic]{new()}}) and registered internally
 when the object is created.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-bind"></a>}}
+\if{latex}{\out{\hypertarget{method-bind}{}}}
+\subsection{Method \code{bind()}}{
+Create a strict atomic vector from an \link{Atomic} object
+and bind it to \verb{$name} in a given environment or list-like object.
+
+\strong{This is an experimental feature.}
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Atomic$bind(where = parent.frame(), lock = FALSE, .validate = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{where}}{An environment or a list-like object.}
+
+\item{\code{lock}}{A scalar logical. If \code{where} is an environment, should
+the binding be locked? If so, it cannot be changed until it is
+\link[base:bindenv]{unlocked}.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The \link{Atomic} object invisibly if the object is valid.
+Else, an error explaining what is wrong with the object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Create an environment.
+env <- new.env()
+
+## Spawn a vector from a blueprint and bind the result to $name
+## in env. We also lock the binding.
+b <- Atomic$new(12.0, "vector", 1000L)$bind(env, TRUE)
+
+## Trying to change value of a locked binding results in an error.
+\dontrun{env$vector <- 1.0}
+
+## You can later unlock the binding.
+unlockBinding("vector", env)
+env$vector <- "new value"
+
+## Bind a prototype to $name within a list.
+lst <- list(value = 1L)
+b$bind(lst)
+lst$vector
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-as_list"></a>}}
