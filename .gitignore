@@ -37,3 +37,6 @@ vignettes/*.pdf
 
 # Github workflows outputs
 .github/*.html
+
+# Historical releases / assets
+.releases/
