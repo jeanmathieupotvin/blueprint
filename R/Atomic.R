@@ -459,13 +459,7 @@ Atomic <- R6::R6Class("Atomic",
             if (missing(file)) {
                 return(yaml::as.yaml(out, handlers = handlers, ...))
             } else if (is_scalar_character(file, FALSE) && nzchar(file)) {
-
-                # The following code chunk is well tested but for
-                # some reason it is not catched by covr, which is
-                # weird. Deactivate coverage of this chunk for now.
-                # TODO: verify coverage with future versions of covr.
-                yaml::write_yaml(out, file, "UTF-8", handlers = handlers, ...) # nocov
-
+                yaml::write_yaml(out, file, "UTF-8", handlers = handlers, ...)
                 return(if (.validate) self$validate() else invisible(self))
             } else {
                 stop("'file' must be a non-empty scalar character.",
@@ -553,15 +547,10 @@ Atomic <- R6::R6Class("Atomic",
             if (missing(file)) {
                 return(do.call(jsonlite::toJSON, opts_json_atomic(x = out, ...)))
             } else if (is_scalar_character(file, FALSE) && nzchar(file)) {
-
-                # The following code chunk is well tested but for
-                # some reason it is not catched by covr, which is
-                # weird. Deactivate coverage of this chunk for now.
-                # TODO: verify coverage with future versions of covr.
                 do.call(
                     jsonlite::write_json,
                     opts_json_atomic(x = out, path = file, ...)
-                ) # nocov
+                )
 
                 return(if (.validate) self$validate() else invisible(self))
             } else {

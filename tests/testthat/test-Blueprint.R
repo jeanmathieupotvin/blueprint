@@ -33,18 +33,6 @@ test_that("$validate()",
 })
 
 
-test_that("$print()",
-{
-    b <- Blueprint$new()
-
-    expect_output(b$print(), "Blueprint")
-    expect_output(b$print(), "(\\[\\d.\\d.\\d(.\\d+)?\\])")
-
-    # Test and record output.
-    expect_snapshot_output(b$print())
-})
-
-
 test_that("$format()",
 {
     expect_identical(Blueprint$new()$format(), "<Blueprint>")

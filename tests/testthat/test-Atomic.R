@@ -79,7 +79,6 @@ test_that("$validate()",
 {
     # Test if output is returned invisibly.
     b <- Atomic$new(sample.int(10L), "test", 10L)
-
     expect_invisible(b$validate())
     expect_identical(b$validate(), b)
 
@@ -90,14 +89,12 @@ test_that("$validate()",
     # superset(). We proceed like this to avoid using
     # multiple calls to `<-`, which would be cumbersome.
     b <- Atomic$new(sample.int(10L), "test", 10L)
-
     expect_error(superset(b, "type", 1,             FALSE), "scalar character")
     expect_error(superset(b, "type", c("t1", "t2"), FALSE), "scalar character")
     expect_error(superset(b, "type", "list",        FALSE), "strict atomic")
     expect_error(superset(b, "type", "numeric",     FALSE), "strict atomic")
 
     b <- Atomic$new(sample.int(10L), "test", 10L)
-
     expect_s3_class(superset(b, "type", "NULL"),      "Atomic")
     expect_s3_class(superset(b, "type", "logical"),   "Atomic")
     expect_s3_class(superset(b, "type", "single"),    "Atomic")
@@ -108,55 +105,18 @@ test_that("$validate()",
 
     # Test validation of $name.
     b <- Atomic$new(sample.int(10L), "test", 10L)
-
     expect_error(b$set("name", 1),             "scalar character")
     expect_error(b$set("name", c("n1", "n2")), "scalar character")
 
     # Test validation of $length.
     b <- Atomic$new(sample.int(10L), "test")
-
     expect_error(b$set("length", -1L), "positive scalar integer")
     expect_error(b$set("length", 1.2), "positive scalar integer")
     expect_error(b$set("length", "1"), "positive scalar integer")
 
     b <- Atomic$new(sample.int(10L), "test")
-
     expect_s3_class(b$set("length", 0L),   "Atomic")
     expect_s3_class(b$set("length", NULL), "Atomic")
-})
-
-
-test_that("$print() output when length > 0L",
-{
-    # $print() is partially tested, because part of the string
-    # is tested through $format(). We only test if the output
-    # of $format() is included by looking for a keyword.
-
-    b <- Atomic$new(sample.int(10L), "test", 10L)
-
-    # Test outputs not stemming from $format().
-    expect_output(b$print(), "Atomic blueprint")
-    expect_output(b$print(), "(\\[\\d.\\d.\\d(.\\d+)?\\])")
-
-    # Test and record output.
-    expect_snapshot_output(b$print())
-})
-
-
-test_that("$print() output when length is NULL",
-{
-    # $print() is partially tested, because part of the string
-    # is tested through $format(). We only test if the output
-    # of $format() is included by looking for a keyword.
-
-    b <- Atomic$new(sample.int(10L), "test", NULL)
-
-    # Test outputs not stemming from $format().
-    expect_output(b$print(), "Atomic blueprint")
-    expect_output(b$print(), "(\\[\\d.\\d.\\d(.\\d+)?\\])")
-
-    # Test and record output.
-    expect_snapshot_output(b$print())
 })
 
 
@@ -164,18 +124,15 @@ test_that("$format()",
 {
     # Test normal usage when length is not NULL (>= 0).
     b <- Atomic$new(raw(10L), "test", 10L)
-
     expect_identical(b$format(), "<name:test type:raw length:10>")
 
     # Test normal usage when length is NULL.
     b <- Atomic$new(raw(10L), "test", NULL)
-
     expect_identical(b$format(), "<name:test type:raw>")
 
     # Test deactivation of $validate().
     # We inject an error into object to do so.
     b$type <- "test"
-
     expect_identical(b$format(.validate = FALSE), "<name:test type:test>")
 })
 
@@ -184,7 +141,6 @@ test_that("$compare()",
 {
     # Test normal usage when length is not NULL (>= 0).
     b <- Atomic$new(raw(10L), "test", 10L)
-
     expect_true(b$compare(raw(10L)))
     expect_false(b$compare(raw(1L)))
     expect_false(b$compare(double(1L)))
@@ -192,14 +148,12 @@ test_that("$compare()",
 
     # Test normal usage when length is NULL.
     b <- Atomic$new(raw(10L), "test", NULL)
-
     expect_true(b$compare(raw(10L)))
     expect_true(b$compare(raw(1L)))
     expect_false(b$compare(double(1L)))
 
     # Test specific single case.
     b <- Atomic$new(single(10L), "test", 10L)
-
     expect_true(b$compare(single(10L)))
     expect_false(b$compare(single(1L)))
     expect_false(b$compare(double(1L)))
@@ -208,7 +162,6 @@ test_that("$compare()",
     # Test deactivation of $validate().
     # We inject an error into object to do so.
     b$type <- "test"
-
     expect_false(b$compare(single(10L), .validate = FALSE))
 })
 
@@ -236,7 +189,6 @@ test_that("$generate()",
     # We inject an error into object to do so.
     b <- Atomic$new(logical(), "test")
     b$type <- "test"
-
     expect_identical(b$generate(.validate = FALSE), NA)
 })
 
@@ -267,14 +219,12 @@ test_that("$as_list()",
         length    = 5L,
         prototype = 10L
     )
-
     expect_identical(b$as_list(), ref)
 
     # Test deactivation of $validate().
     # We inject an error into object to do so.
     b$type   <- "test"
     ref$type <- "test"
-
     expect_identical(b$as_list(.validate = FALSE), ref)
 })
 
@@ -284,20 +234,17 @@ test_that("$as_character()",
      # Test normal usage when length is not NULL (>= 0).
     b   <- Atomic$new(c(10L, 8L, 9L, 5L, 1L), "test", 5L)
     ref <- c(name = "test", type = "integer", length = "5")
-
     expect_identical(b$as_character(), ref)
 
     # Test normal usage when length is NULL.
     b   <- Atomic$new(c(10L, 8L, 9L, 5L, 1L), "test")
     ref <- c(name = "test", type = "integer", length = "NULL")
-
     expect_identical(b$as_character(), ref)
 
     # Test deactivation of $validate().
     # We inject an error into object to do so.
     b$type <- "test"
     ref[["type"]] <- "test"
-
     expect_identical(b$as_character(.validate = FALSE), ref)
 })
 
@@ -306,79 +253,27 @@ test_that("$as_yaml()",
 {
     b <- Atomic$new(raw(), "test", 5L)
 
-    # Test file argument.
+    # Test return value when file is missing.
+    out <- b$as_yaml(headers = list(`UTF-8 char` = "é"))
+    expect_type(out, "character")
+    expect_identical(Encoding(out), "UTF-8")
+
+    # Test return value when file is not missing.
+    expect_identical(b$as_yaml(tempfile()), b)
+
+    # Test arguments checks.
+    # Argument headers is validated by add_headers().
     expect_error(b$as_yaml(file = 1),             "scalar character")
     expect_error(b$as_yaml(file = c("f1", "f2")), "scalar character")
+    expect_error(b$as_yaml(file = ""),            "non-empty")
+
+    expect_error(b$as_yaml(source_header = 1L),               "scalar logical")
+    expect_error(b$as_yaml(source_header = c(TRUE, FALSE)),   "scalar logical")
 
     # Test deactivation of $validate().
     # We inject an error into object to do so.
     b$type <- "test"
-
     expect_true(grepl("(\n  type: test)", b$as_yaml(.validate = FALSE)))
-})
-
-
-test_that("$as_yaml() output with default handlers",
-{
-    b <- Atomic$new(raw(), "test", 5L)
-
-    # Test console output.
-    out <- b$as_yaml(
-        headers = list("UTF-8 char" = "é"),
-        indent  = 2L
-    )
-
-    expect_length(out, 1L)
-    expect_type(out, "character")
-    expect_identical(Encoding(out), "UTF-8")
-    expect_snapshot_output(cat(out))
-
-    # Test file output.
-    # Capture it for future reference.
-    path <- tempfile(fileext = ".yaml")
-    out  <- b$as_yaml(
-        file     = path,
-        headers  = list("UTF-8 char" = "é"),
-        indent   = 4L
-    )
-
-    expect_null(out)
-    expect_snapshot_file(path, "as-yaml-default-handlers.yaml")
-})
-
-
-test_that("$as_yaml() output with custom handlers",
-{
-    # We do so by rewriting the representation of the
-    # prototype field. We use a character type instead
-    # of a base64 string.
-
-    b <- Atomic$new(raw(), "test", 5L)
-
-    # Test console output.
-    out <- b$as_yaml(
-        headers  = list("UTF-8 char" = "é"),
-        handlers = list(raw = function(x) { return(as.character(x)) }),
-        indent   = 4L
-    )
-
-    expect_length(out, 1L)
-    expect_type(out, "character")
-    expect_identical(Encoding(out), "UTF-8")
-    expect_snapshot_output(cat(out))
-
-    # Test file output.
-    # Capture it for future reference.
-    path <- tempfile(fileext = ".yaml")
-    out  <- b$as_yaml(
-        file     = path,
-        headers  = list("UTF-8 char" = "é"),
-        handlers = list(raw = function(x) { return(as.character(x)) }),
-        indent   = 4L
-    )
-
-    expect_null(out)
-    expect_snapshot_file(path, "as-yaml-custom-handlers.yaml")
 })
 
 
@@ -386,44 +281,27 @@ test_that("$as_json()",
 {
     b <- Atomic$new(raw(), "test", 5L)
 
-    # Test file argument.
+    # Test return value when file is missing.
+    out <- b$as_json(headers = list(`UTF-8 char` = "é"))
+    expect_s3_class(out, "json")
+    expect_identical(Encoding(out), "UTF-8")
+
+    # Test return value when file is not missing.
+    expect_identical(b$as_json(tempfile()), b)
+
+    # Test arguments checks.
+    # Argument headers is validated by add_headers().
     expect_error(b$as_json(file = 1),             "scalar character")
     expect_error(b$as_json(file = c("f1", "f2")), "scalar character")
+    expect_error(b$as_json(file = ""),            "non-empty")
+
+    expect_error(b$as_json(source_header = 1L),               "scalar logical")
+    expect_error(b$as_json(source_header = c(TRUE, FALSE)),   "scalar logical")
 
     # Test deactivation of $validate().
     # We inject an error into object to do so.
     b$type <- "test"
-
     expect_true(grepl("(\"type\": \"test\")", b$as_json(.validate = FALSE)))
-})
-
-
-test_that("$as_json() output",
-{
-    b <- Atomic$new(raw(), "test", 5L)
-
-    # Test console output.
-    out <- b$as_json(
-        headers = list("UTF-8 char" = "é"),
-        raw     = "int"
-    )
-
-    expect_length(out, 1L)
-    expect_type(out, "character")
-    expect_identical(Encoding(out), "UTF-8")
-    expect_snapshot_output(cat(out))
-
-    # Test file output.
-    # Capture it for future reference.
-    path <- tempfile(fileext = ".json")
-    out  <- b$as_json(
-        file     = path,
-        headers  = list("UTF-8 char" = "é"),
-        raw      = "int"
-    )
-
-    expect_null(out)
-    expect_snapshot_file(path, "as-json.json")
 })
 
 
@@ -450,7 +328,6 @@ test_that("as.list.Atomic()",
         length    = 5L,
         prototype = 10L
     )
-
     expect_identical(as.list(b), ref)
 })
 
@@ -459,6 +336,5 @@ test_that("as.character.Atomic()",
 {
     b   <- Atomic$new(c(10L, 8L, 9L, 5L, 1L), "test", 5L)
     ref <- c(name = "test", type = "integer", length = "5")
-
     expect_identical(as.character(b), ref)
 })
