@@ -35,8 +35,5 @@ vignettes/*.pdf
 # Files in development
 .dev/
 
-# Snapshots from testthat 3e
-tests/testthat/_snaps/
-
 # Github workflows outputs
 .github/*.html
