@@ -2,50 +2,77 @@
 % Please edit documentation in R/Blueprint.R
 \name{Blueprint}
 \alias{Blueprint}
-\alias{new_blueprint}
 \alias{is_blueprint}
+\alias{valid_blueprint}
 \title{The Blueprint (root) super-class}
 \usage{
-## Constructor function
-new_blueprint()
-
 ## Test if an object is a 'Blueprint' object
 is_blueprint(x)
+
+## Validate if an object is a proper 'Blueprint' object
+valid_blueprint(x)
 }
 \arguments{
 \item{x}{any \R object.}
 }
 \value{
 \itemize{
-\item Constructor function \code{\link[=new_blueprint]{new_blueprint()}} is a wrapper to
-\code{\link[=Blueprint]{$new()}} and returns a \link[R6:R6Class]{R6} object of class \link{Blueprint}.
+\item External helper function \code{\link[=is_blueprint]{is_blueprint()}} returns a logical scalar.
 }
 
 \itemize{
-\item External helper functions \code{\link[=is_blueprint]{is_blueprint()}} returns a logical scalar.
+\item External helper function \code{\link[=valid_blueprint]{valid_blueprint()}} returns a logical scalar if
+the object is valid. Else, an error explaining what is wrong is returned.
 }
 }
 \description{
 \link{Blueprint} is the root super-class of all \link[R6:R6Class]{R6} classes of package
-\pkg{blueprint}. In other words, all classes defined in package
-\pkg{blueprint} inherit class \link{Blueprint}. This class is \strong{definitely not
-useful to the user} and is mostly used has a safeguard against probable
-class names collisions.
+\pkg{blueprint} and provides important low-level mechanisms. All classes of
+\pkg{blueprint} inherit class \link{Blueprint}.
 
-You should consider it as a virtual class. It has an API mostly for
-consistency with other classes of the package.
+\strong{This class is definitely not useful for typical users}. You should
+consider it a virtual class.
+}
+\examples{
+
+## ------------------------------------------------
+## Method `Blueprint$get`
+## ------------------------------------------------
+
+## Get a field, here 'version'.
+Blueprint$new()$get("version")
+
+## Extract a non-existent field, here 'nope'. NULL is returned.
+Blueprint$new()$get("nope")
+
+## Just return the whole object (is a functional style).
+## The output is invisible, we must print it to see it.
+Blueprint$new()$get()$print()
+
+## ------------------------------------------------
+## Method `Blueprint$set`
+## ------------------------------------------------
+
+## Trying to update a non-public field throws an error!
+\dontrun{
+Blueprint$new()$set("version", "1.0.0")
+}
+}
+\seealso{
+Other Blueprint classes: 
+\code{\link{Atomic}}
 }
 \author{
-Jean-Mathieu Potvin (\href{mailto:info@jeanmathieupotvin.com}{info@jeanmathieupotvin.com})
+Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 }
 \concept{Blueprint classes}
-\section{Public fields}{
-\if{html}{\out{<div class="r6-fields">}}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{is_blueprint}}{A scalar logical always equal to \code{TRUE}.}
+\item{\code{is_blueprint}}{A scalar logical always equal to TRUE.}
 
-\item{\code{blueprint_version}}{A scalar character that holds the
-\pkg{blueprint} package's version when an object is created.}
+\item{\code{version}}{A scalar character that registers
+\pkg{blueprint}'s version at the moment the object is created.}
 }
 \if{html}{\out{</div>}}
 }
@@ -56,6 +83,8 @@ Jean-Mathieu Potvin (\href{mailto:info@jeanmathieupotvin.com}{info@jeanmathieupo
 \item \href{#method-validate}{\code{Blueprint$validate()}}
 \item \href{#method-print}{\code{Blueprint$print()}}
 \item \href{#method-format}{\code{Blueprint$format()}}
+\item \href{#method-get}{\code{Blueprint$get()}}
+\item \href{#method-set}{\code{Blueprint$set()}}
 }
 }
 \if{html}{\out{<hr>}}
@@ -80,11 +109,6 @@ Validate a \link{Blueprint} object.
 \if{html}{\out{<div class="r">}}\preformatted{Blueprint$validate()}\if{html}{\out{</div>}}
 }
 
-\subsection{Details}{
-A \link{Blueprint} instance is valid if \verb{$is_blueprint} is
-\code{TRUE}.
-}
-
 \subsection{Returns}{
 The \link{Blueprint} object invisibly if the object is valid.
 Else, an error explaining what is wrong with the object.
@@ -97,6 +121,10 @@ Else, an error explaining what is wrong with the object.
 Print a \link{Blueprint} object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Blueprint$print()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+The object is automatically validated before being printed.
 }
 
 \subsection{Returns}{
@@ -116,5 +144,94 @@ Format a \link{Blueprint} object.
 A character scalar representing the formatted
 \link{Blueprint} object.
 }
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-get"></a>}}
+\if{latex}{\out{\hypertarget{method-get}{}}}
+\subsection{Method \code{get()}}{
+Extract a field's value from a \link{Blueprint} object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$get(field = character(), .validate = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field}}{A scalar character. The name of a field.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+The value corresponding to the chosen \code{field}. If it
+does not exist, \code{NULL} is returned. If \code{field} is missing,
+the underlying \link{Blueprint} object is returned invisibly.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Get a field, here 'version'.
+Blueprint$new()$get("version")
+
+## Extract a non-existent field, here 'nope'. NULL is returned.
+Blueprint$new()$get("nope")
+
+## Just return the whole object (is a functional style).
+## The output is invisible, we must print it to see it.
+Blueprint$new()$get()$print()
+}
+\if{html}{\out{</div>}}
+
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-set"></a>}}
+\if{latex}{\out{\hypertarget{method-set}{}}}
+\subsection{Method \code{set()}}{
+Update a field's value of a \link{Blueprint} object.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Blueprint$set(field = character(), value, .validate = TRUE)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{field}}{A scalar character. The name of a field.}
+
+\item{\code{value}}{Any \R value. The value to use when updating a field. Its
+type must match the field's underlying structure.}
+
+\item{\code{.validate}}{A scalar logical. Validate the object before calling
+the method? While this argument is available to the users, it should
+be ignored, unless you have an alternative way to make sure your
+underlying object is valid. Since it is a low-level argument, it is
+not validated, so proceed with care.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Details}{
+Beware! Class \link{Blueprint} has no modifiable fields.
+}
+
+\subsection{Returns}{
+The \link{Blueprint} object invisibly if the object is valid.
+Else, an error explaining what is wrong with the object.
+}
+\subsection{Examples}{
+\if{html}{\out{<div class="r example copy">}}
+\preformatted{## Trying to update a non-public field throws an error!
+\dontrun{
+Blueprint$new()$set("version", "1.0.0")
+}
+}
+\if{html}{\out{</div>}}
+
+}
+
 }
 }

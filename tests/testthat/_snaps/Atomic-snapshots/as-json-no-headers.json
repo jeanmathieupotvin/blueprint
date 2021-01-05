@@ -1,0 +1,8 @@
+{
+  "Atomic": {
+    "name": "test",
+    "type": "raw",
+    "length": 5,
+    "prototype": "AA=="
+  }
+}

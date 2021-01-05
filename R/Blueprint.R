@@ -10,19 +10,23 @@ NULL
 #'
 #' @description
 #' [Blueprint] is the root super-class of all [R6][R6::R6] classes of package
-#' \pkg{blueprint}. In other words, all classes defined in package
-#' \pkg{blueprint} inherit class [Blueprint]. This class is **definitely not
-#' useful to the user** and is mostly used has a safeguard against probable
-#' class names collisions.
+#' \pkg{blueprint} and provides important low-level mechanisms. All classes of
+#' \pkg{blueprint} inherit class [Blueprint].
 #'
-#' You should consider it as a virtual class. It has an API mostly for
-#' consistency with other classes of the package.
+#' **This class is definitely not useful for typical users**. You should
+#' consider it a virtual class.
+#'
+#' @template param-field
+#'
+#' @template param-value
+#'
+#' @template param-validate
 #'
 #' @usage NULL
 #'
 #' @format NULL
 #'
-#' @author Jean-Mathieu Potvin (<info@@jeanmathieupotvin.com>)
+#' @author Jean-Mathieu Potvin (<jm@@potvin.xyz>)
 #'
 #' @family Blueprint classes
 #'
@@ -34,17 +38,26 @@ Blueprint <- R6::R6Class("Blueprint",
     lock_objects = TRUE,
     cloneable    = FALSE,
     inherit      = NULL,
-    private      = NULL,
-    public       = list(
+    private      = list(
 
-        #' @field is_blueprint A scalar logical always equal to `TRUE`.
-        is_blueprint = TRUE,
+        # Register package's version whenever an object is created.
+        # We hide this value from users and make it accessible via
+        # an active field. This is safer and faster.
+        pkg_ver = as.character(utils::packageVersion("blueprint"))
+    ),
+    active = list(
 
-        #' @field blueprint_version A scalar character that holds the
-        #' \pkg{blueprint} package's version when an object is created.
-        blueprint_version = as.character(utils::packageVersion("blueprint")),
+        #' @field is_blueprint A scalar logical always equal to TRUE.
+        is_blueprint = function() { return(TRUE) },
+
+        #' @field version A scalar character that registers
+        #' \pkg{blueprint}'s version at the moment the object is created.
+        version = function() { return(private$pkg_ver) }
+    ),
+    public = list(
 
         #' @description Create a new [Blueprint] object.
+        #'
         #' @return A [R6][R6::R6] object of class [Blueprint].
         initialize = function()
         {
@@ -52,39 +65,103 @@ Blueprint <- R6::R6Class("Blueprint",
         },
 
         #' @description Validate a [Blueprint] object.
+        #'
         #' @return The [Blueprint] object invisibly if the object is valid.
         #' Else, an error explaining what is wrong with the object.
-        #' @details A [Blueprint] instance is valid if `$is_blueprint` is
-        #' `TRUE`.
         validate = function()
         {
-            is_valid_r6_instance(
-                if (!is_scalar_logical(self$is_blueprint) || !self$is_blueprint) {
-                    "$is_blueprint is FALSE. It should be a scalar TRUE."
-                },
-                if (!is_scalar_character(self$blueprint_version)) {
-                    "$blueprint_version must be a character of length 1."
-                }
-            )
-
             return(invisible(self))
         },
 
         #' @description Print a [Blueprint] object.
+        #'
         #' @return The [Blueprint] object invisibly.
+        #'
+        #' @details
+        #' The object is automatically validated before being printed.
         print = function()
         {
-            cat(self$format())
+            self$validate()
+            cat(sprintf("<Blueprint [%s]>", self$version))
             return(invisible(self))
         },
 
         #' @description Format a [Blueprint] object.
+        #'
         #' @return A character scalar representing the formatted
         #' [Blueprint] object.
         format = function()
         {
-            self$validate()
             return("<Blueprint>")
+        },
+
+        #' @description Extract a field's value from a [Blueprint] object.
+        #'
+        #' @return The value corresponding to the chosen `field`. If it
+        #' does not exist, `NULL` is returned. If `field` is missing,
+        #' the underlying [Blueprint] object is returned invisibly.
+        #'
+        #' @examples
+        #' ## Get a field, here 'version'.
+        #' Blueprint$new()$get("version")
+        #'
+        #' ## Extract a non-existent field, here 'nope'. NULL is returned.
+        #' Blueprint$new()$get("nope")
+        #'
+        #' ## Just return the whole object (is a functional style).
+        #' ## The output is invisible, we must print it to see it.
+        #' Blueprint$new()$get()$print()
+        get = function(field = character(), .validate = TRUE)
+        {
+            if (.validate) {
+                self$validate()
+            }
+
+            if (length(field)) {
+                if (!is_scalar_character(field, FALSE)) {
+                    stop("'field' must be a scalar character.", call. = FALSE)
+                }
+                return(self[[field]])
+            } else {
+                return(invisible(self))
+            }
+        },
+
+        #' @description Update a field's value of a [Blueprint] object.
+        #'
+        #' @return The [Blueprint] object invisibly if the object is valid.
+        #' Else, an error explaining what is wrong with the object.
+        #'
+        #' @details
+        #' Beware! Class [Blueprint] has no modifiable fields.
+        #'
+        #' @examples
+        #' ## Trying to update a non-public field throws an error!
+        #' \dontrun{
+        #' Blueprint$new()$set("version", "1.0.0")
+        #' }
+        set = function(field = character(), value, .validate = TRUE)
+        {
+            if (!is_scalar_character(field, FALSE)) {
+                stop("'field' must be a scalar character.", call. = FALSE)
+            }
+            if (.validate) {
+                self$validate()
+            }
+
+            # By design, classes in blueprint refers to
+            # the underlying object generator and we can
+            # get fields easily from these generators.
+            r6gen  <- get(class(self)[[1L]])
+            fields <- names(r6gen$public_fields)
+
+            if (length(fields)) {
+                field <- match.arg(field, fields)
+                self[[field]] <- value
+                return(self$validate())
+            } else {
+                stop("the object has no modifiable fields.", call. = FALSE)
+            }
         }
     )
 )
@@ -96,44 +173,37 @@ Blueprint <- R6::R6Class("Blueprint",
 #' @rdname Blueprint
 #'
 #' @usage
-#' ## Constructor function
-#' new_blueprint()
-#'
-#' @return
-#' * Constructor function [new_blueprint()] is a wrapper to
-#' [`$new()`][Blueprint] and returns a [R6][R6::R6] object of class [Blueprint].
-#'
-#' @export
-new_blueprint <- function()
-{
-    return(Blueprint$new())
-}
-
-
-#' @rdname Blueprint
-#'
-#' @usage
 #' ## Test if an object is a 'Blueprint' object
 #' is_blueprint(x)
 #'
 #' @param x any \R object.
 #'
 #' @return
-#' * External helper functions [is_blueprint()] returns a logical scalar.
+#' * External helper function [is_blueprint()] returns a logical scalar.
 #'
 #' @export
 is_blueprint <- function(x)
 {
-    return(inherits(x, "Blueprint", FALSE) && isTRUE(x$is_blueprint))
+    return(inherits(x, "Blueprint", FALSE) && x$is_blueprint)
 }
 
 
-# S3 methods dispatch ----------------------------------------------------------
-
-
+#' @rdname Blueprint
+#'
+#' @usage
+#' ## Validate if an object is a proper 'Blueprint' object
+#' valid_blueprint(x)
+#'
+#' @return
+#' * External helper function [valid_blueprint()] returns a logical scalar if
+#' the object is valid. Else, an error explaining what is wrong is returned.
+#'
 #' @export
-#' @keywords internal
-format.Blueprint <- function(x, ...)
+valid_blueprint <- function(x)
 {
-    return(x$format())
+    if (!is_blueprint(x)) {
+        stop("'x' is not a 'Blueprint' object.", call. = FALSE)
+    }
+
+    return(valid_r6_instance(x))
 }

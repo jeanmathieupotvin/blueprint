@@ -1,4 +1,4 @@
 library(testthat)
 library(blueprint)
 
-test_check("blueprint")
+testthat::test_check("blueprint")
