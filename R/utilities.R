@@ -106,9 +106,11 @@ inject <- function(x, ...)
 }
 
 
-# Inject method for named lists.
+#' @export
 inject.list <- function(x, values = list(), ...)
 {
+    # Inject method for named lists.
+
     stopifnot(is_named_list(x))
 
     if (length(values)) {
@@ -128,9 +130,11 @@ inject.list <- function(x, values = list(), ...)
 }
 
 
-# Inject method for named vectors.
+#' @export
 inject.default <- function(x, values = vector(), ...)
 {
+    # Inject method for named vectors.
+
     stopifnot(is_named_vctr(x))
 
     if (length(values)) {

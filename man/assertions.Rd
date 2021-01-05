@@ -41,7 +41,7 @@ underlying tested object \emph{is} something (that \emph{something} is given by
 the function's name).
 }
 \description{
-Check if an object is a proper type, mode, length, etc. This is
+Check if an object is of a proper type, mode, length, etc. This is
 useful when implementing simple checks. These are used extensively in
 package \pkg{blueprint} and are all available to the users for convenience.
 }

@@ -3,7 +3,7 @@
 #' @title Simple assertions
 #'
 #' @description
-#' Check if an object is a proper type, mode, length, etc. This is
+#' Check if an object is of a proper type, mode, length, etc. This is
 #' useful when implementing simple checks. These are used extensively in
 #' package \pkg{blueprint} and are all available to the users for convenience.
 #'

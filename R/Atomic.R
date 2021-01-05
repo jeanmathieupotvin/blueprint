@@ -74,10 +74,10 @@ Atomic <- R6::R6Class("Atomic",
     ),
     public = list(
 
-        #' @field name A scalar character. A name for the vector.
+        #' @field name A non-empty, non-NA scalar character. A name for the vector.
         name = NA_character_,
 
-        #' @field type A scalar character. The class of the vector.
+        #' @field type A non-empty, non-NA scalar character. The class of the vector.
         type = NA_character_,
 
         #' @field length A scalar integer. The length of the vector. If `NULL`,
@@ -88,8 +88,8 @@ Atomic <- R6::R6Class("Atomic",
         #'
         #' @param atomic any [strict atomic][is_strict_atomic()] \R vector.
         #'
-        #' @param name A scalar character. The name of the vector passed
-        #' to `atomic`.
+        #' @param name A non-empty, non-NA scalar character. The name of the
+        #' vector passed to `atomic`.
         #'
         #' @param length A scalar integer. This argument is flexible. If
         #' `NULL`, `$length` is ignored.
@@ -277,7 +277,7 @@ Atomic <- R6::R6Class("Atomic",
         #' @return A [strict atomic vector][is_strict_atomic()]. Its underlying
         #' `type` and `length` is respectively given by fields `$type` and
         #' `$length`. It is initialized with a suitable prototype derived from
-        #' argument `atomic` (see [`new()`][Atomic]) and registered internally
+        #' argument `atomic` (see [`$new()`][Atomic]) and registered internally
         #' when the object is created.
         generate = function(.validate = TRUE)
         {

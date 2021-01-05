@@ -180,9 +180,9 @@ Jean-Mathieu Potvin (\href{mailto:jm@potvin.xyz}{jm@potvin.xyz})
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{name}}{A scalar character. A name for the vector.}
+\item{\code{name}}{A non-empty, non-NA scalar character. A name for the vector.}
 
-\item{\code{type}}{A scalar character. The class of the vector.}
+\item{\code{type}}{A non-empty, non-NA scalar character. The class of the vector.}
 
 \item{\code{length}}{A scalar integer. The length of the vector. If \code{NULL},
 it is ignored by the class instance.}
@@ -227,8 +227,8 @@ Create an \link{Atomic} object.
 \describe{
 \item{\code{atomic}}{any \link[=is_strict_atomic]{strict atomic} \R vector.}
 
-\item{\code{name}}{A scalar character. The name of the vector passed
-to \code{atomic}.}
+\item{\code{name}}{A non-empty, non-NA scalar character. The name of the
+vector passed to \code{atomic}.}
 
 \item{\code{length}}{A scalar integer. This argument is flexible. If
 \code{NULL}, \verb{$length} is ignored.}
@@ -382,7 +382,7 @@ not validated, so proceed with care.}
 A \link[=is_strict_atomic]{strict atomic vector}. Its underlying
 \code{type} and \code{length} is respectively given by fields \verb{$type} and
 \verb{$length}. It is initialized with a suitable prototype derived from
-argument \code{atomic} (see \code{\link[=Atomic]{new()}}) and registered internally
+argument \code{atomic} (see \code{\link[=Atomic]{$new()}}) and registered internally
 when the object is created.
 }
 }
