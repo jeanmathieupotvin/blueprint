@@ -486,7 +486,8 @@ Atomic <- R6::R6Class("Atomic",
         #' cat(ab$as_yaml(headers = myheaders))
         #'
         #' ## Write output to a file.
-        #' ab$as_yaml(file = "my_atomic.yaml", headers = myheaders)
+        #' path <- tempfile(fileext = ".yaml")
+        #' ab$as_yaml(file = path, headers = myheaders)
         #'
         #' ## Output is always encoded to UTF-8.
         #' Encoding(ab$as_yaml(headers = list(utf8char = "`"))) == "UTF-8"
@@ -584,7 +585,8 @@ Atomic <- R6::R6Class("Atomic",
         #' cat(ab$as_json(headers = myheaders))
         #'
         #' ## Write output to a file.
-        #' ab$as_json(file = "my_atomic.json", headers = myheaders)
+        #' path <- tempfile(fileext = ".json")
+        #' ab$as_json(file = path, headers = myheaders)
         #'
         #' ## Output is always encoded to UTF-8.
         #' Encoding(ab$as_json(headers = list(utf8char = "`"))) == "UTF-8"
