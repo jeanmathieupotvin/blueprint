@@ -3,7 +3,7 @@
 # This workflows was generated automatically by
 # usethis::use_github_action_check_standard(). It runs R CMD CHECK
 # via the rcmdcheck package on three OS (Ubuntu, macOS and Windows)
-# that runs the latest release of R. This is appripriate for package
+# that runs the latest release of R. This is appropriate for package
 # to be submitted to CRAN.
 on:
   push:
