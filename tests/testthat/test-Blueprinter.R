@@ -10,8 +10,10 @@ test_that("operator %bp% works",
     expect_warning(test %bp% `+`, "No suitable blueprint")
 
     # Test arguments checks.
-    expect_error(1L %bp% raw(),               "inappropriate 'symbol'")
-    expect_error(c("bad", "name") %bp% raw(), "inappropriate 'symbol'")
+    expect_error(1L %bp% raw(),               "symbol")
+    expect_error("" %bp% raw(),               "symbol")
+    expect_error(NA_character_    %bp% raw(), "symbol")
+    expect_error(c("bad", "name") %bp% raw(), "symbol")
 })
 
 

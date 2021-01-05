@@ -36,17 +36,16 @@ NULL
 {
     name <- if (is.name(substitute(symbol))) {
         deparse(substitute(symbol))
-    } else if (is_scalar_character(symbol)) {
+    } else if (is_scalar_character(symbol, FALSE) && nzchar(symbol)) {
         symbol
     } else {
-        stop("inappropriate 'symbol' value.",
-             " It should be a name or a scalar character.",
+        stop("'symbol' must be a name (a symbol) or a non-empty scalar character.",
              call. = FALSE)
     }
 
     if (is_strict_atomic(object)) {
-        objlen <- length(object)
-        return(Atomic$new(object, name, if (objlen == 0L) NULL else objlen))
+        len <- length(object)
+        return(Atomic$new(object, name, if (len == 0L) NULL else len))
     } else {
         warning("No suitable blueprint class was found for argument 'object'.",
                 call. = FALSE)
