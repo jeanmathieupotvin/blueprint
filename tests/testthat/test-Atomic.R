@@ -60,8 +60,10 @@ test_that("$new()",
     expect_error(Atomic$new(array(),  "test"), "strict atomic")
     expect_error(Atomic$new(matrix(), "test"), "strict atomic")
 
-    # Names can only be scalar characters.
+    # Names can only be non-empty scalar characters.
     expect_error(Atomic$new(raw(), 1L),                "scalar character")
+    expect_error(Atomic$new(raw(), ""),                "scalar character")
+    expect_error(Atomic$new(raw(), NA_character_),     "scalar character")
     expect_error(Atomic$new(raw(), c("test", "test")), "scalar character")
 
     # Lengths can be NULL or scalar positive integers.
@@ -106,6 +108,8 @@ test_that("$validate()",
     # Test validation of $name.
     b <- Atomic$new(sample.int(10L), "test", 10L)
     expect_error(b$set("name", 1),             "scalar character")
+    expect_error(b$set("name", ""),            "scalar character")
+    expect_error(b$set("name", NA_character_), "scalar character")
     expect_error(b$set("name", c("n1", "n2")), "scalar character")
 
     # Test validation of $length.

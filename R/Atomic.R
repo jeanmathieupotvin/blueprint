@@ -159,14 +159,14 @@ Atomic <- R6::R6Class("Atomic",
             # Therefore, $type needs to be a scalar for match(),
             # so we check its first element only.
             report_errors(
-                if (!is_scalar_character(self$name, FALSE))  {
-                    "$name must be an scalar character."
+                if (!is_scalar_character(self$name, FALSE) || !nzchar(self$name)) {
+                    "$name must be a non-empty scalar character."
                 },
                 if (!is_scalar_character(self$type, FALSE)) {
                     "$type must be a scalar character."
                 },
                 if (!match(self$type[[1L]], private$valid_types, 0L)) {
-                    "$type should be a strict atomic type."
+                    "$type must be a strict atomic type."
                 },
                 if (!is.null(self$length) &&
                     (!is_scalar_integer(self$length, FALSE) || self$length < 0L)) {
